@@ -131,129 +131,134 @@ Verification agents confirm: original bug is fixed, no regressions introduced, r
 ## 3. Complete File Structure
 
 ```
-zflow/
-├── SKILL.md                          # Main skill entry point — orchestrator
-├── LICENSE.txt                       # License terms
+# Repository layout
+
+├── README.md                          # End-user documentation (repo landing page)
+├── CLAUDE.md                          # Claude Code behavioral guidelines
+├── zflow-design-plan.md               # This file — architecture & design reference
+├── evals/                             # Test infrastructure for validating ZFlow
+│   ├── evals.json
+│   └── files/
+│       ├── sample-scope.md
+│       └── sample-codebase/
 │
-├── skills/                           # Sub-skills (invoked by orchestrator)
-│   ├── zflow-brainstorm/
-│   │   └── SKILL.md                  # Socratic brainstorming agent
-│   ├── zflow-research/
-│   │   └── SKILL.md                  # Research swarm coordinator
-│   ├── zflow-design/
-│   │   └── SKILL.md                  # Solution architect agent
-│   ├── zflow-review/
-│   │   └── SKILL.md                  # Multi-perspective review agents
-│   ├── zflow-ui-design/
-│   │   └── SKILL.md                  # Pencil.dev UI design coordinator
-│   ├── zflow-implement/
-│   │   └── SKILL.md                  # Parallel implementation coordinator
-│   ├── zflow-qa/
-│   │   └── SKILL.md                  # QA agent swarm coordinator
-│   ├── zflow-document/
-│   │   └── SKILL.md                  # Documentation & commit agent
-│   └── zflow-debug/
-│       └── SKILL.md                  # Debugging workflow orchestrator
-│
-├── agents/                           # Sub-agent prompt templates
-│   │
-│   ├── _shared/
-│   │   └── karpathy-preamble.md      # Behavioral rules injected into ALL agents
-│   │
-│   ├── brainstorm/
-│   │   ├── socratic-interviewer.md   # Brainstorming agent persona & guided method
-│   │   └── question-patterns.md      # Multiple-choice question templates & examples
-│   │
-│   ├── research/
-│   │   ├── architecture-scout.md     # Analyzes project architecture
-│   │   ├── dependency-mapper.md      # Maps dependency chains
-│   │   ├── pattern-analyzer.md       # Identifies existing patterns & conventions
-│   │   ├── test-surveyor.md          # Surveys test coverage & patterns
-│   │   ├── related-code-finder.md    # Finds related/affected code
-│   │   └── ui-system-scout.md        # [UI] Surveys design system, components, tokens
-│   │
-│   ├── design/
-│   │   └── solution-architect.md     # Senior architect deliberation prompt
-│   │
-│   ├── review/
-│   │   ├── gap-detector.md           # Finds gaps & missing requirements
-│   │   ├── overengineering-critic.md # Identifies unnecessary complexity (Karpathy enforcer)
-│   │   ├── security-reviewer.md      # Security implications review
-│   │   ├── performance-reviewer.md   # Performance implications review
-│   │   └── alignment-checker.md      # Architecture alignment check
-│   │
-│   ├── ui-design/
-│   │   ├── pencil-designer.md        # Pencil.dev canvas design agent
-│   │   ├── design-system-builder.md  # Design token & component system agent
-│   │   └── ui-review-agent.md        # Screenshot-based UI review agent
-│   │
-│   ├── implement/
-│   │   ├── focused-implementer.md    # Single-task implementation agent
-│   │   └── ui-implementer.md         # [UI] Implements from Pencil.dev designs
-│   │
-│   ├── qa/
-│   │   ├── completeness-checker.md   # Implementation completeness
-│   │   ├── ux-reviewer.md            # User experience review
-│   │   ├── code-quality-auditor.md   # Code quality & standards (Karpathy enforcer)
-│   │   ├── test-coverage-agent.md    # Test coverage & quality
-│   │   ├── design-alignment-qa.md    # Design/architecture alignment
-│   │   ├── security-auditor.md       # Deep security vulnerability analysis (OWASP)
-│   │   └── ui-visual-qa.md           # [UI] Visual regression & design fidelity
-│   │
-│   ├── debug/
-│   │   ├── reproducer.md             # Bug reproduction agent
-│   │   ├── call-chain-tracer.md      # Trace backward from symptom
-│   │   ├── data-flow-tracer.md       # Follow data to corruption source
-│   │   ├── pattern-scanner.md        # Find similar bug patterns
-│   │   ├── history-investigator.md   # Git history analysis
-│   │   ├── security-impact-assessor.md # Assess security implications of the bug
-│   │   ├── root-cause-analyst.md     # Synthesize root cause
-│   │   ├── fix-designer.md           # Design minimal effective fix
-│   │   └── fix-verifier.md           # Verify fix + regression check
-│   │
-│   └── document/
-│       └── documentation-writer.md   # Documentation update agent
-│
-├── templates/                        # Output document templates
-│   ├── scope.md                      # Brainstorm output template (requirements & intent only)
-│   ├── approach-proposal.md          # 2-3 approach comparison template (used in Phase 2: Design)
-│   ├── research-report.md            # Research findings template
-│   ├── solution.md                   # Design solution template
-│   ├── reviewed-solution.md          # Post-review solution template
-│   ├── ui-design-report.md           # [UI] Pencil.dev design handoff template
-│   ├── implementation-plan.md        # Task breakdown with dependencies
-│   ├── impl-report.md               # Implementation status report
-│   ├── qa-report.md                  # QA findings template
-│   ├── qa-checklist.md               # QA dimension checklist
-│   ├── security-audit-report.md      # Security vulnerability findings template
-│   ├── repro-report.md              # Bug reproduction report
-│   ├── investigation.md             # Debug investigation template
-│   ├── root-cause.md                # Root cause analysis template
-│   ├── fix-design.md                # Fix design template
-│   └── verification.md              # Fix verification template
-│
-├── references/
-│   ├── workflow-guide.md             # Detailed workflow documentation
-│   ├── agent-orchestration.md        # How agent swarms are coordinated
-│   ├── phase-gates.md               # Phase transition criteria
-│   ├── dependency-tiers.md          # How implementation tasks are tiered
-│   ├── escalation-patterns.md       # When/how to escalate (3-strike rule etc.)
-│   ├── karpathy-guidelines.md       # Full Karpathy guidelines with ZFlow annotations
-│   ├── pencil-integration.md        # Pencil.dev workflow & MCP tool reference
-│   ├── security-checklist.md        # OWASP Top 10 2025 deep audit checklist
-│   └── security-patterns.md         # Common vulnerability patterns by language
-│
-├── scripts/
-│   ├── init-workspace.sh            # Initialize .zflow/ workspace directory
-│   ├── validate-phase.py            # Validate phase output before transition
-│   ├── generate-summary.py          # Generate workflow summary report
-│   └── check-pencil-availability.sh # Detect Pencil.dev MCP tools
-│
-└── evals/                            # Testing framework
-    ├── evals.json                    # Test scenarios
-    └── files/                        # Test input files
-        ├── sample-scope.md
-        └── sample-codebase/
+└── zflow/                             # Package — copy this to your harness's skills dir
+    ├── SKILL.md                       # Main skill entry point — orchestrator
+    ├── LICENSE.txt                    # License terms
+    │
+    ├── skills/                        # Sub-skills (invoked by orchestrator)
+    │   ├── zflow-brainstorm/
+    │   │   └── SKILL.md               # Socratic brainstorming agent
+    │   ├── zflow-research/
+    │   │   └── SKILL.md               # Research swarm coordinator
+    │   ├── zflow-design/
+    │   │   └── SKILL.md               # Solution architect agent
+    │   ├── zflow-review/
+    │   │   └── SKILL.md               # Multi-perspective review agents
+    │   ├── zflow-ui-design/
+    │   │   └── SKILL.md               # Pencil.dev UI design coordinator
+    │   ├── zflow-implement/
+    │   │   └── SKILL.md               # Parallel implementation coordinator
+    │   ├── zflow-qa/
+    │   │   └── SKILL.md               # QA agent swarm coordinator
+    │   ├── zflow-document/
+    │   │   └── SKILL.md               # Documentation & commit agent
+    │   └── zflow-debug/
+    │       └── SKILL.md               # Debugging workflow orchestrator
+    │
+    ├── agents/                        # Sub-agent prompt templates
+    │   │
+    │   ├── _shared/
+    │   │   └── karpathy-preamble.md   # Behavioral rules injected into ALL agents
+    │   │
+    │   ├── brainstorm/
+    │   │   ├── socratic-interviewer.md
+    │   │   └── question-patterns.md
+    │   │
+    │   ├── research/
+    │   │   ├── architecture-scout.md
+    │   │   ├── dependency-mapper.md
+    │   │   ├── pattern-analyzer.md
+    │   │   ├── test-surveyor.md
+    │   │   ├── related-code-finder.md
+    │   │   └── ui-system-scout.md     # [UI] Conditional
+    │   │
+    │   ├── design/
+    │   │   └── solution-architect.md
+    │   │
+    │   ├── review/
+    │   │   ├── gap-detector.md
+    │   │   ├── overengineering-critic.md
+    │   │   ├── security-reviewer.md
+    │   │   ├── performance-reviewer.md
+    │   │   └── alignment-checker.md
+    │   │
+    │   ├── ui-design/
+    │   │   ├── pencil-designer.md
+    │   │   ├── design-system-builder.md
+    │   │   └── ui-review-agent.md
+    │   │
+    │   ├── implement/
+    │   │   ├── focused-implementer.md
+    │   │   └── ui-implementer.md       # [UI] Conditional
+    │   │
+    │   ├── qa/
+    │   │   ├── completeness-checker.md
+    │   │   ├── ux-reviewer.md
+    │   │   ├── code-quality-auditor.md
+    │   │   ├── test-coverage-agent.md
+    │   │   ├── design-alignment-qa.md
+    │   │   ├── security-auditor.md     # OWASP deep audit
+    │   │   └── ui-visual-qa.md         # [UI] Conditional
+    │   │
+    │   ├── debug/
+    │   │   ├── reproducer.md
+    │   │   ├── call-chain-tracer.md
+    │   │   ├── data-flow-tracer.md
+    │   │   ├── pattern-scanner.md
+    │   │   ├── history-investigator.md
+    │   │   ├── security-impact-assessor.md
+    │   │   ├── root-cause-analyst.md
+    │   │   ├── fix-designer.md
+    │   │   └── fix-verifier.md
+    │   │
+    │   └── document/
+    │       └── documentation-writer.md
+    │
+    ├── templates/                     # Output document templates
+    │   ├── scope.md
+    │   ├── approach-proposal.md
+    │   ├── research-report.md
+    │   ├── solution.md
+    │   ├── reviewed-solution.md
+    │   ├── ui-design-report.md
+    │   ├── implementation-plan.md
+    │   ├── impl-report.md
+    │   ├── qa-report.md
+    │   ├── qa-checklist.md
+    │   ├── security-audit-report.md
+    │   ├── repro-report.md
+    │   ├── investigation.md
+    │   ├── root-cause.md
+    │   ├── fix-design.md
+    │   └── verification.md
+    │
+    ├── references/
+    │   ├── workflow-guide.md
+    │   ├── agent-orchestration.md
+    │   ├── phase-gates.md
+    │   ├── dependency-tiers.md
+    │   ├── escalation-patterns.md
+    │   ├── karpathy-guidelines.md
+    │   ├── pencil-integration.md
+    │   ├── security-checklist.md
+    │   └── security-patterns.md
+    │
+    └── scripts/
+        ├── init-workspace.sh
+        ├── validate-phase.py
+        ├── generate-summary.py
+        └── check-pencil-availability.sh
 ```
 
 ---

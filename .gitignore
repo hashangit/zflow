@@ -15,6 +15,9 @@ Thumbs.db
 # Dual graph (local agent state)
 .dual-graph/
 
+# Qwen Code
+.qwen/
+
 # Python
 __pycache__/
 *.pyc

@@ -384,7 +384,7 @@ Resume anytime — if you interrupt ZFlow and run `/using-zflow` again, it picks
 ## Project Structure
 
 ```
-zflow/
+zflow/                              # Copy this folder to your harness's skills directory
 ├── SKILL.md                        # Main orchestrator entry point
 ├── LICENSE.txt                     # MIT License
 │
@@ -413,8 +413,7 @@ zflow/
 │
 ├── templates/                      # Output document templates
 ├── references/                     # Internal reference documentation
-├── scripts/                        # Workspace and validation scripts
-└── evals/                          # Test scenarios
+└── scripts/                        # Workspace and validation scripts
 ```
 
 100 files, ~14,600 lines across skills, agents, templates, references, and evals.
