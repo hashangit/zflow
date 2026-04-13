@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ZFlow Eval Scenarios",
+  "description": "Test scenarios for verifying ZFlow multi-agent workflow system works correctly. These are template scenarios — actual eval implementation would use a more sophisticated runner with mock agents and output capture.",
+  "version": "0.1.0",
+
+  "scenarios": [
+
+    {
+      "id": "eval-simple-feature",
+      "name": "Simple Feature (No UI)",
+      "description": "A straightforward backend feature with no UI work. Tests the minimal happy path through the dev workflow without Phase 3.5.",
+      "trigger": {
+        "user_message": "I want to add a rate limiter middleware to my Express API. It should limit requests to 100 per minute per IP address and return 429 when exceeded.",
+        "invocation": "/using-zflow"
+      },
+      "workflow_type": "dev",
+      "expected_phase_sequence": [
+        "00-brainstorm",
+        "01-research",
+        "02-design",
+        "03-review",
+        "04-implement",
+        "05-qa",
+        "06-document"
+      ],
+      "expected_outputs": {
+        "00-brainstorm": {
+          "file": "scope.md",
+          "required_sections": [
+            "Problem Statement",
+            "Success Criteria",
+            "Scope Boundaries",
+            "MVP Definition"
+          ],
+          "assertions": [
+            "ui_work flag should be false",
+            "scope should mention rate limiting",
+            "scope should mention Express middleware"
+          ]
+        },
+        "01-research": {
+          "file": "research-report.md",
+          "required_sections": [
+            "Architecture",
+            "Dependencies",
+            "Key Findings"
+          ],
+          "assertions": [
+            "should identify existing middleware patterns",
+            "should map Express version and related packages"
+          ]
+        },
+        "02-design": {
+          "file": "solution.md",
+          "required_sections": [
+            "Chosen Approach",
+            "Component Breakdown",
+            "Task Breakdown"
+          ],
+          "assertions": [
+            "should propose at least 2 approaches",
+            "task breakdown should have success criteria per task"
+          ]
+        },
+        "03-review": {
+          "file": "reviewed-solution.md",
+          "assertions": [
+            "should include reviewer findings appendix",
+            "solution should not have drifted from scope"
+          ]
+        },
+        "04-implement": {
+          "file": "impl-report.md",
+          "required_sections": [
+            "Tasks Completed",
+            "Files Changed",
+            "Deviations"
+          ],
+          "assertions": [
+            "all tasks from solution should be completed",
+            "every changed file should trace to scope"
+          ]
+        },
+        "05-qa": {
+          "file": "qa-report.md",
+          "assertions": [
+            "should have zero blocker or critical issues",
+            "security audit should check for rate limit bypass"
+          ]
+        },
+        "06-document": {
+          "file": "changes-summary.md",
+          "assertions": [
+            "CHANGELOG should be updated",
+            "commit message should follow conventional commits"
+          ]
+        }
+      },
+      "phase_3_5_triggered": false,
+      "expected_total_phases": 7
+    },
+
+    {
+      "id": "eval-complex-feature-with-ui",
+      "name": "Complex Feature with UI (Pencil.dev)",
+      "description": "A feature involving both backend and frontend UI work. Tests the full dev workflow including Phase 3.5 UI design with Pencil.dev.",
+      "trigger": {
+        "user_message": "Build a notification center for my dashboard app. It should have a bell icon with unread count, a dropdown panel showing recent notifications, and mark-as-read functionality. Notifications come from a WebSocket connection.",
+        "invocation": "/using-zflow"
+      },
+      "workflow_type": "dev",
+      "expected_phase_sequence": [
+        "00-brainstorm",
+        "01-research",
+        "02-design",
+        "03-review",
+        "03.5-ui-design",
+        "04-implement",
+        "05-qa",
+        "06-document"
+      ],
+      "expected_outputs": {
+        "00-brainstorm": {
+          "file": "scope.md",
+          "assertions": [
+            "ui_work flag should be true",
+            "scope should mention notification center, dropdown, WebSocket",
+            "should propose multiple scope tiers (minimal/standard/full)"
+          ]
+        },
+        "01-research": {
+          "file": "research-report.md",
+          "assertions": [
+            "ui-system-scout agent should be included in the swarm",
+            "should survey existing component library and design tokens",
+            "should identify WebSocket infrastructure"
+          ]
+        },
+        "03.5-ui-design": {
+          "file": "ui-design-report.md",
+          "required_sections": [
+            "Design Tokens",
+            "Component Specifications",
+            "Layout Descriptions"
+          ],
+          "assertions": [
+            "should include .pen file with visual designs",
+            "design tokens should match existing system",
+            "accessibility requirements should be documented"
+          ]
+        },
+        "04-implement": {
+          "file": "impl-report.md",
+          "assertions": [
+            "ui-implementer agent should be used for UI tasks",
+            "implementation should reference ui-design-report.md"
+          ]
+        },
+        "05-qa": {
+          "file": "qa-report.md",
+          "assertions": [
+            "ui-visual-qa agent should compare against Pencil exports",
+            "should check responsive behavior at all breakpoints"
+          ]
+        }
+      },
+      "phase_3_5_triggered": true,
+      "pencil_required": true,
+      "expected_total_phases": 8
+    },
+
+    {
+      "id": "eval-debug-workflow",
+      "name": "Debug Workflow (Root Cause Fix)",
+      "description": "A bug report triggers the debug workflow. Tests all 6 debug phases from reproduction through verification.",
+      "trigger": {
+        "user_message": "Users are getting 500 errors when they submit the checkout form with international addresses. The error only happens with non-ASCII characters in the address field.",
+        "invocation": "/using-zflow-debug"
+      },
+      "workflow_type": "debug",
+      "expected_phase_sequence": [
+        "d0-reproduce",
+        "d1-investigate",
+        "d2-analyze",
+        "d3-design-fix",
+        "d4-implement-fix",
+        "d5-verify"
+      ],
+      "expected_outputs": {
+        "d0-reproduce": {
+          "file": "repro-report.md",
+          "required_sections": [
+            "Bug Description",
+            "Reproduction Steps",
+            "Expected Behavior",
+            "Actual Behavior"
+          ],
+          "assertions": [
+            "reproduction steps should use non-ASCII characters",
+            "should capture the actual error output/stack trace"
+          ]
+        },
+        "d1-investigate": {
+          "file": "investigation.md",
+          "assertions": [
+            "should trace the encoding issue through the call chain",
+            "security-impact-assessor should check for injection via encoding",
+            "history analysis should check recent changes to address handling"
+          ]
+        },
+        "d2-analyze": {
+          "file": "root-cause.md",
+          "assertions": [
+            "should distinguish symptom (500 error) from root cause (encoding)",
+            "confidence level should be stated",
+            "blast radius should be assessed"
+          ]
+        },
+        "d3-design-fix": {
+          "file": "fix-design.md",
+          "assertions": [
+            "fix should be minimal and address root cause",
+            "regression risk should be documented",
+            "Karpathy: should be smallest effective change"
+          ]
+        },
+        "d4-implement-fix": {
+          "file": "fix-impl-report.md",
+          "assertions": [
+            "every changed line should trace to the fix design",
+            "no speculative changes beyond the fix scope"
+          ]
+        },
+        "d5-verify": {
+          "file": "verification.md",
+          "assertions": [
+            "original reproduction steps should now pass",
+            "regression tests should all pass",
+            "security verifier should confirm no new vulnerabilities"
+          ]
+        }
+      },
+      "expected_total_phases": 6
+    },
+
+    {
+      "id": "eval-phase-skipping",
+      "name": "Phase Skipping (Quick Fix)",
+      "description": "A user provides a well-defined task that should skip brainstorm and research phases, jumping directly to design.",
+      "trigger": {
+        "user_message": "Skip to design. I need to add a `created_at` timestamp field to the User model. The DB is PostgreSQL using Prisma. Just design the migration and implement it.",
+        "invocation": "/using-zflow"
+      },
+      "workflow_type": "dev",
+      "config_overrides": {
+        "workflow": {
+          "skip_phases": ["brainstorm", "research"]
+        }
+      },
+      "expected_phase_sequence": [
+        "02-design",
+        "03-review",
+        "04-implement",
+        "05-qa",
+        "06-document"
+      ],
+      "expected_outputs": {
+        "02-design": {
+          "file": "solution.md",
+          "assertions": [
+            "should reference the specific model and field",
+            "should include database migration plan",
+            "should address backward compatibility"
+          ]
+        },
+        "00-brainstorm": {
+          "should_exist": false,
+          "assertions": ["scope.md should NOT be generated"]
+        },
+        "01-research": {
+          "should_exist": false,
+          "assertions": ["research-report.md should NOT be generated"]
+        }
+      },
+      "expected_total_phases": 5
+    },
+
+    {
+      "id": "eval-resume-from-interruption",
+      "name": "Resume From Interruption",
+      "description": "Simulates a workflow that was interrupted after Phase 4 (implement) and needs to resume at Phase 5 (QA). Tests that the workspace state is correctly preserved and the orchestrator can pick up where it left off.",
+      "trigger": {
+        "user_message": "Resume my ZFlow workflow. I was in the middle of implementing the notification center feature.",
+        "invocation": "/using-zflow"
+      },
+      "workflow_type": "dev",
+      "pre_conditions": {
+        "description": "Workspace must have completed phases 00-04 before this eval runs",
+        "current_phase_json": {
+          "workflow": "dev",
+          "phase": "implement",
+          "status": "completed"
+        },
+        "existing_phase_outputs": [
+          "phases/00-brainstorm/scope.md",
+          "phases/01-research/research-report.md",
+          "phases/02-design/solution.md",
+          "phases/03-review/reviewed-solution.md",
+          "phases/04-implement/impl-report.md"
+        ]
+      },
+      "expected_phase_sequence": [
+        "05-qa",
+        "06-document"
+      ],
+      "expected_outputs": {
+        "05-qa": {
+          "file": "qa-report.md",
+          "assertions": [
+            "should read impl-report.md as input",
+            "should validate all implemented tasks from the solution"
+          ]
+        },
+        "06-document": {
+          "file": "changes-summary.md",
+          "assertions": [
+            "should read the full document chain for context"
+          ]
+        }
+      },
+      "expected_total_phases": 2,
+      "assertions": [
+        "should NOT re-run brainstorm through implement phases",
+        "should detect existing phase outputs and skip them",
+        "current-phase.json should update to reflect resumed progress"
+      ]
+    },
+
+    {
+      "id": "eval-qa-loop-back",
+      "name": "QA Blocker Loop-Back",
+      "description": "Tests the scenario where QA finds blocker issues that require looping back to the implement phase for targeted fixes.",
+      "trigger": {
+        "user_message": "I just finished implementing the auth module. Run QA on it.",
+        "invocation": "/using-zflow"
+      },
+      "workflow_type": "dev",
+      "pre_conditions": {
+        "description": "Workspace has completed phases through implementation",
+        "current_phase_json": {
+          "workflow": "dev",
+          "phase": "implement",
+          "status": "completed"
+        },
+        "mock_qa_result": {
+          "blocker_issues": 2,
+          "major_issues": 3,
+          "minor_issues": 5
+        }
+      },
+      "expected_phase_sequence": [
+        "05-qa",
+        "04-implement",
+        "05-qa",
+        "06-document"
+      ],
+      "expected_outputs": {
+        "05-qa": {
+          "file": "qa-report.md",
+          "assertions": [
+            "first QA pass should find blocker issues",
+            "second QA pass should have zero blockers",
+            "security audit should be included"
+          ]
+        },
+        "04-implement": {
+          "file": "impl-report.md",
+          "assertions": [
+            "second impl report should only address QA findings",
+            "changes should be targeted — not a full re-implementation"
+          ]
+        }
+      },
+      "expected_total_phases": 4,
+      "assertions": [
+        "should loop back to implement after blocker QA findings",
+        "second QA pass should confirm blockers are resolved",
+        "should NOT loop back a third time if second QA passes"
+      ]
+    }
+  ],
+
+  "metadata": {
+    "total_scenarios": 6,
+    "coverage": {
+      "dev_workflow_phases_tested": [0, 1, 2, 3, 3.5, 4, 5, 6],
+      "debug_workflow_phases_tested": [0, 1, 2, 3, 4, 5],
+      "features_tested": [
+        "full dev workflow (no UI)",
+        "full dev workflow (with UI + Pencil.dev)",
+        "full debug workflow",
+        "phase skipping",
+        "resume from interruption",
+        "QA blocker loop-back"
+      ],
+      "features_not_tested": [
+        "escalation pattern (3 failed fix attempts in debug)",
+        "Pencil.dev unavailable degradation",
+        "concurrent workflow interference",
+        "invalid phase output validation",
+        "custom gate configuration"
+      ]
+    },
+    "notes": "This is a template eval framework. A production implementation would include: (1) a test runner that sets up mock workspaces, (2) mock agent responses for deterministic testing, (3) output capture and assertion evaluation, (4) timeout handling for stuck phases, and (5) cleanup between scenarios."
+  }
+}

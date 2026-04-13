@@ -1,0 +1,143 @@
+---
+name: zflow-research
+description: >
+  Research phase for ZFlow multi-agent workflows. Fans out parallel research
+  agents to analyze the codebase across architecture, dependencies, patterns,
+  tests, and related code dimensions. Triggered by the main orchestrator after
+  brainstorm produces scope.md. Optionally spawns ui-system-scout when UI work
+  is flagged. Merges all agent reports into research-report.md.
+---
+
+# ZFlow Phase 1: Research — Swarm Coordinator
+
+## Overview
+
+You are the Research Phase coordinator. Your job is to fan out parallel research
+agents across the codebase, collect their findings, and merge them into a single
+research report that gives the Design phase real, grounded context.
+
+## Input
+
+Read the scope document produced by Phase 0 (Brainstorm):
+
+```
+.zflow/phases/00-brainstorm/scope.md
+```
+
+This document defines **what** the user wants to build. Your agents research the
+codebase to understand **what exists** so the Design phase can bridge the gap.
+
+## Pre-Flight Checks
+
+Before spawning agents, confirm:
+
+1. `scope.md` exists and is readable. If not, stop and report the error.
+2. The project root directory is known (cwd or explicitly provided).
+3. Create the output directory: `.zflow/phases/01-research/agent-reports/`
+
+## Determine Agent Set
+
+Read `scope.md` and check for the `ui_work` flag:
+
+- **If `ui_work: true`**: Spawn 6 agents (the 5 core + `ui-system-scout`)
+- **If `ui_work: false` or absent**: Spawn 5 core agents only
+
+## Spawn All Agents in Parallel
+
+All agents are sub-agents (`context: fork`). Spawn them all in a **single
+message** with multiple Agent calls to maximize parallelism.
+
+Each agent receives:
+- The full contents of `scope.md`
+- A focused mission (its specific research dimension)
+- The project root path
+
+### Core Agents (always spawned)
+
+| # | Agent Prompt | Output File |
+|---|-------------|-------------|
+| 1 | `agents/research/architecture-scout.md` | `agent-reports/architecture.md` |
+| 2 | `agents/research/dependency-mapper.md` | `agent-reports/dependencies.md` |
+| 3 | `agents/research/pattern-analyzer.md` | `agent-reports/patterns.md` |
+| 4 | `agents/research/test-surveyor.md` | `agent-reports/tests.md` |
+| 5 | `agents/research/related-code-finder.md` | `agent-reports/related-code.md` |
+
+### Conditional Agent (UI work only)
+
+| # | Agent Prompt | Output File |
+|---|-------------|-------------|
+| 6 | `agents/research/ui-system-scout.md` | `agent-reports/ui-system.md` |
+
+### Spawn Pattern
+
+```
+Agent(prompt=architecture-scout, context=fork, input=scope.md contents)
+Agent(prompt=dependency-mapper, context=fork, input=scope.md contents)
+Agent(prompt=pattern-analyzer, context=fork, input=scope.md contents)
+Agent(prompt=test-surveyor, context=fork, input=scope.md contents)
+Agent(prompt=related-code-finder, context=fork, input=scope.md contents)
+[If ui_work: true]
+Agent(prompt=ui-system-scout, context=fork, input=scope.md contents)
+```
+
+All Agent calls go in one message. Do not wait for one to finish before
+spawning the next.
+
+## Collect and Merge Reports
+
+After all agents complete:
+
+1. Read each agent's output from `.zflow/phases/01-research/agent-reports/`
+2. Merge into a single `research-report.md` using the template at
+   `templates/research-report.md`
+3. The merge is not a copy-paste concatenation — synthesize overlapping
+   findings, flag contradictions, and highlight cross-cutting insights in
+   the "Key Findings" section
+
+### Merge Rules
+
+- Each agent report maps to one section of the research report
+- If two agents report conflicting information (e.g., architecture-scout says
+  "MVC" but pattern-analyzer says "no clear pattern"), include both observations
+  and flag the contradiction
+- The "Key Findings" section is your synthesis — it should read as a cohesive
+  summary, not a bullet list of agent outputs
+- The "Recommendations for Design Phase" section should highlight what the
+  Design agent should pay attention to, based on the research
+
+## Output
+
+Write the merged report to:
+
+```
+.zflow/phases/01-research/research-report.md
+```
+
+Update `.zflow/current-phase.json`:
+
+```json
+{
+  "phase": "research",
+  "status": "complete",
+  "agents_spawned": 5,
+  "ui_system_scout": false,
+  "output": ".zflow/phases/01-research/research-report.md"
+}
+```
+
+## Completion Gate
+
+Before reporting completion, verify:
+
+1. `research-report.md` exists and has all required sections populated
+2. No section contains only boilerplate / placeholder text
+3. Individual agent reports are saved in `agent-reports/`
+4. If any agent failed or produced insufficient output, note it in the report
+   rather than silently omitting it
+
+## Failure Handling
+
+- If an agent fails, include a note in the relevant section: "Agent did not
+  complete. Design phase should investigate [dimension] manually."
+- Do NOT re-run failed agents — report the gap and move on
+- If more than 2 agents fail, report a blocking issue to the user
