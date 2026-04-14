@@ -1,10 +1,10 @@
 ---
-name: using-zflow
+name: zflow
 description: >
   Multi-agent development workflow system. Use whenever the user wants to
   plan, research, design, implement, QA, or debug a feature or fix using
   a structured multi-phase workflow with specialized sub-agent swarms.
-  Triggers on: "zflow", "using-zflow", multi-phase development, agent workflow,
+  Triggers on: "zflow", multi-phase development, agent workflow,
   structured development, systematic implementation.
 disable-model-invocation: true
 ---
@@ -100,7 +100,7 @@ Only create phase directories for phases that will actually run.
 
 ## Workflow Detection
 
-When the user invokes `/using-zflow`, determine which workflow to run:
+When the user invokes `/zflow`, determine which workflow to run:
 
 ### Development Workflow (default)
 
