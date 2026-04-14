@@ -33,7 +33,7 @@ ZFlow applies this principle systematically:
 
 ZFlow provides two distinct workflows depending on what you're doing:
 
-### 🔨 Development Workflow (`/using-zflow`)
+### 🔨 Development Workflow (`/zflow`)
 
 For building new features, planning functionality, or doing structured end-to-end development.
 
@@ -62,7 +62,7 @@ Brainstorm → Research → Design → Review → [UI Design] → Implement → 
                                   .md                    report.md   audit
 ```
 
-### 🐞 Debug Workflow (`/using-zflow-debug`)
+### 🐞 Debug Workflow (`/zflow`)
 
 For fixing bugs, investigating issues, or resolving regressions.
 
@@ -120,7 +120,7 @@ cp -r zflow/ ~/.gemini/skills/zflow/
 ### Your First Run
 
 ```bash
-/using-zflow I want to add a notification system to my app
+/zflow I want to add a notification system to my app
 ```
 
 ZFlow will:
@@ -396,7 +396,7 @@ When ZFlow runs, it creates a `.zflow/` directory to track progress:
     └── 06-document/
 ```
 
-Resume anytime — if you interrupt ZFlow and run `/using-zflow` again, it picks up where you left off.
+Resume anytime — if you interrupt ZFlow and run `/zflow` again, it picks up where you left off.
 
 ---
 
@@ -461,8 +461,7 @@ These rules are enforced at three levels: embedded in every agent's prompt pream
 
 | Command | Workflow |
 |---------|----------|
-| `/using-zflow` | Development workflow — brainstorm through commit |
-| `/using-zflow-debug` | Debug workflow — reproduce through verify |
+| `/zflow` | Development or Debug workflow — auto-detected based on your request |
 
 ---
 
