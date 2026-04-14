@@ -1,19 +1,8 @@
 # OWASP Top 10 2025 Deep Audit Checklist
 
-Comprehensive security reference for the ZFlow security-auditor agent. Covers all OWASP categories plus additional checks.
+Security reference for the ZFlow security-auditor agent (Phase 5 QA). Covers OWASP categories plus additional checks. The auditor thinks like an attacker: systematically searching for every exploitation path.
 
----
-
-## Overview
-
-This checklist is used by the `security-auditor.md` agent during Phase 5 (QA). The auditor thinks like an attacker: not rubber-stamping code but systematically searching for every way it can be exploited, abused, or made to behave unexpectedly.
-
-The checklist follows the OWASP Top 10 2025 rankings, with additional checks for secrets exposure, CSRF, file upload, and API security.
-
-Each category includes:
-- **What to scan for:** Specific vulnerability patterns to look for
-- **Verification methods:** How to confirm whether a vulnerability exists
-- **Severity guidance:** How to rate findings
+Each category includes: **what to scan for**, **verification methods**, and **severity guidance**.
 
 ---
 
@@ -21,40 +10,40 @@ Each category includes:
 
 ### What to Scan For
 
-- **Insecure Direct Object Reference (IDOR):** Can user A access user B's resources by changing an ID in the URL, request body, or API parameter?
-- **Missing access control checks:** API endpoints that perform data access without verifying the requesting user's authorization
-- **Horizontal privilege escalation:** Users with the same role accessing each other's data
-- **Vertical privilege escalation:** Regular users accessing admin or elevated-privilege functions
-- **CORS misconfiguration:** `Access-Control-Allow-Origin: *` combined with credentials, or overly permissive origin whitelists
-- **Server-Side Request Forgery (SSRF):** Application making HTTP requests to URLs controlled by user input
-- **Forced browsing:** Accessing unauthenticated API endpoints or static resources through direct URL manipulation
-- **Metadata manipulation:** Tampering with JWT claims, session tokens, or hidden form fields to escalate privileges
+- **IDOR:** Can user A access user B's resources by changing an ID in URL/body/API param?
+- **Missing access control:** API endpoints doing data access without authorization checks
+- **Horizontal privilege escalation:** Same-role users accessing each other's data
+- **Vertical privilege escalation:** Regular users accessing admin functions
+- **CORS misconfiguration:** `Access-Control-Allow-Origin: *` with credentials, or overly permissive origins
+- **SSRF:** App making HTTP requests to user-controlled URLs
+- **Forced browsing:** Accessing unauthenticated endpoints/resources via direct URL
+- **Metadata manipulation:** Tampering JWT claims, session tokens, hidden fields to escalate
 
 ### Verification Methods
 
-1. **Trace authorization checks before ALL data access operations:**
-   - Every database query must be preceded by an authorization check
-   - Check that ownership validation exists (requesting user must own the resource)
-   - Verify that role/permission checks are enforced server-side (not just UI hiding)
+1. **Trace authorization before ALL data access:**
+   - Every DB query preceded by authorization check
+   - Ownership validation exists (requesting user must own resource)
+   - Role/permission checks enforced server-side (not just UI hiding)
 
 2. **Confirm object ownership validation:**
-   - For every endpoint that takes an ID parameter, verify the code checks that the authenticated user owns or has access to that resource
-   - Pattern to look for: database queries that select by ID without a user constraint
+   - Endpoints taking ID params must verify authenticated user owns/accesses that resource
+   - Look for: DB queries selecting by ID without user constraint
 
 3. **Check role/permission validation per endpoint:**
-   - Map all API endpoints and their expected authorization levels
-   - Verify middleware or decorator-based auth is applied consistently
-   - Check that authorization is not bypassed by HTTP method changes (e.g., GET vs DELETE)
+   - Map all API endpoints and expected authorization levels
+   - Verify middleware/decorator auth applied consistently
+   - Authorization not bypassed by HTTP method changes (GET vs DELETE)
 
 4. **Verify CORS headers are restrictive:**
-   - `Access-Control-Allow-Origin` should not be `*` when credentials are sent
-   - `Access-Control-Allow-Methods` should list only needed methods
-   - Check that CORS configuration is not dynamically reflecting the `Origin` header
+   - `Access-Control-Allow-Origin` not `*` when credentials sent
+   - `Access-Control-Allow-Methods` lists only needed methods
+   - CORS config not dynamically reflecting `Origin` header
 
 5. **Test for SSRF:**
-   - Find all places where user input becomes a URL for outbound requests
+   - Find where user input becomes outbound request URLs
    - Check for allow-lists of permitted domains/URLs
-   - Verify that internal IP ranges (10.x, 172.16-31.x, 192.168.x, 127.x) are blocked
+   - Internal IP ranges blocked (10.x, 172.16-31.x, 192.168.x, 127.x)
 
 ---
 
@@ -62,43 +51,41 @@ Each category includes:
 
 ### What to Scan For
 
-- **Default credentials** still enabled (admin/admin, test/test, default passwords)
-- **Verbose error messages** exposing stack traces, file paths, SQL queries, internal IPs
-- **Missing security headers:** Content-Security-Policy (CSP), X-Frame-Options, Strict-Transport-Security (HSTS), X-Content-Type-Options
-- **Debug mode** enabled in production configuration
-- **Exposed configuration files** containing secrets (.env, config.yml, settings.py with hardcoded values)
-- **Unnecessary services/features** enabled (directory listing, admin panels, API documentation endpoints)
-- **Cloud storage misconfiguration:** Public S3 buckets, open Firebase rules, unauthenticated database access
-- **Default framework settings:** Django DEBUG=True, Flask debug mode, Express default error handler
+- **Default credentials** (admin/admin, test/test, default passwords)
+- **Verbose errors** exposing stack traces, file paths, SQL, internal IPs
+- **Missing security headers:** CSP, X-Frame-Options, HSTS, X-Content-Type-Options
+- **Debug mode** enabled in production
+- **Exposed config files** with secrets (.env, config.yml, hardcoded settings.py)
+- **Unnecessary services** (directory listing, admin panels, API docs endpoints)
+- **Cloud misconfiguration:** Public S3 buckets, open Firebase rules, unauthenticated DB access
+- **Default framework settings:** Django DEBUG=True, Flask debug, Express default error handler
 
 ### Verification Methods
 
-1. **Search for default credential patterns:**
-   - Search for `admin`, `password`, `root`, `test`, `default` in configuration files and source
-   - Look for hardcoded connection strings with credentials
-   - Look for default API keys or secrets
+1. **Search default credential patterns:**
+   - `admin`, `password`, `root`, `test`, `default` in config files and source
+   - Hardcoded connection strings with credentials
+   - Default API keys or secrets
 
-2. **Check error handling returns generic messages:**
-   - Production error responses should not include stack traces
-   - Error pages should not reveal framework version, server type, or file paths
-   - Look for debug flag set to true in production configs
+2. **Check error handling:**
+   - Production errors: no stack traces, framework versions, server types, or file paths
+   - Debug flag not `true` in production configs
 
-3. **Verify security headers are set:**
-   - CSP should restrict script sources to same-origin or specific CDNs
-   - X-Frame-Options should be DENY or SAMEORIGIN
-   - HSTS should be enabled with a max-age of at least 1 year
-   - X-Content-Type-Options should be nosniff
-   - Check middleware configuration for these headers
+3. **Verify security headers:**
+   - CSP: restrict script sources to same-origin or specific CDNs
+   - X-Frame-Options: DENY or SAMEORIGIN
+   - HSTS: enabled, max-age >= 1 year
+   - X-Content-Type-Options: nosniff
 
-4. **Confirm debug is off in production configs:**
-   - Check environment-specific configuration files
-   - Verify that debug mode is controlled by environment variables
-   - Ensure production deployment scripts set the correct environment
+4. **Confirm debug off in production:**
+   - Environment-specific configs checked
+   - Debug controlled by env vars
+   - Deploy scripts set correct environment
 
-5. **Check for exposed configuration endpoints:**
+5. **Check exposed endpoints:**
    - `/admin`, `/debug`, `/status`, `/metrics`, `/health` with sensitive data
-   - Swagger/OpenAPI documentation endpoints accessible in production
-   - PHP info pages, ASP.NET trace.axd, Spring Boot actuator endpoints
+   - Swagger/OpenAPI accessible in production
+   - PHP info, ASP.NET trace.axd, Spring Boot actuator endpoints
 
 ---
 
@@ -106,44 +93,46 @@ Each category includes:
 
 ### What to Scan For
 
-- **Dependencies with known CVEs** (check via `npm audit`, `pip-audit`, `cargo audit`, etc.)
-- **Outdated or unmaintained dependencies** (no updates in 2+ years, deprecated packages)
-- **Untrusted package sources** (packages from non-official registries)
-- **Missing lock files** (no package-lock.json, poetry.lock, Pipfile.lock, yarn.lock)
-- **No integrity verification** on dependencies (no checksums, no SRI)
-- **Typosquatting risk** (package names similar to popular packages but with subtle misspellings)
-- **Build script injection** (post-install scripts, pre-build hooks that execute arbitrary code)
+- **Dependencies with known CVEs** (`npm audit`, `pip-audit`, `cargo audit`)
+- **Outdated/unmaintained dependencies** (no updates 2+ years, deprecated)
+- **Untrusted package sources** (non-official registries)
+- **Missing lock files** (package-lock.json, poetry.lock, Pipfile.lock, yarn.lock)
+- **No integrity verification** (no checksums, no SRI)
+- **Typosquatting risk** (names similar to popular packages)
+- **Build script injection** (post-install scripts, pre-build hooks executing code)
 
 ### Verification Methods
 
-1. **Execute dependency audit commands:**
-   - Node.js: `npm audit --production` or `yarn audit`
-   - Python: `pip-audit -r requirements.txt` or `safety check`
-   - Go: check against vulnerability databases
-   - Ruby: `bundle audit check --update`
-   - Java: OWASP dependency-check plugin
+1. **Run dependency audits:**
 
-2. **Check package publish dates and maintainer reputation:**
-   - Look for packages with very few maintainers
-   - Check if the last publish date is recent
-   - Verify the package is the official one (not a fork or similarly named package)
+   | Ecosystem | Command |
+   |-----------|---------|
+   | Node.js | `npm audit --production` / `yarn audit` |
+   | Python | `pip-audit -r requirements.txt` / `safety check` |
+   | Go | Check vulnerability databases |
+   | Ruby | `bundle audit check --update` |
+   | Java | OWASP dependency-check plugin |
+
+2. **Check package reputation:**
+   - Few maintainers = higher risk
+   - Last publish date recent
+   - Package is official (not fork or similarly named)
 
 3. **Verify lock files exist and are committed:**
    - `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`
-   - `poetry.lock`, `Pipfile.lock`
-   - `Gemfile.lock`
-   - These should be tracked in version control
+   - `poetry.lock`, `Pipfile.lock`, `Gemfile.lock`
+   - All tracked in version control
 
-4. **Check for unusual or suspicious package names:**
-   - Cross-reference with known typosquatting databases
-   - Verify package names match official documentation
-   - Check for packages with very similar names to popular ones
+4. **Check suspicious package names:**
+   - Cross-reference typosquatting databases
+   - Verify names match official docs
+   - Flag names very similar to popular packages
 
 5. **Review CI/CD pipeline security:**
-   - No secrets in pipeline configuration files
+   - No secrets in pipeline config
    - Pinned Docker image digests (not just tags)
    - Signed artifacts and commits
-   - Minimal permissions for build agents
+   - Minimal build agent permissions
 
 ---
 
@@ -151,43 +140,45 @@ Each category includes:
 
 ### What to Scan For
 
-- **Weak hashing algorithms** for passwords: MD5, SHA1, SHA256 without salt
-- **Hardcoded encryption keys or salts** in source code
-- **Missing encryption** for sensitive data at rest (PII, financial data, health records)
-- **Missing TLS enforcement** (HTTP endpoints, non-HTTPS API calls)
-- **Predictable random number generation** (language-standard random functions for security-critical values like tokens, nonces, IDs)
-- **Poor key management** (keys in source, keys in plaintext config, no key rotation)
-- **Weak TLS configuration** (TLS 1.0/1.1, weak cipher suites, no certificate validation)
-- **Insecure password storage** (plaintext, reversible encryption instead of hashing)
+- **Weak hashing** for passwords: MD5, SHA1, SHA256 without salt
+- **Hardcoded keys/salts** in source code
+- **Missing encryption** for data at rest (PII, financial, health records)
+- **Missing TLS** (HTTP endpoints, non-HTTPS API calls)
+- **Predictable RNG** (standard random for tokens, nonces, IDs)
+- **Poor key management** (keys in source, plaintext config, no rotation)
+- **Weak TLS** (1.0/1.1, weak ciphers, no cert validation)
+- **Insecure password storage** (plaintext, reversible encryption)
 
 ### Verification Methods
 
-1. **Search for MD5/SHA1 usage in authentication contexts:**
-   - Look for md5 and sha1 function calls in auth-related code
-   - In password handling, these are always wrong
-   - For non-security checksums (file integrity), document why they are acceptable
+1. **Search MD5/SHA1 in auth contexts:**
+   - `md5`/`sha1` calls in auth code = always wrong
+   - Non-security checksums (file integrity): document why acceptable
 
-2. **Search for hardcoded key patterns:**
-   - Long hex or base64 strings in source code
-   - Variable names like `SECRET_KEY`, `ENCRYPTION_KEY`, `API_KEY`
-   - Patterns matching 32+ character alphanumeric strings in non-test files
+2. **Search hardcoded key patterns:**
+   - Long hex/base64 strings in source
+   - Variables named `SECRET_KEY`, `ENCRYPTION_KEY`, `API_KEY`
+   - 32+ char alphanumeric strings in non-test files
 
-3. **Confirm passwords use bcrypt/scrypt/Argon2 with adequate cost:**
-   - bcrypt with cost factor 12 or higher
-   - scrypt with N=2^17, r=8, p=1 or stronger
-   - argon2id with recommended parameters
+3. **Confirm password hashing:**
+
+   | Algorithm | Minimum Parameters |
+   |-----------|-------------------|
+   | bcrypt | Cost factor >= 12 |
+   | scrypt | N=2^17, r=8, p=1 |
+   | argon2id | Recommended parameters |
 
 4. **Verify HTTPS enforcement:**
-   - HTTP-to-HTTPS redirect middleware is active
-   - HSTS header is set
-   - No mixed content (HTTP resources on HTTPS pages)
-   - No http:// URLs in API configurations for production
+   - HTTP-to-HTTPS redirect active
+   - HSTS header set
+   - No mixed content
+   - No `http://` URLs in production API configs
 
-5. **Check random number generation for security contexts:**
-   - Token generation must use cryptographic random functions (e.g., `crypto.randomBytes()` in Node.js, `secrets` module in Python)
-   - Session IDs must be cryptographically random
-   - Password reset tokens must be unpredictable
-   - Flag any use of non-cryptographic random in security contexts
+5. **Check RNG for security contexts:**
+   - Tokens: cryptographic random (`crypto.randomBytes()`, `secrets` module)
+   - Session IDs: cryptographically random
+   - Password reset tokens: unpredictable
+   - Flag non-cryptographic random in security contexts
 
 ---
 
@@ -195,43 +186,45 @@ Each category includes:
 
 ### What to Scan For
 
-- **SQL injection:** String concatenation or f-strings in SQL queries with user input
-- **NoSQL injection:** User input flowing directly into MongoDB query operators (`$where`, `$gt`, `$ne`)
-- **OS command injection:** User input passed to shell execution functions
-- **XSS (Cross-Site Scripting):**
-  - Reflected: User input reflected in HTML without encoding
-  - Stored: User input stored and later rendered without encoding
-  - DOM-based: Client-side JavaScript rendering user input via innerHTML, document.write
-- **Template injection:** User input in template engines (Jinja2, Handlebars, EJS, Thymeleaf)
-- **LDAP/XPath injection:** User input in LDAP queries or XPath expressions
-- **LLM prompt injection:** User input flowing into AI model prompts without sanitization
+- **SQL injection:** String concat/f-strings in SQL with user input
+- **NoSQL injection:** User input into MongoDB operators (`$where`, `$gt`, `$ne`)
+- **OS command injection:** User input to shell execution
+- **XSS:**
+  - Reflected: user input in HTML without encoding
+  - Stored: user input rendered without encoding
+  - DOM-based: `innerHTML`, `document.write` with user input
+- **Template injection:** User input in engines (Jinja2, Handlebars, EJS, Thymeleaf)
+- **LDAP/XPath injection:** User input in LDAP/XPath expressions
+- **LLM prompt injection:** User input in AI prompts without sanitization
 
 ### Verification Methods
 
-1. **Trace ALL user input from entry point to query/command execution:**
-   - HTTP parameters, headers, body fields
-   - URL path segments
-   - Cookie values
+1. **Trace ALL user input to query/command execution:**
+   - HTTP params, headers, body fields
+   - URL path segments, cookie values
    - File uploads (filenames, content)
-   - Environment variables that can be influenced by users
+   - User-influenceable environment variables
 
-2. **Confirm parameterized queries/prepared statements:**
-   - SQL: use parameterized queries (e.g., `db.query('SELECT * FROM users WHERE id = ?', [id])`) not string concatenation
-   - NoSQL: Use typed comparisons, not string-based query construction
-   - ORM usage is generally safe but check for raw query escapes
+2. **Confirm parameterized queries:**
+   - SQL: parameterized queries, not string concat
+   - NoSQL: typed comparisons, not string-based query construction
+   - ORM generally safe but check for raw query escapes
 
-3. **Verify output encoding is context-appropriate:**
-   - HTML context: HTML entity encoding
-   - JavaScript context: JavaScript string escaping
-   - URL context: URL encoding
-   - CSS context: CSS escaping
-   - Frameworks with auto-escaping (React, Angular, Jinja2 autoescape) help but verify they are not bypassed
+3. **Verify context-appropriate output encoding:**
+
+   | Context | Encoding |
+   |---------|----------|
+   | HTML | Entity encoding |
+   | JavaScript | String escaping |
+   | URL | URL encoding |
+   | CSS | CSS escaping |
+   | Auto-escaping frameworks (React, Angular, Jinja2) | Verify not bypassed |
 
 4. **Check for dangerous functions:**
-   - JavaScript: `dangerouslySetInnerHTML`, `innerHTML`, `eval()`, `Function()`, `document.write()`
-   - Python: `eval()`, `exec()`, subprocess calls with shell=True
+   - JS: `dangerouslySetInnerHTML`, `innerHTML`, `eval()`, `Function()`, `document.write()`
+   - Python: `eval()`, `exec()`, subprocess with `shell=True`
    - Java: `Runtime.exec()`, `ProcessBuilder` with unsanitized input
-   - PHP: `eval()`, shell execution functions, backtick operator
+   - PHP: `eval()`, shell execution, backtick operator
 
 ---
 
@@ -239,37 +232,39 @@ Each category includes:
 
 ### What to Scan For
 
-- **Business logic flaws:** Can workflow steps be skipped? Can limits be bypassed? Can multi-step processes be short-circuited?
-- **Race conditions:** Concurrent requests causing double-spending, duplicate creation, or inconsistent state
-- **TOCTOU (Time-of-Check/Time-of-Use):** Check and action not atomic, allowing state changes between them
-- **Missing rate limiting** on sensitive operations (login, signup, password reset, API calls)
-- **Insufficient input validation** for business rules (negative quantities, future dates in past-only fields, exceeding maximum values)
-- **Missing anti-automation controls** (CAPTCHA, proof-of-work, bot detection on critical flows)
-- **Predictable resource identifiers** (sequential IDs allowing enumeration)
-- **Insecure default flows** (registration without email verification, password reset without token expiry)
+- **Business logic flaws:** Workflow steps skippable? Limits bypassable? Multi-step short-circuitable?
+- **Race conditions:** Concurrent requests causing double-spending, duplicates, inconsistent state
+- **TOCTOU:** Check and action not atomic
+- **Missing rate limiting** on sensitive ops (login, signup, password reset, API)
+- **Insufficient validation** for business rules (negative quantities, wrong dates, exceeded max)
+- **Missing anti-automation** (CAPTCHA, proof-of-work, bot detection)
+- **Predictable IDs** (sequential, allowing enumeration)
+- **Insecure default flows** (registration without verification, reset without token expiry)
 
 ### Verification Methods
 
-1. **Review business logic flows for authorization at each step:**
-   - Multi-step workflows should validate authorization at every step, not just the first
-   - Step completion should be tracked server-side, not trust client-side state
+1. **Review authorization at each workflow step:**
+   - Multi-step workflows: auth validated at every step
+   - Step completion tracked server-side
 
-2. **Check for atomic operations on financial/sensitive changes:**
-   - Balance updates should use database transactions
-   - Inventory decrements should be atomic (not read-modify-write without locking)
-   - Use `SELECT ... FOR UPDATE` or equivalent where needed
+2. **Check atomic operations on sensitive changes:**
+   - Balance updates: DB transactions
+   - Inventory decrements: atomic (not read-modify-write without locking)
+   - `SELECT ... FOR UPDATE` or equivalent
 
-3. **Verify rate limiting exists:**
-   - Login endpoint: max 5-10 attempts per minute per IP/account
-   - Signup: max 3-5 per hour per IP
-   - Password reset: max 3-5 per hour per account
-   - API endpoints: reasonable limits per user/API key
-   - Check for rate limiting middleware or configuration
+3. **Verify rate limiting:**
+
+   | Endpoint | Limit |
+   |----------|-------|
+   | Login | 5-10 attempts/min per IP/account |
+   | Signup | 3-5/hour per IP |
+   | Password reset | 3-5/hour per account |
+   | API endpoints | Reasonable per user/key |
 
 4. **Test workflow bypass:**
-   - Can step 3 of a 5-step process be accessed directly via API?
-   - Can payment be confirmed without completing prior steps?
-   - Can a resource be accessed without going through the expected flow?
+   - Can step 3 of 5 be accessed directly?
+   - Can payment confirm without prior steps?
+   - Can resources be accessed outside expected flow?
 
 ---
 
@@ -277,48 +272,48 @@ Each category includes:
 
 ### What to Scan For
 
-- **Weak password requirements** (minimum length under 12, no complexity requirements, allows common passwords)
-- **Missing brute-force protection** (no lockout, no rate limiting on login attempts)
-- **Insecure session management** (predictable tokens, no expiration, no invalidation on logout, session fixation)
-- **Missing MFA** for high-value or admin accounts
-- **Credential recovery flaws** (user enumeration via "forgot password" -- different responses for existing vs non-existing users)
-- **Hardcoded credentials** in source code or configuration
-- **Credential stuffing vulnerability** (no detection of bulk login attempts from known-breached credentials)
-- **Session fixation** (session ID not regenerated after login)
+- **Weak password requirements** (under 12 chars, no complexity, common passwords allowed)
+- **No brute-force protection** (no lockout, no rate limiting)
+- **Insecure session management** (predictable tokens, no expiration, no logout invalidation, fixation)
+- **Missing MFA** for high-value/admin accounts
+- **Credential recovery flaws** (user enumeration via different responses)
+- **Hardcoded credentials** in source or config
+- **Credential stuffing** (no bulk login detection)
+- **Session fixation** (session ID not regenerated post-login)
 - **Long-lived tokens** (JWT without expiration, refresh tokens without rotation)
 
 ### Verification Methods
 
 1. **Check password policy:**
-   - Minimum 12 characters recommended (8 absolute minimum)
-   - Should not be in common password lists (check against top 10,000 passwords)
-   - Check for maximum length (some systems truncate, weakening security)
-   - Verify password hashing uses bcrypt/scrypt/Argon2
+   - Min 12 chars recommended (8 absolute minimum)
+   - Not in top 10,000 common passwords
+   - Check for max length truncation
+   - Hashing uses bcrypt/scrypt/Argon2
 
-2. **Confirm lockout after N failed attempts:**
-   - Temporary lockout (15-30 minutes) after 5-10 failed attempts
+2. **Confirm lockout after failed attempts:**
+   - Temporary lockout (15-30 min) after 5-10 failures
    - Progressive delays between attempts
-   - Account lockout notification to the account holder
-   - Check that lockout is server-side (not just UI)
+   - Account holder notified
+   - Lockout is server-side
 
 3. **Verify session token properties:**
-   - Cryptographically random (not predictable)
-   - Has expiration (absolute and idle timeout)
+   - Cryptographically random
+   - Expiration (absolute + idle timeout)
    - Invalidated on logout
-   - Regenerated after login (prevents session fixation)
+   - Regenerated after login
    - HttpOnly, Secure, SameSite cookie flags
 
-4. **Check no credentials in logs or error responses:**
-   - Passwords should never appear in logs (even masked)
-   - Error messages should not reveal whether a username exists
-   - Use generic "Invalid username or password" rather than specific failure reasons
+4. **Check no credentials in logs/errors:**
+   - Passwords never in logs (even masked)
+   - Errors don't reveal username existence
+   - Generic "Invalid username or password"
 
-5. **Verify JWT security if used:**
-   - Strong signing algorithm (RS256, ES256 -- not none or HS256 with weak key)
-   - Short expiration (access tokens: 15 minutes or less)
-   - Refresh token rotation (new refresh token on each use)
+5. **Verify JWT security:**
+   - Algorithm: RS256/ES256 (not `none` or HS256 with weak key)
+   - Access tokens: 15 min or less
+   - Refresh token rotation on each use
    - Claims validated (iss, aud, exp, nbf)
-   - No sensitive data in JWT payload (it is not encrypted, just signed)
+   - No sensitive data in payload (not encrypted, only signed)
 
 ---
 
@@ -326,39 +321,39 @@ Each category includes:
 
 ### What to Scan For
 
-- **Insecure deserialization** of untrusted data (pickle, ObjectInputStream, unserialize with user input)
-- **Missing integrity checks** on critical data (no signatures, no HMAC, no checksums)
-- **CI/CD pipeline security gaps** (no branch protection, no review requirements, secrets in pipeline config)
-- **Auto-update without verification** (downloading and executing code without signature verification)
-- **Unsigned artifacts** (binaries, containers, packages without signatures or checksums)
-- **Untrusted CDN resources** (scripts loaded from CDNs without Subresource Integrity)
-- **Build reproducibility issues** (non-deterministic builds, floating dependency versions)
+- **Insecure deserialization** (pickle, ObjectInputStream, unserialize with user input)
+- **Missing integrity checks** (no signatures, HMAC, checksums)
+- **CI/CD gaps** (no branch protection, no reviews, secrets in pipeline config)
+- **Auto-update without verification** (code execution without signature check)
+- **Unsigned artifacts** (no signatures/checksums on binaries, containers, packages)
+- **Untrusted CDN** (scripts without Subresource Integrity)
+- **Build reproducibility** (non-deterministic builds, floating versions)
 
 ### Verification Methods
 
-1. **Search for insecure deserialization patterns:**
-   - Python: `pickle.loads()`, `yaml.load()` without safe loader, `marshal.loads()`
+1. **Search insecure deserialization:**
+   - Python: `pickle.loads()`, `yaml.load()` without SafeLoader, `marshal.loads()`
    - Java: `ObjectInputStream.readObject()`, `XMLDecoder`
-   - PHP: `unserialize()` with user-controlled input
-   - Node.js: deserialized data passed to dangerous evaluation functions
+   - PHP: `unserialize()` with user input
+   - Node.js: deserialized data to dangerous eval functions
    - .NET: `BinaryFormatter.Deserialize()`, `LosFormatter.Deserialize()`
 
 2. **Verify integrity checks on external data:**
-   - Webhook payloads: HMAC signature verification
-   - File downloads: checksums or signatures
-   - API responses from third parties: TLS plus certificate pinning where appropriate
-   - Database migrations: checksums to detect tampering
+   - Webhooks: HMAC signature verification
+   - Downloads: checksums/signatures
+   - Third-party APIs: TLS + certificate pinning
+   - DB migrations: checksums for tamper detection
 
-3. **Check CI/CD configuration:**
-   - Branch protection rules (no direct pushes to main)
-   - Pull request reviews required
-   - Secrets stored in vault (not in pipeline YAML)
-   - Build agent permissions are minimal
-   - Deployment requires approval for production
+3. **Check CI/CD config:**
+   - Branch protection (no direct pushes to main)
+   - PR reviews required
+   - Secrets in vault (not pipeline YAML)
+   - Minimal build agent permissions
+   - Production deployment requires approval
 
-4. **Check for Subresource Integrity (SRI) on CDN resources:**
-   - External scripts should have `integrity` and `crossorigin` attributes
-   - Flag any external scripts without SRI
+4. **Check SRI on CDN resources:**
+   - External scripts need `integrity` + `crossorigin` attributes
+   - Flag external scripts without SRI
 
 ---
 
@@ -366,37 +361,37 @@ Each category includes:
 
 ### What to Scan For
 
-- **Missing logging** of security-relevant events (login, access denied, privilege changes, data export)
-- **Secrets in log output** (passwords, tokens, API keys logged in plaintext)
-- **Insufficient log context** for incident response (missing timestamp, user ID, IP, action, resource)
-- **Log injection vulnerabilities** (user input in log messages without sanitization, allowing log forgery)
-- **No alerting** on suspicious patterns (brute force, privilege escalation, unusual data access)
-- **Log storage issues** (logs stored without integrity protection, no retention policy, no tamper detection)
-- **Missing audit trail** for sensitive operations (data modification, admin actions, configuration changes)
+- **Missing logging** of security events (login, access denied, privilege changes, data export)
+- **Secrets in logs** (passwords, tokens, API keys in plaintext)
+- **Insufficient context** (missing timestamp, user ID, IP, action, resource)
+- **Log injection** (user input in logs without sanitization)
+- **No alerting** on suspicious patterns (brute force, escalation, unusual access)
+- **Log storage issues** (no integrity protection, no retention, no tamper detection)
+- **Missing audit trail** for sensitive ops (data modification, admin actions, config changes)
 
 ### Verification Methods
 
-1. **Confirm auth events are logged with adequate context:**
-   - Every login attempt (success and failure): timestamp, user ID, IP, user agent, result
+1. **Confirm auth events logged with context:**
+   - Login attempts: timestamp, user ID, IP, user agent, result
    - Password changes: timestamp, user ID, IP
-   - Access denied events: timestamp, user ID, requested resource, reason
-   - Privilege changes: timestamp, actor, target user, old role, new role
+   - Access denied: timestamp, user ID, resource, reason
+   - Privilege changes: timestamp, actor, target, old/new role
 
-2. **Search for sensitive data in log statements:**
-   - Passwords should never be logged (even partially)
-   - API keys, tokens, session IDs should be redacted
-   - PII (SSN, credit card, health data) should not appear in logs
+2. **Search sensitive data in logs:**
+   - Passwords: never (even partially)
+   - API keys, tokens, session IDs: redacted
+   - PII (SSN, credit card, health): not in logs
 
-3. **Verify log output is sanitized:**
-   - User input in log messages should be encoded or delimited
-   - Prevent log injection (newline characters, control characters in user input)
-   - Use structured logging (JSON) rather than string concatenation for log messages
+3. **Verify log output sanitized:**
+   - User input encoded or delimited
+   - Prevent log injection (newlines, control chars)
+   - Structured logging (JSON) over string concatenation
 
-4. **Check for alerting configuration:**
-   - Brute force detection: multiple failed logins from same IP
+4. **Check alerting config:**
+   - Brute force: multiple failed logins from same IP
    - Privilege escalation: user gaining admin access
-   - Data exfiltration: bulk data access or export
-   - Unusual patterns: access at unusual times, from unusual locations
+   - Data exfiltration: bulk access or export
+   - Unusual patterns: off-hours access, unusual locations
 
 ---
 
@@ -404,36 +399,35 @@ Each category includes:
 
 ### What to Scan For
 
-- **"Failing open"** -- defaulting to allow on error (auth check throws exception, access is granted)
-- **Silently swallowed exceptions** (empty catch blocks, pass statements in except handlers)
-- **Sensitive information in error responses** (stack traces, SQL queries, file paths, internal IPs in API error responses)
-- **Unhandled exceptions in critical paths** (payment processing, authentication, data modification without error handling)
-- **Missing boundary validation** (null, empty string, zero, maximum values, negative numbers)
-- **Denial of service via error paths** (unbounded error logging, recursive error handling, resource exhaustion on error)
-- **Inconsistent error handling** (some endpoints handle errors, others do not)
+- **Failing open** (auth exception grants access)
+- **Swallowed exceptions** (empty catch blocks, `pass` in except handlers)
+- **Sensitive error responses** (stack traces, SQL, file paths, internal IPs)
+- **Unhandled exceptions** in critical paths (payments, auth, data modification)
+- **Missing boundary validation** (null, empty string, zero, max values, negatives)
+- **DoS via error paths** (unbounded logging, recursive handling, resource exhaustion)
+- **Inconsistent error handling** across endpoints
 
 ### Verification Methods
 
-1. **Check all catch blocks actually handle the error:**
-   - Empty catch blocks are always suspicious
-   - Each catch should either: recover, retry, log with context, or propagate as a generic error
-   - Look for empty handlers and pass statements in exception blocks
+1. **Check all catch blocks handle errors:**
+   - Empty catches = suspicious
+   - Each catch: recover, retry, log with context, or propagate as generic error
 
-2. **Verify errors fail securely (deny by default):**
-   - If auth check throws, the user should be denied, not granted access
-   - If validation throws, the operation should be rejected, not accepted
-   - If rate limiting check throws, the request should be throttled, not allowed
+2. **Verify fail-secure (deny by default):**
+   - Auth exception -> deny
+   - Validation exception -> reject
+   - Rate limit exception -> throttle
 
-3. **Confirm error messages are generic to users:**
-   - API error responses should use generic messages
-   - Detailed error info (stack trace, query, file path) should go to server logs only
-   - Different HTTP status codes for different error types but no details in the body for 5xx
+3. **Confirm generic error messages:**
+   - API responses: generic messages only
+   - Details (trace, query, path) to server logs
+   - Different HTTP status codes but no details in 5xx bodies
 
 4. **Check boundary validation:**
-   - Null/undefined checks before accessing properties
+   - Null/undefined checks before property access
    - Empty string/array validation
-   - Numeric range validation (min/max, positive numbers for quantities)
-   - Date validation (not in future when should be past, not expired)
+   - Numeric ranges (min/max, positive for quantities)
+   - Date validation (past/future as appropriate)
    - Collection size limits
 
 ---
@@ -442,75 +436,75 @@ Each category includes:
 
 ### Secrets and Credentials Exposure
 
-**What to scan for:**
-- API keys, passwords, tokens in source code (regex patterns for long alphanumeric strings in non-test files)
-- `.env` files not in `.gitignore`
-- Credentials in configuration files committed to repo
-- Common patterns: `api_key=`, `password=`, `secret=`, `token=`, `AWS_`, `DATABASE_URL` with embedded credentials
-- Private keys (`.pem`, `.key` files) in the repository
-- Credentials in Docker images or docker-compose files
+**Scan for:**
+- API keys, passwords, tokens in source (regex for long alphanumeric in non-test files)
+- `.env` not in `.gitignore`
+- Credentials in committed config files
+- Patterns: `api_key=`, `password=`, `secret=`, `token=`, `AWS_`, `DATABASE_URL`
+- Private keys (`.pem`, `.key`) in repo
+- Credentials in Docker images/compose files
 
-**Verification methods:**
-- Check `.gitignore` includes `.env`, `*.pem`, `*.key`
-- Search for credential patterns in tracked files
-- Verify secrets are loaded from environment variables or secret managers
-- Run secret scanning tools if available
+**Verify:**
+- `.gitignore` includes `.env`, `*.pem`, `*.key`
+- Credential patterns absent from tracked files
+- Secrets from env vars or secret managers
+- Run secret scanning tools
 
-### CSRF (Cross-Site Request Forgery) Protection
+### CSRF Protection
 
-**What to scan for:**
+**Scan for:**
 - State-changing requests (POST/PUT/DELETE) without CSRF protection
-- Missing CSRF tokens in forms and AJAX requests
+- Missing CSRF tokens in forms/AJAX
 - SameSite cookie attribute not set
-- API endpoints that accept actions based solely on cookies without additional verification
+- Cookie-only auth without additional verification
 
-**Verification methods:**
-- Verify CSRF tokens on all state-changing requests
-- Check `SameSite=Strict` or `SameSite=Lax` on session cookies
-- For API-only backends: verify token-based auth (Bearer tokens) instead of cookie-based
-- Verify CORS policy restricts which origins can make requests
+**Verify:**
+- CSRF tokens on all state-changing requests
+- `SameSite=Strict` or `SameSite=Lax` on session cookies
+- API-only backends: Bearer tokens (not cookies)
+- CORS policy restricts requesting origins
 
 ### File Upload Security
 
-**What to scan for:**
-- No file type validation (or only extension-based, not content-based)
+**Scan for:**
+- No file type validation (or extension-only, not content-based)
 - No upload size limits
-- Uploaded files served from the application domain (allowing uploaded scripts to execute)
-- Path traversal in filenames (directory traversal sequences)
-- No virus/malware scanning on uploaded files
-- Predictable upload paths or filenames
+- Uploaded files served from app domain (scripts can execute)
+- Path traversal in filenames
+- No malware scanning
+- Predictable upload paths/filenames
 
-**Verification methods:**
-- Check file type validation uses magic bytes (file signature), not just extension
-- Verify upload size limits are enforced (max file size in config)
-- Confirm uploaded files are served from a different domain or CDN (not the app domain)
-- Sanitize filenames: remove path separators, use generated filenames
-- Check for `Content-Disposition: attachment` header on file downloads
+**Verify:**
+- File type by magic bytes, not just extension
+- Size limits enforced in config
+- Files served from different domain/CDN
+- Sanitized filenames (remove path separators, use generated names)
+- `Content-Disposition: attachment` on downloads
 
 ### API Security
 
-**What to scan for:**
-- No rate limiting on API endpoints
+**Scan for:**
+- No rate limiting
 - Missing input validation and size limits
-- Improper HTTP method enforcement (GET for data modification)
-- No API versioning for breaking changes
-- Sensitive data in URL parameters (tokens, passwords, PII in query strings)
-- Missing pagination on list endpoints (enabling data harvesting)
-- Bulk operations without rate limiting or confirmation
+- Wrong HTTP methods (GET for data modification)
+- No API versioning
+- Sensitive data in URL params (tokens, passwords, PII)
+- Missing pagination on list endpoints
+- Bulk ops without rate limiting
 
-**Verification methods:**
-- Verify rate limiting middleware is applied to all API routes
-- Check input validation on all endpoints (type, format, size, range)
-- Confirm HTTP methods are correct (GET = read only, POST = create, PUT/PATCH = update, DELETE = delete)
-- Check API versioning strategy (URL-based or header-based)
-- Verify sensitive parameters are in the request body, not the URL
-- Check that list endpoints have pagination with reasonable page size limits
+**Verify:**
+- Rate limiting middleware on all routes
+- Input validation (type, format, size, range) on all endpoints
+- HTTP methods correct (GET=read, POST=create, PUT/PATCH=update, DELETE=delete)
+- Versioning strategy (URL or header-based)
+- Sensitive params in body, not URL
+- Pagination with reasonable page size limits
 
 ---
 
 ## Security Audit Output Format
 
-All findings follow this format in `security-audit-report.md`:
+All findings in `security-audit-report.md`:
 
 ```
 [SEV-NNN] Finding Title
@@ -518,26 +512,22 @@ All findings follow this format in `security-audit-report.md`:
 - OWASP Category: A01-A10 or "Additional"
 - Location: file:line
 - Description: What was found
-- Attack Scenario: How this could be exploited (required for all Critical/High)
+- Attack Scenario: How this could be exploited (required for Critical/High)
 - Evidence: Code snippet showing the vulnerability
 - Remediation: Specific fix with code example
 - Verification: How to confirm the fix works
 ```
 
-### Severity Rating Guidelines
+### Severity Rating
 
 | Severity | Criteria |
 |----------|----------|
-| Critical | Remote code execution, data breach, auth bypass. Exploitable without special access. |
-| High | Significant security impact but requires specific conditions. Privilege escalation, significant data exposure. |
-| Medium | Limited impact or requires authenticated access. Information leakage, DoS, limited injection. |
-| Low | Minimal impact. Configuration weaknesses, information hints, theoretical vulnerabilities. |
-| Informational | Best practice recommendations. No direct vulnerability but improves security posture. |
+| Critical | RCE, data breach, auth bypass. Exploitable without special access. |
+| High | Significant impact, requires specific conditions. Privilege escalation, major data exposure. |
+| Medium | Limited impact or requires auth. Info leakage, DoS, limited injection. |
+| Low | Minimal impact. Config weaknesses, info hints, theoretical vulns. |
+| Informational | Best practices. No direct vuln, improves security posture. |
 
 ### Clean Categories
 
-For each OWASP category reviewed with no findings, the report confirms:
-- Which areas were checked
-- That no vulnerabilities were identified in this category
-
-This confirms the audit was performed, not skipped.
+For OWASP categories with no findings, confirm: which areas were checked and that no vulnerabilities were identified. This proves the audit was performed, not skipped.

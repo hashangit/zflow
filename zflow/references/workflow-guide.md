@@ -6,21 +6,10 @@ Reference for invoking, configuring, and navigating ZFlow workflows.
 
 ## Invoking the Workflow
 
-### Development Workflow
-
-```
-/using-zflow
-```
-
-Full multi-phase workflow: Brainstorm, Research, Design, Review, UI Design (conditional), Implement, QA, Document. Use for new features, refactoring, or architectural changes.
-
-### Debugging Workflow
-
-```
-/using-zflow-debug
-```
-
-Debugging workflow: Reproduce, Investigate, Analyze, Design Fix, Implement Fix, Verify. Use for bugs, errors, or test failures.
+| Command | Workflow | Use When |
+|---------|----------|----------|
+| `/using-zflow` | Brainstorm → Research → Design → Review → UI Design → Implement → QA → Document | New features, refactoring, architectural changes |
+| `/using-zflow-debug` | Reproduce → Investigate → Analyze → Design Fix → Implement Fix → Verify | Bugs, errors, test failures |
 
 Both require explicit invocation (`disable-model-invocation: true` prevents auto-triggering).
 
@@ -30,7 +19,7 @@ Both require explicit invocation (`disable-model-invocation: true` prevents auto
 
 ### Phase 0: Brainstorm
 
-**What happens:** Socratic interviewer reads your codebase silently, then engages you in guided conversation. Questions asked one at a time in multiple-choice format with explanations and recommendations grounded in your project.
+Socratic interviewer reads codebase silently, then engages in guided conversation. Questions one at a time in multiple-choice format with explanations and recommendations grounded in your project.
 
 | | |
 |---|---|
@@ -49,13 +38,13 @@ Both require explicit invocation (`disable-model-invocation: true` prevents auto
 **Tips:**
 - More upfront context = fewer questions
 - Seriously consider decomposition if flagged
-- The "simplest viable version" is almost always the right starting point
+- "Simplest viable version" is almost always the right starting point
 
 ---
 
 ### Phase 1: Research
 
-**What happens:** 5-6 parallel agents fan out across your codebase to gather context around the scope.
+5-6 parallel agents fan out across your codebase to gather context around the scope.
 
 | | |
 |---|---|
@@ -72,18 +61,18 @@ Both require explicit invocation (`disable-model-invocation: true` prevents auto
 | related-code-finder | Code affected by planned changes |
 | ui-system-scout (conditional) | Design system, components, tokens |
 
-Agents operate independently; coordinator merges reports into unified document with cross-cutting "Key Findings."
+Agents operate independently; coordinator merges into unified document with cross-cutting "Key Findings."
 
 ---
 
 ### Phase 2: Design
 
-**What happens:** Senior architect maps research against scope, proposes 2-3 approaches as guided multiple-choice options, then presents chosen design section-by-section for incremental approval.
+Senior architect maps research against scope, proposes 2-3 approaches as multiple-choice options, then presents chosen design section-by-section for incremental approval.
 
 | | |
 |---|---|
 | **Input** | `scope.md` + `research-report.md` |
-| **Output** | `solution.md` — complete design: approach, architecture, components, data flow, errors, testing, task breakdown |
+| **Output** | `solution.md` — approach, architecture, components, data flow, errors, testing, task breakdown |
 | **Human gate** | Yes (default) |
 
 **Sections presented one at a time:**
@@ -95,13 +84,13 @@ Agents operate independently; coordinator merges reports into unified document w
 6. Interface Design (if UI work)
 7. Task Breakdown with Dependencies
 
-Section-by-section approval prevents rubber-stamping. Disagreements surface early.
+Section-by-section approval prevents rubber-stamping; disagreements surface early.
 
 ---
 
 ### Phase 3: Review
 
-**What happens:** Fresh agents (no prior context) examine scope and solution from multiple viewpoints. Coordinator performs structural self-review.
+Fresh agents (no prior context) examine scope and solution from multiple viewpoints. Coordinator performs structural self-review.
 
 | | |
 |---|---|
@@ -128,12 +117,12 @@ Section-by-section approval prevents rubber-stamping. Disagreements surface earl
 
 ### Phase 3.5: UI Design (Conditional)
 
-Only triggered when `scope.md` has `ui_work: true`. If Pencil.dev MCP available, full visual design runs; otherwise user chooses to install or proceed without.
+Only triggered when `scope.md` has `ui_work: true`. Full visual design via Pencil.dev if MCP available; otherwise user chooses to install or proceed without.
 
 | | |
 |---|---|
 | **Input** | `reviewed-solution.md` |
-| **Output** | `ui-design-report.md` with design tokens, component specs, screen layouts, exported images |
+| **Output** | `ui-design-report.md` — design tokens, component specs, screen layouts, exported images |
 | **Human gate** | Yes (default) |
 
 **Sub-phases:**
@@ -141,13 +130,13 @@ Only triggered when `scope.md` has `ui_work: true`. If Pencil.dev MCP available,
 2. **UI Design on Canvas** — design each screen/component via Pencil.dev, iterate with user
 3. **Design Review** — accessibility, responsiveness, consistency, compliance checks
 
-If Pencil.dev unavailable and user declines install, phase skipped. Implementation agents work from text specs instead.
+If Pencil.dev unavailable and user declines install, phase skipped. Implementation works from text specs.
 
 ---
 
 ### Phase 4: Implement
 
-**What happens:** Implementation agents deployed in parallel, organized by dependency tiers (Tier 0 first, then Tier 1, etc.).
+Implementation agents deployed in parallel, organized by dependency tiers (Tier 0 first, then Tier 1, etc.).
 
 | | |
 |---|---|
@@ -155,21 +144,13 @@ If Pencil.dev unavailable and user declines install, phase skipped. Implementati
 | **Output** | Working code + `impl-report.md` |
 | **Human gate** | No (auto-pass) |
 
-**Each agent receives:**
-- Specific task description and success criteria
-- Relevant solution design sections
-- File paths (from research)
-- Coding conventions (from pattern analysis)
-- Related test patterns (from test survey)
-- Karpathy preamble (surgical changes constraint)
-
-Every deviation from design must be justified in impl report.
+**Each agent receives:** task description + success criteria, relevant solution sections, file paths, coding conventions, test patterns, Karpathy preamble (surgical changes constraint). Every deviation from design must be justified in impl report.
 
 ---
 
 ### Phase 5: QA
 
-**What happens:** QA agents run in parallel across multiple dimensions including deep security analysis.
+QA agents run in parallel across multiple dimensions including deep security analysis.
 
 | | |
 |---|---|
@@ -188,6 +169,7 @@ Every deviation from design must be justified in impl report.
 | ui-visual-qa (conditional) | Design fidelity, responsive behavior |
 
 **Issue severity levels:**
+
 | Level | Action |
 |-------|--------|
 | Critical (Security) | Must fix immediately |
@@ -212,52 +194,38 @@ Critical/blocker issues loop back to Phase 4 for targeted fixes.
 
 ## Debugging Workflow: Phase-by-Phase
 
-### Phase D0: Reproduce
-Agent confirms reproducibility, documents steps, captures error output, identifies minimal reproduction case. Output: `repro-report.md`
-
-### Phase D1: Investigate
-Five parallel agents trace the issue from different angles. Output: `investigation.md`
-Agents: call-chain-tracer, data-flow-tracer, pattern-scanner, history-investigator, security-impact-assessor
-
-### Phase D2: Root Cause Analysis
-Deliberation agent synthesizes findings to identify root cause, distinguishing symptom from cause. Output: `root-cause.md`
-
-### Phase D3: Design Fix
-Three parallel reviewers design and evaluate proposed fix: minimal fix, regression review, pattern-wide fix. Output: `fix-design.md`
-
-### Phase D4: Implement Fix
-Implementation agent applies the fix with 3-strike escalation rule. Output: Code changes + `fix-impl-report.md`
-
-### Phase D5: Verify
-Four parallel verifiers confirm fix works, no regressions, similar patterns checked, security intact. Output: `verification.md`
+| Phase | What Happens | Output |
+|-------|-------------|--------|
+| **D0: Reproduce** | Confirms reproducibility, documents steps, captures error output, identifies minimal reproduction | `repro-report.md` |
+| **D1: Investigate** | Five parallel agents: call-chain-tracer, data-flow-tracer, pattern-scanner, history-investigator, security-impact-assessor | `investigation.md` |
+| **D2: Root Cause** | Deliberation agent synthesizes findings, distinguishes symptom from cause | `root-cause.md` |
+| **D3: Design Fix** | Three reviewers: minimal fix, regression review, pattern-wide fix | `fix-design.md` |
+| **D4: Implement Fix** | Applies fix with 3-strike escalation rule | Code + `fix-impl-report.md` |
+| **D5: Verify** | Four verifiers: fix works, no regressions, similar patterns checked, security intact | `verification.md` |
 
 ---
 
 ## Document Chain Summary
 
-Development workflow:
+Development:
 ```
 scope.md --> research-report.md --> solution.md --> reviewed-solution.md
                                                                       |
                                               [If UI] ui-design-report.md
                                                                       |
-                                              reviewed-solution.md --> impl-report.md
-                                                                      |
-                                              impl-report.md --> qa-report.md --> commit
+                                              reviewed-solution.md --> impl-report.md --> qa-report.md --> commit
 ```
 
-Debug workflow:
+Debug:
 ```
-repro-report.md --> investigation.md --> root-cause.md --> fix-design.md
-                                                                          |
-                                              fix-design.md --> fix-impl-report.md --> verification.md
+repro-report.md --> investigation.md --> root-cause.md --> fix-design.md --> fix-impl-report.md --> verification.md
 ```
 
 ---
 
 ## Human Gates
 
-At each gate, the user can **Approve**, **Request changes** (agent revises), or **Abort**.
+At each gate: **Approve** | **Request changes** (agent revises) | **Abort**.
 
 Configure in `.zflow/config.json`:
 ```json
@@ -280,9 +248,9 @@ Configure in `.zflow/config.json`:
 | `human` | Pause and wait for user approval |
 | `auto` | Pass automatically if artifact validation succeeds |
 
-Auto-pass validates output exists and follows template structure — it skips human review, not quality. Use for phases where you trust agent output (e.g., research is factual, implementation follows approved design).
+Auto-pass validates output exists and follows template structure — skips human review, not quality.
 
-**Gate failure:** If validation fails (missing/incomplete document, boilerplate not replaced), coordinator reports failure, re-runs the entire phase, surfaces issue to user if re-run also fails.
+**Gate failure:** If validation fails, coordinator reports failure, re-runs the entire phase, surfaces issue to user if re-run also fails.
 
 ---
 
@@ -290,9 +258,7 @@ Auto-pass validates output exists and follows template structure — it skips hu
 
 Configure in `.zflow/config.json`:
 ```json
-{
-  "skip_phases": ["brainstorm", "research"]
-}
+{ "skip_phases": ["brainstorm", "research"] }
 ```
 
 | Scenario | Skip These |
@@ -302,37 +268,30 @@ Configure in `.zflow/config.json`:
 | Known bug in debug workflow | reproduce |
 | Non-UI work | Phase 3.5 auto-skipped (no config needed) |
 
-Skipped phases' outputs are unavailable to downstream phases. E.g., skipping research means design works without codebase context.
+Skipped phases' outputs unavailable downstream. E.g., skipping research means design works without codebase context.
 
 ---
 
 ## Resuming Interrupted Workflows
 
-ZFlow tracks progress in `.zflow/current-phase.json`. On interruption:
-
+Tracked in `.zflow/current-phase.json`. On interruption:
 1. `.zflow/` workspace persists all completed phase outputs
 2. `current-phase.json` records in-progress phase and status
 3. Re-invoking `/using-zflow` detects existing workspace
 4. Orchestrator resumes from last completed phase
 
-Manual resumption — edit `current-phase.json`:
-```json
-{
-  "phase": "implement",
-  "status": "pending"
-}
-```
+Manual resumption — edit `current-phase.json`: `{"phase": "implement", "status": "pending"}`
 
 ---
 
 ## Tips for Best Results
 
 1. **Be specific upfront.** More context = fewer clarification questions.
-2. **Engage with brainstorm questions.** Multiple-choice surfaces trade-offs — read options carefully.
+2. **Engage with brainstorm questions.** Multiple-choice surfaces trade-offs.
 3. **Resist scope creep during design.** Section-by-section approval catches over-engineering.
-4. **Trust the review phase.** Fresh-agent reviews catch things anchored design agents miss.
-5. **Match gates to trust level.** Auto for trusted phases, human for tighter control.
-6. **Skip phases for iterative work.** After one full run, skip early phases and jump to implementation/QA.
+4. **Trust the review phase.** Fresh-agent reviews catch things anchored agents miss.
+5. **Match gates to trust level.** Auto for trusted phases, human for control.
+6. **Skip phases for iterative work.** After one full run, jump to implementation/QA.
 7. **Review the security audit summary.** Highlights most important findings.
 8. **Let UI design iterate.** Fixing design on canvas is cheaper than in code.
 
@@ -356,7 +315,7 @@ ZFlow assesses task complexity before starting and proposes a pipeline profile. 
 
 | Profile | Phases | Use Case |
 |---------|--------|----------|
-| **Quick Fix** | IMPLEMENT (with design sketch) → QA (reduced) → DOCUMENT | Single-function fix, config change |
+| **Quick Fix** | IMPLEMENT (design sketch) → QA (reduced) → DOCUMENT | Single-function fix, config change |
 | **Standard** | BRAINSTORM (abbreviated) → DESIGN → REVIEW → IMPLEMENT → QA → DOCUMENT | Typical feature, 2-3 modules |
 | **Full** | Full 8-phase pipeline | Cross-cutting, multi-system |
 | **Extended** | Full + deeper research + extended security | Greenfield, security-critical |
@@ -370,9 +329,9 @@ Options: Accept, Upgrade, Downgrade, Customize specific phases, Use full pipelin
 ### QA Loop-Back
 
 When QA finds Critical/Blocker issues, classified by root cause layer:
-- **Implementation** → Loop to Phase 4
-- **Design** → Loop to Phase 2
-- **Scope** → Loop to Phase 0
+- **Implementation** → Phase 4
+- **Design** → Phase 2
+- **Scope** → Phase 0
 
 Orchestrator recommends target; user decides. See `references/phase-gates.md` for artifact preservation rules.
 
