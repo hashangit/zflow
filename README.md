@@ -546,6 +546,8 @@ This major update transforms ZFlow from a static 8-phase pipeline into an **adap
 - **QA Severity Grading:** Improved categorization (Critical, Blocker, Major, Minor, Note) with explicit enforcement rules for loop-backs.
 - **Security Audit Depth:** Standardized `audit_depth` settings across all QA agents.
 
+See the full history in [CHANGELOG.md](CHANGELOG.md).
+
 ---
 
 ## ⚖️ License

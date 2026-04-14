@@ -73,3 +73,48 @@ This is an internal restructuring — the external workflow (phases 0-6 + debug 
 identical. Users running ZFlow will see the same phase sequence, same artifacts, and same
 human gates. The change is purely in how phases are loaded and executed internally. No
 breaking changes to artifact formats, config schemas, or agent prompts.
+
+---
+
+### v0.5.0 (2026-04-14) — Adaptive Orchestration & Modular Refactor
+
+This major update transforms ZFlow from a static 8-phase pipeline into an **adaptive, complexity-aware orchestration system** and modularizes the core engine for better scalability.
+
+#### 🚀 Adaptive Pipeline System
+- **Dynamic Profile Selection:** ZFlow now dynamically selects from 4 task-optimized profiles based on a 1-15 complexity score:
+    - **Quick Fix (Trivial):** 3-4 agents, abbreviated brainstorm, skips Research/Review phases, and uses "Design Sketches" for speed.
+    - **Standard (Default):** The balanced, structured workflow for typical features.
+    - **Full (Complex):** Comprehensive 8-phase pipeline with exhaustive Research and Review.
+    - **Extended (Critical):** Maximum rigor with multiple QA/Review swarms and structural validation for high-risk changes.
+- **Complexity Assessment Rubric:** Implemented a multi-signal scoring rubric across five dimensions:
+    - **Affected Systems:** Counts distinct modules or architectural layers.
+    - **Technical Domains:** Varieties of tech stacks (Backend, UI, Database, etc.).
+    - **Existing Patterns:** Follows established code vs. requiring new abstractions.
+    - **User Language:** Quality and detail level of the initial prompt.
+    - **Ambiguity:** Level of technical uncertainty or requirement gaps.
+- **Pipeline Invariants:** Core guarantees (Design-before-Implementation, QA-after-Implementation, Human-in-the-Loop gates) are now enforced regardless of the selected profile.
+
+#### 🔄 Intelligent QA & Loop-Back Protocol
+- **Root Cause Layer Classification:** Critical/Blocker findings are now categorized into **Implementation**, **Design**, **Scope**, or **Unknown**.
+- **Smart Re-entry Protocol:**
+    - Implementation errors trigger targeted re-Implementation.
+    - Design flaws loop back to the Design phase while attempting to preserve valid implementation work.
+    - Scope mismatches (e.g., user rejection) loop back to Brainstorm for clarification.
+- **Artifact Preservation:** Logic added to prevent full re-writes by tracking which sections of a solution or implementation are invalidated.
+
+#### 🏗️ Core Orchestrator Refactor (Modularization)
+- **"Read, Don't Inline" Architecture:** Reduced the main `SKILL.md` size by 50% by extracting content into a new `/references` directory:
+    - `default-config.md`: Full JSON schema for ZFlow configuration.
+    - `pencil-integration.md`: Pencil.dev detection flow and decision logic.
+    - `phase-resumption.md`: Logic for detecting interrupts and state checking.
+    - `error-handling.md`: Unified procedures for phase failures and missing artifacts.
+    - `quick-reference.md`: Naming conventions, checklists, and human gate prompt templates.
+- **Harness-Agnostic Invocation:** Sub-skill calling conventions are now independent of specific AI harnesses (Claude, zClaw, Gemini).
+
+#### 🤖 Agent & Prompt Enhancements
+- **Standardized Karpathy Preamble:** All 34 agent prompts now use a unified inclusion note for `agents/_shared/karpathy-preamble.md`, ensuring behavioral consistency.
+- **Template Section Classification:** 16 templates updated with a three-tier (Required/Expected/Optional) system to reduce boilerplate for simple tasks.
+- **Abbreviated Brainstorm Mode:** Guided path for Trivial tasks reduced to 3-4 targeted questions.
+- **Design Alignment Logic:** Design agents can now operate without Research Reports for "Quick Fix" profiles.
+- **QA Severity Grading:** Improved categorization (Critical, Blocker, Major, Minor, Note) with explicit enforcement rules for loop-backs.
+- **Security Audit Depth:** Standardized `audit_depth` settings across all QA agents.
