@@ -5,6 +5,34 @@ templates and realistic examples for each brainstorm dimension.
 
 ---
 
+## Plain Language Rules
+
+These questions are for developers of all experience levels. Follow these rules
+for every question you ask:
+
+1. **Use everyday words.** "Database table" not "Prisma model." "Error
+   message shown to the user" not "centralized error handler with toast
+   notification pattern." "Checking user input" not "Zod validation."
+
+2. **Explain what things mean in context.** Don't assume the developer knows
+   what "REST endpoint" or "WebSocket" means. Briefly explain: "an API
+   endpoint (a URL your app calls to get or send data)" or "WebSocket (a way
+   to push updates to the browser instantly)."
+
+3. **Say why a choice matters.** Before listing options, give one sentence
+   about what this decision affects. "This determines how fast users see
+   updates" is better than assuming they know why real-time matters.
+
+4. **Describe outcomes, not implementations.** "Users see a small red dot
+   when they have new notifications" beats "In-app notification badge with
+   session-based persistence."
+
+5. **Keep recommendations short and clear.** "I'd go with (A) because your
+   project already handles this — no new tools needed" beats a technical
+   justification that requires domain knowledge.
+
+---
+
 ## Core Pattern: Multiple-Choice with Explanations
 
 Use this format by default. Every option includes what it means, when it's
@@ -88,27 +116,26 @@ What's the main pain point this feature addresses?
 **Format**: Multiple-choice with measurable options
 
 ```
-How will we know this feature is successful? Based on your current analytics
-setup (PostHog events on order actions):
+How will we know this feature is a success? Your app already tracks user
+actions with PostHog (your analytics tool), so we can measure things easily.
 
-  A) **Engagement metric**
-     Users view the new feature at least 3x per week on average.
-     → Recommended: measurable via existing PostHog tracking, no new infra.
+  A) **People actually use it**
+     Users open this new feature at least 3 times per week on average.
+     → Recommended: easy to measure with your existing setup, no extra work.
 
-  B) **Task completion metric**
-     Users complete their intended action 30% faster than with the current
-     interface.
-     → Consider if: you can establish a baseline from current usage data.
+  B) **People get things done faster**
+     Users complete their task 30% faster than they do today.
+     → Consider if: you can measure how long things take today for comparison.
 
-  C) **Error reduction metric**
-     Support tickets related to {area} drop by 50% within 30 days.
-     → Consider if: there's an existing ticket category for this pain point.
+  C) **Fewer support requests**
+     Support tickets related to {area} drop by 50% within a month.
+     → Consider if: you already have a ticket category for this problem.
 
   D) **Something else**
-     Describe your success criteria.
+     How would you measure success?
 
-My recommendation: (A) — you already have PostHog integrated and it gives us
-a clear, falsifiable signal without adding tracking overhead.
+My recommendation: (A) — your analytics tool already tracks what users do,
+so we can measure this right away without adding anything new.
 ```
 
 ### Dimension 3: Constraints
@@ -116,28 +143,29 @@ a clear, falsifiable signal without adding tracking overhead.
 **Format**: Multiple-choice with trade-offs
 
 ```
-What constraints should guide this work? Based on your current setup (Next.js 14,
-Prisma, PostgreSQL, deployed on Vercel):
+Are there any rules or limits we should keep in mind? Based on what your
+project uses (Next.js, a PostgreSQL database, and deployed on Vercel):
 
-  A) **Minimal dependency addition**
-     No new packages or infrastructure. Work within existing tech stack.
-     → Recommended: your Prisma/PostgreSQL setup is solid and well-tested.
+  A) **No new tools or packages**
+     Use only what's already installed. No adding new libraries or services.
+     → Recommended: your current setup is solid and well-tested.
 
-  B) **Backward compatible**
-     Must not break any existing API contracts or data formats. Existing
-     consumers continue to work unchanged.
-     → Consider if: external systems consume your API.
+  B) **Don't break anything that exists today**
+     Everything that works now must keep working the same way. Other apps or
+     systems that talk to your app shouldn't notice a change.
+     → Consider if: other teams or external apps depend on your app.
 
-  C) **Timeline-driven**
-     Need this shipped within {N} days. Willing to accept a simpler first
-     version to meet the deadline.
-     → Consider if: there's a business deadline or event driving urgency.
+  C) **Need it done by a certain date**
+     There's a deadline — {N} days. We can simplify the first version to
+     meet it.
+     → Consider if: there's a specific date or event driving this.
 
   D) **Something else**
-     Describe your constraints.
+     What constraints do you have?
 
-My recommendation: (A) + (C) — your stack is mature enough to handle this
-without new deps, and shipping a focused first version avoids scope creep.
+My recommendation: (A) + (C) — your current tools can handle this without
+adding anything new, and shipping a simple first version avoids building too
+much before getting feedback.
 ```
 
 ### Dimension 4: Scope Boundaries
@@ -145,34 +173,34 @@ without new deps, and shipping a focused first version avoids scope creep.
 **Format**: Multiple-choice with MVP cut recommendation
 
 ```
-Which of these are in scope for this iteration?
+What should we include in this first version?
 
-Based on the feature description, here are the potential pieces:
+Here are the pieces this feature could have:
 
-  [1] Core data model and storage
-  [2] API endpoints for CRUD operations
-  [3] Admin dashboard for management
-  [4] End-user notification delivery
-  [5] Analytics and reporting
-  [6] Audit logging
+  [1] Storing the data (database)
+  [2] The behind-the-scenes connections (API)
+  [3] An admin page to manage things
+  [4] Users actually seeing/using it
+  [5] Reports and analytics
+  [6] A log of who did what and when
 
-  A) **[1] + [2] only — Bare minimum**
-     Data layer and API. No UI, no notifications, no reporting.
-     → Recommended: foundation that everything else builds on.
+  A) **[1] + [2] only — Just the foundation**
+     Set up the data storage and connections. No user-facing parts yet.
+     → Recommended: everything else builds on this, so get it right first.
 
-  B) **[1] + [2] + [4] — User-facing MVP**
-     Core data, API, and the user notification experience.
-     → Consider if: the feature isn't useful without user-facing delivery.
+  B) **[1] + [2] + [4] — Users can see it**
+     Data storage, connections, and the part users interact with.
+     → Consider if: the feature isn't useful unless users can see it.
 
   C) **[1] + [2] + [3] + [4] — Full feature**
-     Everything except analytics and audit logging.
-     → Consider if: admin management is required for launch.
+     Everything except reports and the activity log.
+     → Consider if: you need an admin page for someone to manage this.
 
   D) **Something else**
-     Pick your own combination.
+     Pick what you need.
 
-My recommendation: (B) — your users need to receive notifications for this
-to have value, but admin tooling and analytics can follow in the next iteration.
+My recommendation: (B) — users need to see and use this for it to have
+value. Admin pages and reports can come later.
 ```
 
 ### Dimension 5: Simplest Viable Version
@@ -180,27 +208,27 @@ to have value, but admin tooling and analytics can follow in the next iteration.
 **Format**: Multiple-choice with effort tiers
 
 ```
-What level of scope feels right for this feature?
+How much should we build in the first version?
 
-  A) **Minimal — Days of work**
-     In-app notification badge with a simple dropdown list. No persistence
-     beyond session. No read/unread state.
-     → Recommended: validates the feature has value before investing in
-       infrastructure.
+  A) **Small — A few days of work**
+     Just the basics: a small indicator showing new notifications, and a
+     simple list. Notifications disappear when the user closes the browser.
+     → Recommended: build the minimum to see if people find it useful,
+       then add more later if they do.
 
-  B) **Standard — Week of work**
-     Persistent notifications with read/unread state, stored in your existing
-     PostgreSQL database via Prisma. Basic notification list page.
-     → Consider if: users need notification history across sessions.
+  B) **Medium — About a week**
+     Notifications stick around between visits (saved in your database).
+     Users can mark them as read or unread. A simple notifications page.
+     → Consider if: users need to see old notifications when they come back.
 
-  C) **Full — Multiple weeks**
-     Notification preferences, email digest integration, real-time WebSocket
-     delivery, and a notification center with filtering.
-     → Consider if: this is a core product feature, not a nice-to-have.
+  C) **Full — A few weeks**
+     Everything: notification preferences, email digests, instant
+     delivery (using a technology called WebSocket), and a full
+     notification center with search and filters.
+     → Consider if: this is a core part of your product, not a nice-to-have.
 
-My recommendation: (A) — your existing session storage (NextAuth session)
-can hold a notification count. Ship a badge first, measure engagement, then
-decide whether to invest in persistence. (Karpathy: Simplicity First)
+My recommendation: (A) — start small. Ship a simple version first, see if
+people use it, then invest in the bigger version if they do.
 ```
 
 ### Dimension 6: UI Work Detection
@@ -237,29 +265,32 @@ elements, we should flag for design review.
 **Format**: Multiple-choice grounded in existing DB patterns
 
 ```
-How should this feature's data be stored? Based on your current Prisma schema
-(14 models, PostgreSQL with soft-delete pattern on all models):
+Where should this feature's data live? Your project stores data in
+PostgreSQL (your database) using Prisma (a tool that talks to the database).
+You have 14 different data types already.
 
-  A) **New Prisma model**
-     Add a dedicated {ModelName} table following your existing model conventions
-     (id, createdAt, updatedAt, deletedAt).
-     → Recommended: clean separation, follows your established pattern.
+  A) **Add a new data type**
+     Create a new table specifically for this feature, following the same
+     pattern your other data uses (with created date, updated date, etc.).
+     → Recommended: keeps things clean and organized, like your other data.
 
-  B) **Extend existing model**
-     Add fields to your existing {ExistingModel} (e.g., a JSON column for
-     metadata or a status enum).
-     → Consider if: the new data is a natural extension of an existing entity.
+  B) **Add to an existing data type**
+     Add new fields to something that already exists. For example, adding a
+     "status" field to an existing record type.
+     → Consider if: the new information is naturally part of something that
+       already exists.
 
-  C) **Separate storage**
-     Use a different storage mechanism (Redis cache, file storage, external
-     service).
-     → Consider if: this data has different access or retention patterns.
+  C) **Use a different kind of storage**
+     Store it somewhere else — like a fast cache (Redis), files, or an
+     external service.
+     → Consider if: this data needs to be accessed differently than your
+       main data (e.g., it expires quickly or is very temporary).
 
   D) **Something else**
-     Describe your preferred data approach.
+     How would you like to store the data?
 
-My recommendation: (A) — your codebase consistently uses one model per domain
-concept, and the new data has its own lifecycle separate from existing models.
+My recommendation: (A) — your project keeps each type of data in its own
+table, and this new data has its own lifecycle separate from what exists.
 ```
 
 ### Dimension 8: API Design
@@ -267,31 +298,34 @@ concept, and the new data has its own lifecycle separate from existing models.
 **Format**: Multiple-choice grounded in existing API patterns
 
 ```
-What API approach fits this feature? Your project currently has 12 REST
-endpoints following the pattern `/api/v1/{resource}`, all using Next.js Route
-Handlers with Zod validation.
+How should the different parts of your app talk to each other about this
+feature? Your app has 12 API endpoints (URLs that your frontend calls to
+get or send data) — all following the same pattern.
 
-  A) **REST — Match existing pattern**
-     Add new `/api/v1/{resource}` endpoints with Zod validation. Consistent
-     with your 12 existing routes.
-     → Recommended: no new patterns for the team to learn.
+  A) **Add new endpoints — same pattern as the rest**
+     Create new URLs for this feature, following the same style as your
+     existing 12 endpoints. Includes the same input checking your other
+     endpoints use.
+     → Recommended: consistent with everything else — nothing new to learn.
 
-  B) **Extend existing endpoint**
-     Add query parameters or response fields to an existing endpoint.
-     → Consider if: the new functionality is a natural extension of an
-       existing API surface.
+  B) **Add to an existing endpoint**
+     Extend an existing URL to also handle this feature's data.
+     → Consider if: this feature is closely related to something that already
+       has an endpoint.
 
-  C) **WebSocket / SSE for real-time**
-     Add a WebSocket connection or Server-Sent Events stream for live updates.
-     → Consider if: the feature requires sub-second updates. Note: your project
-       currently has no WebSocket infrastructure.
+  C) **Real-time updates (WebSocket or SSE)**
+     Set up a live connection so updates appear instantly without refreshing.
+     WebSocket and SSE are two technologies that push updates to the browser
+     as they happen.
+     → Consider if: users need to see changes the moment they happen. Note:
+       your project doesn't currently use this, so it's a new pattern.
 
   D) **Something else**
-     Describe your preferred API approach.
+     How should the app handle this?
 
-My recommendation: (A) — your existing REST pattern with Zod validation is
-well-established. Unless there's a specific need for real-time delivery, stick
-with what's already working.
+My recommendation: (A) — your existing pattern works well and the team
+already knows it. Unless users specifically need instant real-time updates,
+stick with what works.
 ```
 
 ### Dimension 9: Error Handling
@@ -299,33 +333,33 @@ with what's already working.
 **Format**: Multiple-choice with UX implications
 
 ```
-How should errors in this feature be handled? Your project currently uses a
-centralized error handler that returns `{ error: string, code: string }` with
-toast notifications on the frontend.
+What should happen when something goes wrong in this feature? Right now,
+your app shows a small pop-up message (toast) when there's an error, with
+a retry button.
 
-  A) **Match existing error pattern**
-     Use the same centralized error handler and toast notifications. Users see
-     a brief error message with a retry option.
-     → Recommended: consistent with the rest of your application.
+  A) **Same as the rest of the app**
+     Show a pop-up error message with a retry button. Same way other parts
+     of your app handle errors.
+     → Recommended: users already know how this works in your app.
 
-  B) **Inline validation**
-     Validate before submission and show errors next to the relevant fields.
-     Prevents submissions with invalid data.
-     → Consider if: this feature has form inputs where per-field feedback
-       would help users correct mistakes.
+  B) **Show errors next to the relevant field**
+     Before the user even submits, check their input and highlight what's
+     wrong right next to the field.
+     → Consider if: this feature has a form where users type in information,
+       and seeing what's wrong immediately would help them fix it faster.
 
-  C) **Silent retry with fallback**
-     Automatically retry failed operations (1-2 times) before showing the
-     error to the user. Show a degraded experience if retries exhaust.
-     → Consider if: this involves network operations that may fail
-       intermittently.
+  C) **Try again automatically before showing the error**
+     If something fails, quietly try again 1-2 times. Only show the error
+     if it keeps failing. Show a simpler version of the page if it can't
+     recover.
+     → Consider if: this involves internet requests that sometimes fail
+       for no good reason (like a flaky connection).
 
   D) **Something else**
-     Describe your preferred error handling approach.
+     How would you like errors handled?
 
-My recommendation: (A) — your users are already familiar with the toast
-notification pattern. Add inline validation (B) only if the feature has
-complex form inputs.
+My recommendation: (A) — users already know how errors work in your app.
+Add the per-field checking (B) only if this feature has a complex form.
 ```
 
 ### Dimension 10: Migration / Compatibility
@@ -333,33 +367,32 @@ complex form inputs.
 **Format**: Multiple-choice with risk assessment (conditional — only when modifying existing features)
 
 ```
-Your feature modifies the existing {ExistingFeature}. How should we handle the
-transition?
+This feature changes something that already exists ({ExistingFeature}).
+How should we handle the switch?
 
-  A) **Non-breaking — Additive only**
-     Add new functionality alongside existing behavior. Nothing changes for
-     current users until they opt in.
-     → Recommended: zero risk of regression. Safest approach.
+  A) **Add the new stuff without changing the old**
+     Build the new feature alongside what's there. Users keep using the old
+     version until they choose to use the new one.
+     → Recommended: safest option. Nothing breaks for existing users.
 
-  B) **Feature flag rollout**
-     Ship changes behind a feature flag. Gradually enable for users while
-     monitoring for issues.
-     → Consider if: the change affects critical user workflows and you need
-       a rollback plan.
+  B) **Gradual rollout with a toggle**
+     Build the new version but hide it behind a switch. Turn it on for
+     a few users at a time while watching for problems. Can turn it off
+     instantly if something goes wrong.
+     → Consider if: this change affects something important that many users
+       rely on daily.
 
-  C) **Direct replacement**
-     Replace the existing implementation. All users get the new behavior
-     immediately.
-     → Consider if: the old behavior is buggy or actively harmful, and a
-       clean break is warranted.
+  C) **Replace the old version directly**
+     Remove the old version and replace it. Everyone gets the new version
+     right away.
+     → Consider if: the old version has known bugs or causes problems, and
+       a clean start makes sense.
 
   D) **Something else**
-     Describe your migration strategy.
+     How would you like to handle the transition?
 
-My recommendation: (A) — your codebase already supports additive changes
-without breaking consumers. Reserve direct replacement for when the old
-behavior is causing active problems.
-```
+My recommendation: (A) — safest approach. Only use direct replacement if the
+old version is actively causing problems.
 ```
 
 ---

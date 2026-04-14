@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt="Status">
-  <img src="https://img.shields.io/badge/version-v1.0.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.0.1-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-orange.svg" alt="License">
   <img src="https://img.shields.io/badge/agents-35-blueviolet.svg" alt="Agents">
 </p>
@@ -443,6 +443,8 @@ zflow/                              # Copy this folder to your harness's skills 
 
 These principles shape every agent's behavior in ZFlow:
 
+**Plain Language Communication** — Every question, option, explanation, and status update is written in plain, accessible English. Technical jargon is explained in context. Options describe what they *do*, not what they're *called*. ZFlow conversations should feel natural whether you're a junior developer or a senior architect.
+
 **Think Before Coding** — State assumptions explicitly. Present alternatives rather than picking silently. Stop and ask when something is unclear.
 
 **Simplicity First** — Minimum code that solves the problem. No speculative features, no abstractions for single-use code, no "flexibility" that wasn't requested.
@@ -475,6 +477,17 @@ ZFlow builds on two foundational ideas:
 ---
 
 ## 🚀 Changelog
+
+### v1.0.1 (2026-04-15) — Plain Language Communication
+
+All user-facing prompts, questions, and templates across ZFlow now use plain, accessible language — understandable by developers of any experience level.
+
+- Added "Communication Style" directive to the orchestrator and all interactive phase docs
+- Simplified pipeline proposals, QA gate summaries, and human gate prompts
+- Rewrote all 10 brainstorm question examples in everyday language
+- Renamed design phase sections from technical jargon to plain English
+
+No breaking changes — only the wording changed, not the underlying logic.
 
 ### v1.0.0 (2026-04-14) — Phase Document Architecture & Stable Release
 

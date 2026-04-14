@@ -5,6 +5,91 @@ All notable changes to ZFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.1] - 2026-04-15
+
+### Added
+
+- **Plain Language Communication Style directive** — New top-level section in
+  `SKILL.md` establishing 7 guidelines for all user-facing ZFlow communication:
+  plain English first, explain jargon in-line, describe what things do not what
+  they're called, short sentences, concrete over abstract, why before what, and
+  self-contained recommendations. This directive applies to every phase doc,
+  agent prompt, gate summary, and template in ZFlow.
+
+### Changed
+
+- **Pipeline proposal template** (`SKILL.md`) — Replaced the technical
+  "ZFlow Pipeline Proposal" format (complexity score, profile name, phase
+  depth/agents/gate table) with a plain-language "How should we approach this?"
+  format that describes each step in everyday terms. Internal complexity scoring
+  still happens but is no longer exposed to the user.
+
+- **QA gate template** (`SKILL.md`) — Replaced "Root Cause Layer" terminology
+  and severity classification tables with plain-language issue descriptions:
+  "Testing found N issues that need fixing" with explanations like "The code
+  doesn't match the design" or "The design itself has a flaw."
+
+- **Human gate prompt template** (`references/quick-reference.md`) — Simplified
+  from "Phase Complete: {phase_name}" with artifact paths and key decisions to
+  "{Phase name} step is done" with plain-language summaries and a "What happens
+  next" section that previews the upcoming step.
+
+- **Brainstorm question patterns** (`agents/brainstorm/question-patterns.md`) —
+  Added "Plain Language Rules" section with 5 concrete rules. Rewrote all 10
+  dimension examples to use accessible language:
+  - "Engagement metric" → "People actually use it"
+  - "Minimal dependency addition" → "No new tools or packages"
+  - "New Prisma model" → "Add a new data type"
+  - "REST — Match existing pattern" → "Add new endpoints — same pattern as the rest"
+  - "Match existing error pattern" → "Same as the rest of the app"
+  - "Non-breaking — Additive only" → "Add the new stuff without changing the old"
+
+- **Socratic interviewer agent** (`agents/brainstorm/socratic-interviewer.md`) —
+  Added "Communication Style" section directing plain language usage. Updated
+  example opening to explain tools like Prisma in context.
+
+- **Brainstorm phase doc** (`phases/brainstorm.md`) — Added "Communication
+  Style" section.
+
+- **Design phase doc** (`phases/design.md`) — Added "Communication Style"
+  section. Renamed approach proposal template labels from "Pros/Cons/Effort/
+  Risk/Codebase Fit" to "Good because/Downsides/How much work/How risky/Why it
+  fits your project". Renamed section sequence headers to plain English:
+  "Architecture Overview" → "How it works overall", "Component Breakdown" →
+  "What gets built or changed", "Data Flow" → "How data moves around",
+  "Error Handling & Edge Cases" → "What happens when things go wrong",
+  "Testing Strategy" → "Testing plan", "Task Breakdown" → "Step-by-step plan".
+
+- **Workflow detection prompt** (`SKILL.md`) — Simplified "Development — Plan,
+  research, design, and implement from scratch" to "Building something new —
+  we'll plan, design, and build from scratch".
+
+- **Status reporting** (`SKILL.md`) — Changed "Deploying N parallel agents" to
+  "Running N research tasks in parallel" and "Tier N: count agents running" to
+  "Working on group N of tasks".
+
+### Files Changed
+
+- `zflow/SKILL.md` — Added Communication Style section; simplified pipeline
+  proposal, QA gate, workflow detection, and status reporting templates
+- `zflow/agents/brainstorm/question-patterns.md` — Added Plain Language Rules;
+  rewrote all 10 dimension examples
+- `zflow/agents/brainstorm/socratic-interviewer.md` — Added Communication Style
+  section; updated example opening
+- `zflow/phases/brainstorm.md` — Added Communication Style section
+- `zflow/phases/design.md` — Added Communication Style section; simplified
+  approach proposal template and section sequence headers
+- `zflow/references/quick-reference.md` — Simplified human gate prompt template
+
+### Backward Compatibility
+
+No breaking changes. All phase artifacts, config schemas, agent prompts, and
+workflow logic remain identical. Only the *wording* of user-facing prompts,
+questions, and templates changed — the underlying decisions and processes are
+the same.
+
+---
+
 ## [v1.0.0] - 2026-04-14
 
 ### Changed

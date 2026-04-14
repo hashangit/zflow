@@ -17,27 +17,29 @@ For each phase, verify the output has required sections:
 
 ## Human Gate Prompt Template
 
-When a human gate is required:
+When a human gate is required, present a clear, jargon-free summary:
 
 ```
-## Phase Complete: {phase_name}
+## {Phase name} step is done
 
-**Output**: {artifact_path}
-**Duration**: {elapsed}
-**Agents Used**: {count}
+**What we produced**: {plain-language description, e.g. "A document describing
+what you want to build and why"}
+**Time spent**: {elapsed, or "just now" if brief}
+**Number of agents that worked on this**: {count}
 
-### Summary
-{2-3 sentence summary of what was produced}
+### What was decided
+- {decision 1 in plain language}
+- {decision 2 in plain language}
 
-### Key Decisions
-- {decision 1}
-- {decision 2}
+### What happens next
+{Brief description of the next step, e.g. "Next, we'll research your codebase
+to understand how this fits with what's already there."}
 
-Ready to proceed to {next_phase_name}?
+Ready to move on?
 
-  [A] Approve — proceed to next phase
-  [B] Request changes — I'll provide feedback
-  [C] Abort workflow
+  [A] Looks good — proceed to the next step
+  [B] I have changes or feedback
+  [C] Stop the workflow
 ```
 
 ## Dev Workflow Phases
