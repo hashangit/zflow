@@ -24,27 +24,31 @@ technical spec. See the question patterns file for detailed plain language rules
 
 ## Execution Steps
 
-### Step 1: Silent Codebase Scan
+### Step 1: Silent Codebase Scan (Subagent)
 
-Before asking the user anything, read the project to build context:
+Before asking the user anything, spawn a codebase scout subagent to build
+context. This keeps heavy file reads out of the main conversation.
 
+Spawn the Agent tool with:
+1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
+2. Read `${CLAUDE_SKILL_DIR}/agents/brainstorm/codebase-scout.md` and include its contents
+3. Pass the project root path and the user's initial description
+
+The agent produces a structured summary covering:
 - Project structure, tech stack, and architectural patterns
 - Existing related features or modules
 - Testing patterns and conventions
 - README, CLAUDE.md, and any planning docs
 - Existing design systems, component libraries, CSS architecture
+- Any existing `.zflow/` workspace state (resume capability)
+
+**After the agent returns:** Use its summary (not raw files) to inform your
+questions. If `graph_scan` / `graph_retrieve` tools are available, you may
+supplement the summary with a targeted query, but do not re-read the files
+the agent already scanned.
 
 This context informs every question you ask. Questions must be grounded in what
 the project actually looks like, not generic.
-
-To perform this scan, read the project root files directly. Prioritize:
-- `package.json` / `requirements.txt` / `Cargo.toml` (tech stack)
-- `CLAUDE.md` / `README.md` (project conventions)
-- Directory structure (architecture)
-- Any existing `.zflow/` workspace state (resume capability)
-
-If `graph_scan` / `graph_retrieve` tools are available (e.g., from a dual-graph
-MCP), use those for faster retrieval.
 
 ### Step 2: Scope Assessment
 
@@ -86,15 +90,26 @@ Skip dimensions that don't apply to this feature.
 and a recommendation grounded in the actual project. Use open-ended questions
 only when the topic is genuinely open.
 
-### Step 4: Synthesize scope.md
+### Step 4: Synthesize scope.md (Subagent)
 
-After all questions are answered (or the user provides enough context), assemble
-findings into `scope.md` using the template at `${CLAUDE_SKILL_DIR}/templates/scope.md` as a starting point. Follow the template\'s section classifications: Required sections must be present, Expected sections should be present unless you note a reason, Optional sections are at your discretion. Produce output proportional to task complexity..
+After all questions are answered (or the user provides enough context), delegate
+the scope.md assembly to a subagent. This keeps the template and artifact
+writing out of the main context.
 
-Write the file to `.zflow/phases/00-brainstorm/scope.md` in the project root.
+Spawn the Agent tool with:
+1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
+2. Read `${CLAUDE_SKILL_DIR}/templates/scope.md` and include its contents as the output template
+3. Pass all collected answers: user's initial description, each question response,
+   the codebase summary from Step 1, and the ui_work determination
 
-Present the completed scope.md to the user for confirmation. If they request
-changes, update accordingly.
+The agent must:
+- Follow the template's section classifications: Required must be present,
+  Expected should be present unless noted, Optional at discretion
+- Produce output proportional to task complexity
+- Write the file to `.zflow/phases/00-brainstorm/scope.md`
+
+**After the agent returns:** Present the completed scope.md to the user for
+confirmation. If they request changes, apply them directly (no need to re-spawn).
 
 ### Step 5: Phase Transition
 
