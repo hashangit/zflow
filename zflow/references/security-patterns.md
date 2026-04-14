@@ -6,9 +6,9 @@ Reference for recognizing and remediating vulnerability patterns during code rev
 
 ## Overview
 
-This document catalogs common vulnerability patterns organized by language and ecosystem. The `security-auditor.md` agent uses this reference during Phase 5 (QA) to recognize known patterns in the code being audited. Each pattern includes what to look for, why it is dangerous, and how to fix it.
+Common vulnerability patterns organized by language/ecosystem. Used by `security-auditor.md` during Phase 5 (QA). Each pattern includes: what to search for, why it is dangerous, how to recognize it, and how to fix it.
 
-**Note:** Code examples in this document illustrate vulnerable patterns for educational purposes. They are not meant to be used in production.
+**Note:** Code examples illustrate vulnerable patterns for educational purposes only.
 
 ---
 
@@ -16,36 +16,36 @@ This document catalogs common vulnerability patterns organized by language and e
 
 ### XSS via dangerouslySetInnerHTML
 
-**Pattern to search for:** `dangerouslySetInnerHTML`
+**Search for:** `dangerouslySetInnerHTML`
 
-**Vulnerable code:**
+**Vulnerable:**
 ```jsx
 <div dangerouslySetInnerHTML={{ __html: userInput }} />
 ```
 
-**Why it is dangerous:** React's `dangerouslySetInnerHTML` bypasses React's built-in XSS protection. If `userInput` contains a script tag or event handler attribute, it will execute in the user's browser.
+**Danger:** Bypasses React's XSS protection. If `userInput` contains script tags or event handlers, they execute in the browser.
 
-**How to recognize it:**
-- Search for `dangerouslySetInnerHTML` across all JSX/TSX files
-- Check whether the content being rendered comes from user input or an untrusted source
-- Check if the content is sanitized before rendering (using DOMPurify or similar)
+**How to recognize:**
+- `dangerouslySetInnerHTML` in any JSX/TSX
+- Content from user input or untrusted source
+- No sanitization (DOMPurify or similar) before rendering
 
 **Remediation:**
-- If the content is plain text, use React's default text rendering: `<div>{userInput}</div>`
-- If rich HTML is genuinely needed, sanitize with DOMPurify:
+- Plain text: use React's default rendering: `<div>{userInput}</div>`
+- Rich HTML needed: sanitize with DOMPurify:
   ```jsx
   import DOMPurify from 'dompurify';
   <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(userInput) }} />
   ```
-- If rendering markdown, use a markdown library that sanitizes output
+- Markdown: use a sanitizing markdown library
 
 ---
 
 ### Prototype Pollution
 
-**Pattern to search for:** recursive merge functions, `Object.assign` with user data
+**Search for:** recursive merge functions, `Object.assign` with user data
 
-**Vulnerable code:**
+**Vulnerable:**
 ```javascript
 function merge(target, source) {
   for (const key in source) {
@@ -60,98 +60,98 @@ function merge(target, source) {
 merge(config, userInput);
 ```
 
-**Why it is dangerous:** If `userInput` contains `__proto__`, `constructor`, or `prototype` as keys, the merge function can modify `Object.prototype`, affecting all objects in the application. This can lead to authentication bypass, privilege escalation, or RCE.
+**Danger:** Keys like `__proto__`, `constructor`, or `prototype` modify `Object.prototype`, affecting all objects. Can lead to auth bypass, privilege escalation, or RCE.
 
-**How to recognize it:**
-- Recursive merge/deep clone functions that iterate over object keys
-- `Object.assign()` with user-controlled source objects
-- JSON parsing where the result is used as a config object
-- Any pattern that copies user-controlled properties onto existing objects
+**How to recognize:**
+- Recursive merge/deep clone iterating object keys
+- `Object.assign()` with user-controlled source
+- JSON parsed result used as config object
+- User-controlled properties copied onto existing objects
 
 **Remediation:**
-- Use safe merge utilities (lodash `_.merge` with recent versions that have prototype pollution fixes)
-- Validate that keys do not include `__proto__`, `constructor`, or `prototype`
-- Use `Object.create(null)` for objects that receive user properties
-- Use `Map` instead of plain objects for user-controlled key-value data
+- Use safe merge utilities (lodash `_.merge` with prototype pollution fixes)
+- Validate keys exclude `__proto__`, `constructor`, `prototype`
+- Use `Object.create(null)` for objects receiving user properties
+- Use `Map` for user-controlled key-value data
 
 ---
 
 ### Regex DoS (ReDoS)
 
-**Pattern to search for:** complex regex with nested quantifiers
+**Search for:** complex regex with nested quantifiers
 
-**Vulnerable code:**
+**Vulnerable:**
 ```javascript
 const emailRegex = /^([a-zA-Z0-9]+)*@([a-zA-Z0-9]+)*\.([a-zA-Z0-9]+)*$/;
 emailRegex.test(userInput);
 ```
 
-**Why it is dangerous:** Nested quantifiers (like `(a+)+` or `(a*)*`) can cause catastrophic backtracking on certain inputs. A carefully crafted input can cause the regex engine to take exponential time, freezing the Node.js event loop.
+**Danger:** Nested quantifiers (`(a+)+`, `(a*)*`) cause catastrophic backtracking. Crafted input causes exponential time, freezing the Node.js event loop.
 
-**How to recognize it:**
-- Regex patterns with nested quantifiers: `(x+)+`, `(x*)*`, `(x+)*`
-- Regex with alternating groups and quantifiers: `(a|b)+` where both alternatives can match the same input
-- User input tested against complex regex patterns
+**How to recognize:**
+- Nested quantifiers: `(x+)+`, `(x*)*`, `(x+)*`
+- Alternating groups with quantifiers: `(a|b)+` where both match same input
+- User input tested against complex regex
 
 **Remediation:**
-- Simplify regex patterns to avoid nested quantifiers
+- Simplify regex to avoid nested quantifiers
 - Use atomic groups or possessive quantifiers where supported
-- Set a timeout on regex matching (e.g., using `re2` library which has bounded execution time)
-- For email validation, use a simple pattern or a dedicated validation library rather than complex regex
+- Set timeout on matching (e.g., `re2` library with bounded execution)
+- Email validation: use simple pattern or dedicated library
 
 ---
 
 ### Path Traversal
 
-**Pattern to search for:** `fs.readFile`, `fs.writeFileSync`, `path.join` with user input
+**Search for:** `fs.readFile`, `fs.writeFileSync`, `path.join` with user input
 
-**Vulnerable code:**
+**Vulnerable:**
 ```javascript
 const filePath = path.join(__dirname, 'uploads', req.params.filename);
 fs.readFile(filePath, (err, data) => { ... });
 ```
 
-**Why it is dangerous:** If `req.params.filename` contains `../../etc/passwd`, the resolved path escapes the intended `uploads` directory and reads arbitrary files from the server.
+**Danger:** `req.params.filename` containing `../../etc/passwd` escapes the intended directory and reads arbitrary files.
 
-**How to recognize it:**
-- File system operations that use user input in the path
-- `path.join()` or string concatenation with user-controlled segments
-- Static file serving where the file path is derived from user input
-- Image/file upload handlers that use the original filename
+**How to recognize:**
+- File system ops using user input in path
+- `path.join()` or string concat with user-controlled segments
+- Static file serving with user-derived paths
+- Upload handlers using original filename
 
 **Remediation:**
-- Validate that the resolved path is within the intended directory:
+- Validate resolved path within intended directory:
   ```javascript
   const resolved = path.resolve(__dirname, 'uploads', req.params.filename);
   if (!resolved.startsWith(path.resolve(__dirname, 'uploads'))) {
     throw new Error('Path traversal detected');
   }
   ```
-- Use generated filenames instead of user-provided ones
-- Use a whitelist of allowed file extensions
-- Sanitize filenames: remove path separators, null bytes, and `..` sequences
+- Use generated filenames, not user-provided
+- Whitelist allowed file extensions
+- Sanitize filenames: remove path separators, null bytes, `..`
 
 ---
 
 ### Dynamic Code Execution
 
-**Pattern to search for:** `eval(`, `new Function(`, `setTimeout(string`, `setInterval(string`
+**Search for:** `eval(`, `new Function(`, `setTimeout(string`, `setInterval(string`
 
-**Vulnerable code:** Passing user-controlled strings to JavaScript code execution functions.
+**Vulnerable:** Passing user-controlled strings to code execution functions.
 
-**Why it is dangerous:** Functions that evaluate strings as code (the built-in code evaluation function, the Function constructor, setTimeout/setInterval with string arguments) execute arbitrary JavaScript. If the input comes from a user, this is remote code execution.
+**Danger:** eval, Function constructor, and setTimeout/setInterval with string arguments execute arbitrary JS. User-controlled input equals remote code execution.
 
-**How to recognize it:**
-- Any code evaluation function with user-controlled input
-- `setTimeout()` and `setInterval()` with string arguments (not function references)
+**How to recognize:**
+- Any code eval function with user-controlled input
+- setTimeout/setInterval with string arguments (not function refs)
 - `vm.runInContext()`, `vm.runInNewContext()`, `vm.compileFunction()`
 - Dynamic `import()` with user-controlled paths
 
 **Remediation:**
 - Never pass user input to code execution functions
-- Use `setTimeout(() => { ... }, 0)` (function reference, not string)
-- Use `JSON.parse` for data instead of code evaluation
-- For dynamic calculations, use a safe expression evaluator library
+- Use `setTimeout(() => { ... }, 0)` (function reference)
+- Use `JSON.parse` for data, not code evaluation
+- Dynamic calculations: use a safe expression evaluator library
 
 ---
 
@@ -159,121 +159,121 @@ fs.readFile(filePath, (err, data) => { ... });
 
 ### SQL Injection via f-strings
 
-**Pattern to search for:** f-strings in SQL queries, `.format()` in SQL, `%` formatting in SQL
+**Search for:** f-strings in SQL, `.format()` in SQL, `%` formatting in SQL
 
-**Vulnerable code:**
+**Vulnerable:**
 ```python
 query = f"SELECT * FROM users WHERE email = '{email}' AND status = '{status}'"
 cursor.execute(query)
 ```
 
-**Why it is dangerous:** User input is directly interpolated into the SQL query. An attacker can inject SQL by entering something like `' OR '1'='1' --` as the email field, bypassing authentication.
+**Danger:** User input interpolated directly into SQL. Attacker injects via `' OR '1'='1' --` to bypass authentication.
 
-**How to recognize it:**
-- f-strings, `.format()`, or `%` string formatting in SQL queries
-- Any SQL query built by concatenating user input
-- Raw SQL in Django's `raw()`, SQLAlchemy's `text()`, or cursor `execute()` with string formatting
+**How to recognize:**
+- f-strings, `.format()`, or `%` formatting in SQL queries
+- SQL built by concatenating user input
+- Raw SQL in Django `raw()`, SQLAlchemy `text()`, or cursor `execute()` with formatting
 
 **Remediation:**
-- Use parameterized queries:
+- Parameterized queries:
   ```python
   cursor.execute("SELECT * FROM users WHERE email = %s AND status = %s", (email, status))
   ```
-- Use ORM methods that handle parameterization automatically:
+- ORM methods:
   ```python
   User.objects.filter(email=email, status=status)
   ```
-- If raw SQL is necessary, always use parameterized placeholders
+- Raw SQL: always use parameterized placeholders
 
 ---
 
 ### Pickle Deserialization
 
-**Pattern to search for:** `pickle.loads`, `pickle.load`, `yaml.load` without SafeLoader
+**Search for:** `pickle.loads`, `pickle.load`, `yaml.load` without SafeLoader
 
-**Vulnerable code:**
+**Vulnerable:**
 ```python
 import pickle
 data = pickle.loads(request.data)
 ```
 
-**Why it is dangerous:** `pickle.loads()` can execute arbitrary Python code during deserialization. An attacker can craft a pickle payload that executes system commands, reads files, or establishes a reverse shell.
+**Danger:** `pickle.loads()` executes arbitrary Python code during deserialization. Crafted payload can run system commands, read files, or open reverse shells.
 
-**How to recognize it:**
-- `pickle.loads()`, `pickle.load()` with data from untrusted sources
+**How to recognize:**
+- `pickle.loads()`/`pickle.load()` with untrusted data
 - `cPickle.loads()` (Python 2)
 - `shelve.open()` (uses pickle internally)
-- `marshal.loads()` (less dangerous but still risky)
+- `marshal.loads()` (less dangerous but risky)
 - `yaml.load()` without `Loader=yaml.SafeLoader`
 
 **Remediation:**
-- Use JSON for data interchange (no code execution during parsing):
+- Use JSON for data interchange:
   ```python
   data = json.loads(request.data)
   ```
-- If you must deserialize, use `yaml.safe_load()` instead of `yaml.load()`
-- For pickle specifically: only unpickle data from trusted sources, never from user input
-- Consider using alternatives like `msgpack`, `protobuf`, or `JSON`
+- YAML: use `yaml.safe_load()` instead of `yaml.load()`
+- Pickle: only unpickle from trusted sources, never user input
+- Alternatives: `msgpack`, `protobuf`, or JSON
 
 ---
 
 ### Template Injection (SSTI)
 
-**Pattern to search for:** `Template(user_input)`, `render_template_string`
+**Search for:** `Template(user_input)`, `render_template_string`
 
-**Vulnerable code:**
+**Vulnerable:**
 ```python
 from jinja2 import Template
 template = Template(user_input)
 result = template.render()
 ```
 
-**Why it is dangerous:** If user input is treated as a template, it can contain template directives that execute code. In Jinja2, `{{ config }}` leaks Flask config, and accessing the MRO chain can lead to RCE.
+**Danger:** User input as template can contain directives that execute code. Jinja2 `{{ config }}` leaks Flask config; MRO chain access leads to RCE.
 
-**How to recognize it:**
-- User input passed directly to template engines as the template string (not as a variable)
+**How to recognize:**
+- User input as template string (not as variable)
 - `Template(user_input).render()`
 - `render_template_string(user_input)` in Flask
 - Mako templates with user-controlled content
 - Django templates with `mark_safe` on user input
 
 **Remediation:**
-- Pass user input as template variables, not as the template itself:
+- Pass user input as template variables:
   ```python
   template = Template("Hello {{ name }}!")
   result = template.render(name=user_input)  # Safe: user_input is a variable
   ```
-- Use sandboxed template environments if user-defined templates are required
-- Enable Jinja2's autoescaping: `Environment(autoescape=True)`
+- Sandboxed environments if user-defined templates required
+- Enable Jinja2 autoescaping: `Environment(autoescape=True)`
 - Never use `render_template_string` with user input
 
 ---
 
 ### Command Injection
 
-**Pattern to search for:** `os.system`, `subprocess` with `shell=True`, `os.popen`
+**Search for:** `os.system`, `subprocess` with `shell=True`, `os.popen`
 
-**Vulnerable code:**
+**Vulnerable:**
 ```python
 import os
 os.system(f"ping {user_ip}")
 subprocess.call(f"convert {user_filename} output.png", shell=True)
 ```
 
-**Why it is dangerous:** When `shell=True` is used or `os.system()` is called, the command string is passed to the system shell. User input containing shell metacharacters like semicolons or command substitution syntax will be executed.
+**Danger:** `shell=True` or `os.system()` passes command to system shell. Shell metacharacters (`;`, `$()`) in user input get executed.
 
-**How to recognize it:**
+**How to recognize:**
 - `os.system()`, `os.popen()` with user input
-- `subprocess.call()`, `subprocess.run()`, `subprocess.Popen()` with `shell=True`
-- String formatting or concatenation in command strings
+- `subprocess.call/run/Popen()` with `shell=True`
+- String formatting/concat in command strings
 
 **Remediation:**
-- Use `subprocess.run()` without `shell=True`, passing arguments as a list:
+- Use `subprocess.run()` without `shell=True`, args as list:
   ```python
   subprocess.run(["ping", "-c", "3", user_ip], capture_output=True)
   ```
-- If shell features are truly needed, sanitize input rigorously using `shlex.quote()`
-- Validate input against a strict allowlist (e.g., IP addresses must match a regex)
+- Shell features truly needed: sanitize with `shlex.quote()`
+- Validate input against strict allowlist (e.g., IP regex)
 
 ---
 
@@ -281,9 +281,9 @@ subprocess.call(f"convert {user_filename} output.png", shell=True)
 
 ### CORS Misconfiguration
 
-**Pattern to search for:** `Access-Control-Allow-Origin` with wildcard or dynamic origin
+**Search for:** `Access-Control-Allow-Origin` with wildcard or dynamic origin
 
-**Vulnerable code:**
+**Vulnerable:**
 ```javascript
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -292,17 +292,16 @@ app.use((req, res, next) => {
 });
 ```
 
-**Why it is dangerous:** Setting wildcard origin with credentials allows any website to make authenticated requests to your API, stealing user data or performing actions on their behalf.
+**Danger:** Wildcard origin with credentials lets any website make authenticated requests, stealing user data or performing actions on their behalf.
 
-**How to recognize it:**
-- CORS middleware that reflects the `Origin` header without validation
-- Wildcard origin combined with credentials
-- A static list of allowed origins that includes overly broad domains
-- CORS headers set in multiple places (middleware + individual routes)
+**How to recognize:**
+- CORS middleware reflecting `Origin` without validation
+- Wildcard combined with credentials
+- Overly broad allowed origin list
+- CORS headers set in multiple places (middleware + routes)
 
 **Remediation:**
-- Maintain an explicit allowlist of trusted origins
-- Validate the `Origin` header against the allowlist before setting CORS headers:
+- Explicit allowlist of trusted origins:
   ```javascript
   const allowedOrigins = ['https://app.example.com', 'https://admin.example.com'];
   app.use((req, res, next) => {
@@ -314,68 +313,68 @@ app.use((req, res, next) => {
     next();
   });
   ```
-- Never use wildcard when credentials are involved
+- Never use wildcard with credentials
 
 ---
 
 ### JWT Issues
 
-**Pattern to search for:** `jwt.verify` with `none` algorithm, weak secrets, `jwt.decode` used for auth
+**Search for:** `jwt.verify` with `none` algorithm, weak secrets, `jwt.decode` used for auth
 
-**Vulnerable code:**
-- Accepting the `none` algorithm in jwt.verify
-- Using weak or short JWT secrets (dictionary words, short strings)
+**Vulnerable:**
+- Accepting `none` algorithm in jwt.verify
+- Weak/short JWT secrets (dictionary words, short strings)
 - Using `jwt.decode` instead of `jwt.verify` for authentication
 
-**Why it is dangerous:**
-- The `none` algorithm bypass allows attackers to forge tokens without knowing the secret
-- Weak secrets can be brute-forced
-- Using decode instead of verify accepts any token without validation
+**Danger:**
+- `none` algorithm bypass: forge tokens without knowing secret
+- Weak secrets: brute-forceable
+- Decode instead of verify: accepts any token without validation
 
-**How to recognize it:**
-- JWT libraries configured to accept the `none` algorithm
+**How to recognize:**
+- JWT libraries accepting `none` algorithm
 - Short or common JWT secrets
-- Using decode instead of verify for authentication
-- Missing validation of expiration, issuer, or audience claims
-- JWT payload containing sensitive data (passwords, PII)
+- Decode used for auth instead of verify
+- Missing expiration/issuer/audience claim validation
+- Sensitive data in JWT payload (passwords, PII)
 
 **Remediation:**
-- Always specify allowed algorithms explicitly:
+- Specify allowed algorithms explicitly:
   ```javascript
   const decoded = jwt.verify(token, publicKey, { algorithms: ['RS256'] });
   ```
-- Use strong, randomly generated secrets (32+ bytes for HS256)
+- Strong random secrets (32+ bytes for HS256)
 - Prefer asymmetric algorithms (RS256, ES256) for distributed systems
-- Always use verify, never decode for authentication
-- Validate all relevant claims: expiration, issuer, audience
-- Keep JWT payloads minimal -- they are readable by anyone who has the token
+- Always use verify, never decode for auth
+- Validate all claims: expiration, issuer, audience
+- JWT payloads are readable by anyone with the token -- keep them minimal
 
 ---
 
 ### Session Fixation
 
-**Pattern to search for:** session not regenerated after login, session ID in URLs
+**Search for:** session not regenerated after login, session ID in URLs
 
-**Vulnerable code:**
+**Vulnerable:**
 ```javascript
 app.post('/login', (req, res) => {
   if (authenticate(req.body.username, req.body.password)) {
-    req.session.userId = user.id;  // Sets user on existing session without regeneration
+    req.session.userId = user.id;  // Sets user on existing session
     res.redirect('/dashboard');
   }
 });
 ```
 
-**Why it is dangerous:** An attacker can obtain a session ID (e.g., by visiting the site), then trick a victim into using that session ID (via a link or cookie injection). When the victim logs in, the attacker's session ID is now authenticated, and the attacker can access the victim's account.
+**Danger:** Attacker obtains session ID, tricks victim into using it. When victim logs in, attacker's session is now authenticated.
 
-**How to recognize it:**
-- Login handlers that set authentication state on the existing session without regenerating the session ID
-- Session IDs in URLs (query parameters)
-- Accepting session IDs from both cookies and URL parameters
-- Not invalidating old sessions on logout
+**How to recognize:**
+- Login sets auth state without regenerating session ID
+- Session IDs in URL query parameters
+- Accepting session IDs from both cookies and URL params
+- Old sessions not invalidated on logout
 
 **Remediation:**
-- Regenerate the session ID after successful authentication:
+- Regenerate session ID after authentication:
   ```javascript
   req.session.regenerate(() => {
     req.session.userId = user.id;
@@ -390,24 +389,24 @@ app.post('/login', (req, res) => {
 
 ### Open Redirect
 
-**Pattern to search for:** `res.redirect(req.query`, `redirect`, `url`, `next` parameters
+**Search for:** `res.redirect(req.query`, params named `redirect`, `url`, `next`
 
-**Vulnerable code:**
+**Vulnerable:**
 ```javascript
 app.get('/redirect', (req, res) => {
   res.redirect(req.query.url);
 });
 ```
 
-**Why it is dangerous:** An attacker can craft a URL like `https://yoursite.com/redirect?url=https://evil.com` that appears to be from your domain but redirects to a malicious site. This is used for phishing attacks.
+**Danger:** URL like `https://yoursite.com/redirect?url=https://evil.com` appears from your domain but redirects to malicious site. Used for phishing.
 
-**How to recognize it:**
-- Redirect endpoints that use user input directly
-- URL parameters named `redirect`, `url`, `next`, `return_to`, `continue`
-- OAuth/callback URLs that redirect to user-specified locations
+**How to recognize:**
+- Redirect endpoints using user input directly
+- URL params named `redirect`, `url`, `next`, `return_to`, `continue`
+- OAuth/callback URLs redirecting to user-specified locations
 
 **Remediation:**
-- Validate the redirect target against an allowlist:
+- Validate against allowlist:
   ```javascript
   const allowedHosts = ['yoursite.com', 'app.yoursite.com'];
   const url = new URL(req.query.url, 'https://yoursite.com');
@@ -416,16 +415,16 @@ app.get('/redirect', (req, res) => {
   }
   res.redirect(req.query.url);
   ```
-- Use relative paths instead of absolute URLs when possible
-- If the redirect URL must be flexible, ensure it starts with `/` and does not start with `//`
+- Prefer relative paths over absolute URLs
+- Flexible redirects: ensure starts with `/`, not `//`
 
 ---
 
 ### Server-Side Request Forgery (SSRF)
 
-**Pattern to search for:** HTTP client calls with user-controlled URLs, `requests.get(user_url)`
+**Search for:** HTTP client calls with user-controlled URLs, `requests.get(user_url)`
 
-**Vulnerable code:**
+**Vulnerable:**
 ```python
 import requests
 url = request.args.get('url')
@@ -433,21 +432,21 @@ response = requests.get(url)
 return response.content
 ```
 
-**Why it is dangerous:** The server makes an HTTP request to a user-specified URL. This can be used to access internal services (metadata endpoints, internal APIs, databases) that are not exposed to the internet.
+**Danger:** Server requests user-specified URL. Can access internal services (metadata endpoints, internal APIs, databases) not exposed to the internet.
 
-**How to recognize it:**
+**How to recognize:**
 - HTTP client calls with user-controlled URLs
-- URL fetch/fetch proxy endpoints
-- Webhook testing tools that make requests to user-specified URLs
+- URL fetch/proxy endpoints
+- Webhook testing with user-specified URLs
 - Image/document import from URLs
 - PDF generation from URLs
 
 **Remediation:**
-- Use an allowlist of permitted domains/URLs
-- Block requests to internal IP ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16)
-- Block cloud metadata endpoints (169.254.169.254 for AWS/GCP/Azure)
-- Use a separate network segment for outbound requests
-- Validate URL scheme (only allow https://, not other protocols)
+- Allowlist permitted domains/URLs
+- Block internal IP ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, 169.254.0.0/16
+- Block cloud metadata: 169.254.169.254 (AWS/GCP/Azure)
+- Separate network segment for outbound requests
+- Validate URL scheme (https:// only)
 
 ---
 
@@ -455,30 +454,30 @@ return response.content
 
 ### Step-by-Step Approach
 
-1. **Identify the language and framework** of the code being audited
-2. **Scan for the patterns listed above** using targeted searches
-3. **Trace user input** from entry points (request parameters, headers, body, files) to dangerous sinks (queries, commands, HTML output, file paths)
-4. **For each match**, determine if the input is truly user-controlled and untrusted
-5. **Assess the impact** of successful exploitation
-6. **Document findings** with the pattern name, location, and remediation
+1. Identify language and framework
+2. Scan for patterns above using targeted searches
+3. Trace user input from entry points to dangerous sinks
+4. For each match, determine if input is truly user-controlled and untrusted
+5. Assess exploitation impact
+6. Document findings with pattern name, location, and remediation
 
-### Common Entry Points to Trace
+### Common Entry Points
 
-- HTTP request parameters, query strings, and headers
+- HTTP request params, query strings, headers
 - Request body (JSON, form data, multipart uploads)
 - URL path segments
 - Cookie values
 - File uploads (filename and content)
 - WebSocket messages
-- Environment variables that can be influenced by external input
+- Externally influenceable environment variables
 
 ### Common Dangerous Sinks
 
-- Database queries (SQL, NoSQL, ORM raw queries)
+- Database queries (SQL, NoSQL, ORM raw)
 - Shell command execution
 - HTML output (rendering, DOM manipulation)
 - File system operations (read, write, delete)
-- Network requests (HTTP clients, socket connections)
+- Network requests (HTTP clients, sockets)
 - Deserialization functions
 - Template rendering engines
 - Authentication and authorization logic
