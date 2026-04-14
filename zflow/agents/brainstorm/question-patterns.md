@@ -1,42 +1,22 @@
 # Question Patterns — Multiple-Choice Templates & Examples
 
-Reference document for the Socratic interviewer agent. Contains question format
-templates and realistic examples for each brainstorm dimension.
+Templates and examples for the Socratic interviewer agent's brainstorm dimensions.
 
 ---
 
 ## Plain Language Rules
 
-These questions are for developers of all experience levels. Follow these rules
-for every question you ask:
-
-1. **Use everyday words.** "Database table" not "Prisma model." "Error
-   message shown to the user" not "centralized error handler with toast
-   notification pattern." "Checking user input" not "Zod validation."
-
-2. **Explain what things mean in context.** Don't assume the developer knows
-   what "REST endpoint" or "WebSocket" means. Briefly explain: "an API
-   endpoint (a URL your app calls to get or send data)" or "WebSocket (a way
-   to push updates to the browser instantly)."
-
-3. **Say why a choice matters.** Before listing options, give one sentence
-   about what this decision affects. "This determines how fast users see
-   updates" is better than assuming they know why real-time matters.
-
-4. **Describe outcomes, not implementations.** "Users see a small red dot
-   when they have new notifications" beats "In-app notification badge with
-   session-based persistence."
-
-5. **Keep recommendations short and clear.** "I'd go with (A) because your
-   project already handles this — no new tools needed" beats a technical
-   justification that requires domain knowledge.
+1. **Use everyday words.** "Database table" not "Prisma model." "Error message shown to the user" not "centralized error handler with toast notification pattern." "Checking user input" not "Zod validation."
+2. **Explain terms in context.** "API endpoint (a URL your app calls to get or send data)" or "WebSocket (a way to push updates to the browser instantly)."
+3. **Say why a choice matters.** "This determines how fast users see updates" vs. assuming they know why real-time matters.
+4. **Describe outcomes, not implementations.** "Users see a small red dot when they have new notifications" vs. "In-app notification badge with session-based persistence."
+5. **Keep recommendations short.** "I'd go with (A) because your project already handles this — no new tools needed."
 
 ---
 
 ## Core Pattern: Multiple-Choice with Explanations
 
-Use this format by default. Every option includes what it means, when it's
-appropriate, trade-offs, and a grounded recommendation.
+Default format. Every option includes meaning, appropriateness, trade-offs, and grounded recommendation.
 
 ```
 {Context sentence tying the question to the codebase}
@@ -62,18 +42,16 @@ My recommendation: ({letter}) — {one-sentence reasoning grounded in codebase}
 ```
 
 **Rules:**
-- Every option references actual project context (file names, existing patterns,
-  tech choices already made)
-- The recommendation always has reasoning, but the user always decides
-- The "Something else" escape hatch is always included
-- Options are ordered by recommendation strength (recommended first)
+- Every option references actual project context (file names, existing patterns, tech choices)
+- Recommendation always has reasoning; user always decides
+- "Something else" escape hatch always included
+- Options ordered by recommendation strength (recommended first)
 
 ---
 
 ## Open-Ended Pattern (Use Sparingly)
 
-Use only when the topic is genuinely open — no reasonable set of options covers
-the likely answers.
+Only when genuinely open — no reasonable option set covers likely answers.
 
 ```
 {Question}
@@ -94,7 +72,7 @@ Some possibilities to consider:
 
 ### Dimension 1: Problem & Users
 
-**Format**: Open-ended (genuinely different per project)
+**Format**: Open-ended
 
 ```
 Who are the primary users of this feature, and what problem does it solve for
@@ -151,19 +129,18 @@ project uses (Next.js, a PostgreSQL database, and deployed on Vercel):
      → Recommended: your current setup is solid and well-tested.
 
   B) **Don't break anything that exists today**
-     Everything that works now must keep working the same way. Other apps or
-     systems that talk to your app shouldn't notice a change.
+     Everything that works now must keep working. Other apps or systems that
+     talk to your app shouldn't notice a change.
      → Consider if: other teams or external apps depend on your app.
 
   C) **Need it done by a certain date**
-     There's a deadline — {N} days. We can simplify the first version to
-     meet it.
+     There's a deadline — {N} days. Simplify the first version to meet it.
      → Consider if: there's a specific date or event driving this.
 
   D) **Something else**
      What constraints do you have?
 
-My recommendation: (A) + (C) — your current tools can handle this without
+My recommendation: (A) + (C) — your current tools handle this without
 adding anything new, and shipping a simple first version avoids building too
 much before getting feedback.
 ```
@@ -223,8 +200,8 @@ How much should we build in the first version?
 
   C) **Full — A few weeks**
      Everything: notification preferences, email digests, instant
-     delivery (using a technology called WebSocket), and a full
-     notification center with search and filters.
+     delivery (using WebSocket), and a full notification center with
+     search and filters.
      → Consider if: this is a core part of your product, not a nice-to-have.
 
 My recommendation: (A) — start small. Ship a simple version first, see if
@@ -239,8 +216,8 @@ people use it, then invest in the bigger version if they do.
 Does this feature involve any user interface changes?
 
   A) **New UI components**
-     New pages, sections, or interactive elements the user will see and interact
-     with.
+     New pages, sections, or interactive elements the user will see and
+     interact with.
      → If yes, we'll flag this for design-first development (Pencil.dev).
 
   B) **Modifications to existing UI**
@@ -399,12 +376,9 @@ old version is actively causing problems.
 
 ## Usage Guidelines
 
-- **Don't ask all dimensions** — select the 6-8 most relevant ones
+- **Select 6-8 most relevant dimensions** — don't ask all 10
 - **Skip dimensions the user already answered** in their initial description
-- **Adapt the examples** — these are templates, not scripts. Replace the
-  hypothetical project context with the actual project's details
+- **Adapt examples** — these are templates, not scripts. Replace hypothetical context with actual project details
 - **Order matters** — Problem & Users first, Migration last
-- **If a question feels forced**, skip it. Better 6 great questions than
-  10 mediocre ones
-- **Track question count** — after 8 questions, start wrapping up. If critical
-  gaps remain, ask at most 2 more
+- **Skip forced questions** — better 6 great questions than 10 mediocre ones
+- **Track question count** — after 8, start wrapping up. If critical gaps remain, ask at most 2 more
