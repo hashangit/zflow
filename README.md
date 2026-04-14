@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt="Status">
-  <img src="https://img.shields.io/badge/version-v0.5.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.0.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-orange.svg" alt="License">
   <img src="https://img.shields.io/badge/agents-35-blueviolet.svg" alt="Agents">
 </p>
@@ -475,6 +475,33 @@ ZFlow builds on two foundational ideas:
 ---
 
 ## 🚀 Changelog
+
+### v1.0.0 (2026-04-14) — Phase Document Architecture & Stable Release
+
+**First stable release** — marks the transition from experimental workflow system to a production-ready, platform-agnostic skill.
+
+#### 🏗️ Phase Document Architecture
+- **Migrated from sub-skill invocation to phase document reading** — phases are now simple `.md` files in `phases/` that the orchestrator reads and follows directly
+- **Platform agnostic execution** — works on any AI coding platform that can read files (Claude Code, Gemini CLI, Copilot, OpenCode, etc.)
+- **Portable path resolution** — all internal references use `${CLAUDE_SKILL_DIR}` runtime variable, fixing brittle relative paths
+- **Simplified structure** — 9 skill files consolidated into 9 leaner phase docs (30-50% smaller each), eliminating duplicate frontmatter and invocation metadata
+- **Clearer orchestrator role** — "read phases/X.md, follow instructions" instead of "invoke sub-skill X via harness mechanism Y"
+
+#### 📋 User Experience Improvements
+- Faster phase transitions — no skill invocation overhead
+- Easier customization — edit `.md` files directly
+- Better debugging — single source of truth per phase
+- Uniform paths — all phase docs at `phases/<phase>.md`
+
+#### 📦 Added
+- `zflow/CHANGELOG.md` — version history tracking
+- `zflow/RELEASE.md` — release notes and migration guide
+- `zflow/.claude-plugin/` — plugin configuration directory
+
+#### Backward Compatibility
+External workflow unchanged — same phases, same artifacts, same human gates. Internal restructuring only.
+
+---
 
 ### v0.5.0 (2026-04-14) — Adaptive Orchestration & Modular Refactor
 
