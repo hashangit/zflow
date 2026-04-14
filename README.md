@@ -1,4 +1,11 @@
-# ZFlow
+# <p align="center">🌀 ZFlow</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt="Status">
+  <img src="https://img.shields.io/badge/version-v0.5.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/license-MIT-orange.svg" alt="License">
+  <img src="https://img.shields.io/badge/agents-35-blueviolet.svg" alt="Agents">
+</p>
 
 An adaptive, multi-agent development workflow system that orchestrates specialized AI agents through a complexity-aware, phase-gated software development lifecycle. Works with any skills-capable AI harness — Claude Code, zClaw, Gemini CLI, OpenCode, and others.
 
@@ -6,7 +13,7 @@ Instead of a single AI agent trying to do everything, ZFlow dynamically construc
 
 ---
 
-## Why ZFlow?
+## 🧩 Why ZFlow?
 
 Building software with AI agents works best when the workflow matches the task and has a clear, narrow focus. A brainstorming agent should think differently than an implementation agent. A security reviewer needs an adversarial mindset that a code-quality checker doesn't. But a trivial bug shouldn't require the same overhead as a major architectural change.
 
@@ -22,15 +29,32 @@ ZFlow applies this principle systematically:
 
 ---
 
-## Two Workflows
+## 🔄 Two Workflows
 
 ZFlow provides two distinct workflows depending on what you're doing:
 
-### Development Workflow (`/using-zflow`)
+### 🔨 Development Workflow (`/using-zflow`)
 
 For building new features, planning functionality, or doing structured end-to-end development.
 
+```mermaid
+graph LR
+    B[Brainstorm] --> R[Research]
+    R --> D[Design]
+    D --> Rev[Review]
+    Rev --> UI{UI work?}
+    UI -- Yes --> UD[UI Design]
+    UD --> I[Implement]
+    UI -- No --> I
+    I --> QA[QA Audit]
+    QA --> Doc[Document]
+    
+    style B fill:#f9f,stroke:#333,stroke-width:2px
+    style I fill:#bbf,stroke:#333,stroke-width:2px
+    style QA fill:#bfb,stroke:#333,stroke-width:2px
 ```
+
+```text
 Brainstorm → Research → Design → Review → [UI Design] → Implement → QA → Document
     │            │          │         │          │            │        │        │
  scope.md   research   solution  reviewed   ui-design    code +    qa.md   commit +
@@ -38,11 +62,24 @@ Brainstorm → Research → Design → Review → [UI Design] → Implement → 
                                   .md                    report.md   audit
 ```
 
-### Debug Workflow (`/using-zflow-debug`)
+### 🐞 Debug Workflow (`/using-zflow-debug`)
 
 For fixing bugs, investigating issues, or resolving regressions.
 
+```mermaid
+graph LR
+    Rep[Reproduce] --> Inv[Investigate]
+    Inv --> RC[Root Cause]
+    RC --> DF[Design Fix]
+    DF --> IF[Implement]
+    IF --> Ver[Verify]
+    
+    style Rep fill:#f96,stroke:#333,stroke-width:2px
+    style RC fill:#f66,stroke:#333,stroke-width:2px
+    style Ver fill:#6f6,stroke:#333,stroke-width:2px
 ```
+
+```text
 Reproduce → Investigate → Analyze → Design Fix → Implement Fix → Verify
      │            │           │          │              │            │
  repro.md   investigation  root      fix-          code +       verification
@@ -51,7 +88,7 @@ Reproduce → Investigate → Analyze → Design Fix → Implement Fix → Verif
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
@@ -80,11 +117,9 @@ cp -r zflow/ ~/.zclaw/skills/zflow/
 cp -r zflow/ ~/.gemini/skills/zflow/
 ```
 
-That's it — no build step, no dependencies to install, no configuration required to start.
-
 ### Your First Run
 
-```
+```bash
 /using-zflow I want to add a notification system to my app
 ```
 
@@ -97,105 +132,95 @@ ZFlow will:
 6. Run a full QA sweep including security audit
 7. Update docs and prepare a commit
 
-Each phase pauses for your approval before continuing. You stay in control.
-
 ---
 
-## Development Workflow In Detail
+## 🏗️ Development Workflow In Detail
 
 ### Phase 0: Brainstorm
-
-**What happens**: A Socratic interviewer agent reads your codebase for context, then asks you guided questions — one at a time, in multiple-choice format with recommendations grounded in your actual project. It assesses scope, surfaces ambiguities, and helps decompose complex requests.
-
-**You'll see**: Questions like *"Based on your current auth setup, how should we handle permissions?"* with options that reference your actual codebase patterns.
-
-**Output**: `scope.md` — what needs to be built and why, but not how.
+> **Action**: A Socratic interviewer agent reads your codebase for context, then asks you guided questions — one at a time, in multiple-choice format with recommendations grounded in your actual project. It assesses scope, surfaces ambiguities, and helps decompose complex requests.
+>
+> **Feedback**: Questions like *"Based on your current auth setup, how should we handle permissions?"* with options that reference your actual codebase patterns.
+>
+> **Artifact**: `scope.md` — what needs to be built and why, but not how.
 
 ### Phase 1: Research
-
-**What happens**: 5-6 parallel agents fan out across your codebase — one maps architecture, another traces dependencies, another finds existing patterns, another surveys test infrastructure, and another finds related code. If UI work is detected, a design system scout joins the swarm.
-
-**You'll see**: *"Deploying 6 parallel research agents..."* then *"All agents complete. Merging findings..."*
-
-**Output**: `research-report.md` — real codebase context organized by dimension.
+> **Action**: 5-6 parallel agents fan out across your codebase — one maps architecture, another traces dependencies, another finds existing patterns, another surveys test infrastructure, and another finds related code. If UI work is detected, a design system scout joins the swarm.
+>
+> **Feedback**: *"Deploying 6 parallel research agents..."* then *"All agents complete. Merging findings..."*
+>
+> **Artifact**: `research-report.md` — real codebase context organized by dimension.
 
 ### Phase 2: Design
-
-**What happens**: A senior architect agent maps your scope against the research findings, then proposes 2-3 solution approaches with trade-offs. You pick one. Then the design is presented section-by-section — architecture, components, data flow, errors, testing, tasks — each approved before the next.
-
-**You'll see**: Approach comparisons like *"Extend Existing Service (Recommended)"* vs *"New Microservice"* with effort, risk, and codebase fit ratings.
-
-**Output**: `solution.md` — the full technical design with task breakdown and dependency graph.
+> **Action**: A senior architect agent maps your scope against the research findings, then proposes 2-3 solution approaches with trade-offs. You pick one. Then the design is presented section-by-section — architecture, components, data flow, errors, testing, tasks — each approved before the next.
+>
+> **Feedback**: Approach comparisons like *"Extend Existing Service (Recommended)"* vs *"New Microservice"* with effort, risk, and codebase fit ratings.
+>
+> **Artifact**: `solution.md` — the full technical design with task breakdown and dependency graph.
 
 ### Phase 3: Review
-
-**What happens**: 5 fresh agents — with no prior context bias — examine your scope and solution from different angles: missing requirements, over-engineering, security holes, performance concerns, and architecture alignment. The coordinator then runs a structural self-review for completeness and consistency.
-
-**Key reviewer**: The `overengineering-critic` specifically enforces simplicity — *would a senior engineer say this is overcomplicated?*
-
-**Output**: `reviewed-solution.md` — your solution with adjustments and a full appendix of reviewer findings.
+> **Action**: 5 fresh agents — with no prior context bias — examine your scope and solution from different angles: missing requirements, over-engineering, security holes, performance concerns, and architecture alignment. The coordinator then runs a structural self-review for completeness and consistency.
+>
+> **Feedback**: The `overengineering-critic` specifically enforces simplicity — *would a senior engineer say this is overcomplicated?*
+>
+> **Artifact**: `reviewed-solution.md` — your solution with adjustments and a full appendix of reviewer findings.
 
 ### Phase 3.5: UI Design (Conditional)
-
-**What happens**: Only triggered when your scope involves UI work. If [Pencil.dev](https://pencil.dev) MCP tools are available, a design agent creates the interface on a visual canvas — building design tokens, components, and screen layouts — before any implementation code is written. You approve designs via screenshots.
-
-**If Pencil.dev is not available**: You're asked whether to install it or proceed with standard code-first UI development.
-
-**Output**: `ui-design-report.md` — design tokens, component specs, layout descriptions, and exported reference images.
+> **Action**: Only triggered when your scope involves UI work. If [Pencil.dev](https://pencil.dev) MCP tools are available, a design agent creates the interface on a visual canvas — building design tokens, components, and screen layouts — before any implementation code is written. You approve designs via screenshots.
+>
+> **Feedback**: If Pencil.dev is not available: You're asked whether to install it or proceed with standard code-first UI development.
+>
+> **Artifact**: `ui-design-report.md` — design tokens, component specs, layout descriptions, and exported reference images.
 
 ### Phase 4: Implement
-
-**What happens**: Implementation agents are deployed in parallel, organized by dependency tiers. Tier 0 tasks (no dependencies) run first, then Tier 1, and so on. Each agent gets a focused task slice with success criteria and operates under surgical change constraints.
-
-**You'll see**: *"Tier 0: 3 agents running..."* then *"Tier 1: 2 agents running..."*
-
-**Output**: Working code + `impl-report.md` — every file changed and any deviations from the design.
+> **Action**: Implementation agents are deployed in parallel, organized by dependency tiers. Tier 0 tasks (no dependencies) run first, then Tier 1, and so on. Each agent gets a focused task slice with success criteria and operates under surgical change constraints.
+>
+> **Feedback**: *"Tier 0: 3 agents running..."* then *"Tier 1: 2 agents running..."*
+>
+> **Artifact**: Working code + `impl-report.md` — every file changed and any deviations from the design.
 
 ### Phase 5: QA
-
-**What happens**: 6-7 parallel QA agents check different dimensions: completeness, UX, code quality, test coverage, design alignment, and a **deep OWASP Top 10 security audit**. If UI work was done, a visual QA agent compares implementation against designs.
-
-**Issues are categorized**: Critical (security), Blocker, Major, Minor, or Note. Critical and blocker issues loop back to Phase 4 for targeted fixes.
-
-**Output**: `qa-report.md` — all findings by severity.
+> **Action**: 6-7 parallel QA agents check different dimensions: completeness, UX, code quality, test coverage, design alignment, and a **deep OWASP Top 10 security audit**. If UI work was done, a visual QA agent compares implementation against designs.
+>
+> **Feedback**: Issues are categorized: Critical (security), Blocker, Major, Minor, or Note. Critical and blocker issues loop back to Phase 4 for targeted fixes.
+>
+> **Artifact**: `qa-report.md` — all findings by severity.
 
 ### Phase 6: Document
-
-**What happens**: A documentation agent updates relevant docs, CHANGELOG, and README based on everything produced. Generates a conventional commit message and stages changes.
-
-**Output**: Updated documentation + commit (requires your approval).
+> **Action**: A documentation agent updates relevant docs, CHANGELOG, and README based on everything produced. Generates a conventional commit message and stages changes.
+>
+> **Artifact**: Updated documentation + commit (requires your approval).
 
 ---
 
-## Debug Workflow In Detail
+## 🛠️ Debug Workflow In Detail
 
 ### Phase D0: Reproduce
-
-Agent confirms the bug is reproducible, documents exact steps, captures error output, and identifies the minimal reproduction case.
+> **Action**: Agent confirms the bug is reproducible, documents exact steps, captures error output, and identifies the minimal reproduction case.
+> **Artifact**: `repro-report.md`
 
 ### Phase D1: Investigate
-
-5 parallel agents trace the issue: backward from the symptom (call chain), backward from invalid data (data flow), similar patterns in the codebase, recent git history, and **security impact assessment** (can this be exploited?).
+> **Action**: 5 parallel agents trace the issue: backward from the symptom (call chain), backward from invalid data (data flow), similar patterns in the codebase, recent git history, and **security impact assessment** (can this be exploited?).
+> **Artifact**: `investigation.md`
 
 ### Phase D2: Root Cause Analysis
-
-A deliberation agent synthesizes all findings to identify the true root cause — distinguishing symptom from cause with supporting evidence.
+> **Action**: A deliberation agent synthesizes all findings to identify the true root cause — distinguishing symptom from cause with supporting evidence.
+> **Artifact**: `root-cause.md`
 
 ### Phase D3: Design Fix
-
-3 parallel reviewers check the proposed fix: does it address root cause (not just symptom)? Does it introduce regressions? Is it the minimal effective change?
+> **Action**: 3 parallel reviewers check the proposed fix: does it address root cause (not just symptom)? Does it introduce regressions? Is it the minimal effective change?
+> **Artifact**: `fix-design.md`
 
 ### Phase D4: Implement Fix
-
-Implementation agent applies the fix. If 3 attempts fail, the issue escalates to architectural review.
+> **Action**: Implementation agent applies the fix. If 3 attempts fail, the issue escalates to architectural review.
+> **Artifact**: Working code + `fix-impl-report.md`
 
 ### Phase D5: Verify
-
-4 parallel verifiers confirm: bug is fixed, no regressions, similar patterns are checked, and no security vulnerabilities were introduced.
+> **Action**: 4 parallel verifiers confirm: bug is fixed, no regressions, similar patterns are checked, and no security vulnerabilities were introduced.
+> **Artifact**: `verification.md`
 
 ---
 
-## Agent Inventory
+## 🤖 Agent Inventory
 
 35 specialized agents, each with a focused mission:
 
@@ -272,7 +297,7 @@ Implementation agent applies the fix. If 3 attempts fail, the issue escalates to
 
 ---
 
-## Security
+## 🔒 Security
 
 Security isn't a checkbox in ZFlow — it's a dedicated workflow dimension:
 
@@ -284,14 +309,12 @@ Security isn't a checkbox in ZFlow — it's a dedicated workflow dimension:
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
 ZFlow creates a `.zflow/` workspace in your project root on first run. Edit `.zflow/config.json` to customize:
 
 ### Phase Gates
-
 Control which phases pause for your approval (`"human"`) and which proceed automatically (`"auto"`):
-
 ```json
 {
   "workflow": {
@@ -309,9 +332,7 @@ Control which phases pause for your approval (`"human"`) and which proceed autom
 ```
 
 ### Phase Skipping
-
 For smaller tasks, skip phases you don't need:
-
 ```json
 {
   "workflow": {
@@ -321,9 +342,7 @@ For smaller tasks, skip phases you don't need:
 ```
 
 ### Parallelism
-
 Control how many agents run simultaneously:
-
 ```json
 {
   "workflow": {
@@ -333,7 +352,6 @@ Control how many agents run simultaneously:
 ```
 
 ### Security Settings
-
 ```json
 {
   "security": {
@@ -346,16 +364,15 @@ Control how many agents run simultaneously:
 ```
 
 ### Full Defaults
-
 See the default configuration in the [design plan](zflow-design-plan.md#111-user-configurable-options).
 
 ---
 
-## Workspace Structure
+## 📂 Workspace Structure
 
 When ZFlow runs, it creates a `.zflow/` directory to track progress:
 
-```
+```text
 .zflow/
 ├── current-phase.json          # Active phase tracking
 ├── config.json                 # Your preferences
@@ -383,9 +400,9 @@ Resume anytime — if you interrupt ZFlow and run `/using-zflow` again, it picks
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
-```
+```text
 zflow/                              # Copy this folder to your harness's skills directory
 ├── SKILL.md                        # Main orchestrator entry point
 ├── LICENSE.txt                     # MIT License
@@ -422,7 +439,7 @@ zflow/                              # Copy this folder to your harness's skills 
 
 ---
 
-## Design Principles
+## 📜 Design Principles
 
 These principles shape every agent's behavior in ZFlow:
 
@@ -438,18 +455,16 @@ These rules are enforced at three levels: embedded in every agent's prompt pream
 
 ---
 
-## Commands
+## 💻 Commands
 
 | Command | Workflow |
 |---------|----------|
 | `/using-zflow` | Development workflow — brainstorm through commit |
 | `/using-zflow-debug` | Debug workflow — reproduce through verify |
 
-These are heavyweight workflows that should run when you explicitly choose them. The exact invocation syntax depends on your harness — slash commands in Claude Code and zClaw, skill activation in Gemini CLI, etc.
-
 ---
 
-## Acknowledgments
+## 🤝 Acknowledgments
 
 ZFlow builds on two foundational ideas:
 
@@ -459,9 +474,7 @@ ZFlow builds on two foundational ideas:
 
 ---
 
----
-
-## Changelog
+## 🚀 Changelog
 
 ### v0.5.0 (2026-04-14) — Adaptive Orchestration & Modular Refactor
 
@@ -508,6 +521,6 @@ This major update transforms ZFlow from a static 8-phase pipeline into an **adap
 
 ---
 
-## License
+## ⚖️ License
 
 [MIT](LICENSE.txt) — use it, modify it, ship it.
