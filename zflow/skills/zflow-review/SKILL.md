@@ -29,7 +29,8 @@ If either file is missing, report the error and halt. Do not proceed without bot
 
 ### Step 1: Spawn 5 Parallel Review Agents
 
-Spawn all 5 agents in a SINGLE message to maximize parallelism. Each agent receives `scope.md` and `solution.md` as context. Each agent uses `context: fork` so they operate independently.
+Spawn all 5 agents in a SINGLE message to maximize parallelism. Each agent
+runs independently with only the documents you explicitly include in its prompt.
 
 **Agents to spawn (all in parallel):**
 
@@ -41,11 +42,11 @@ Spawn all 5 agents in a SINGLE message to maximize parallelism. Each agent recei
 | performance-reviewer | `agents/review/performance-reviewer.md` | Performance bottlenecks, scaling concerns |
 | alignment-checker | `agents/review/alignment-checker.md` | Architecture consistency, naming, conventions |
 
-For each agent:
-1. Read the agent prompt from the specified file
-2. Prepend `{Include: agents/_shared/karpathy-preamble.md}` content (the Karpathy behavioral rules)
-3. Provide `scope.md` and `solution.md` content as the input context
-4. Spawn the agent with `context: fork`
+For each agent, construct a prompt string containing:
+1. Read `agents/_shared/karpathy-preamble.md` and include its contents (the Karpathy behavioral rules)
+2. Read the agent's prompt file (e.g., `agents/review/gap-detector.md`) and include its contents
+3. Include the full contents of `scope.md` and `solution.md` as input context
+4. Call the Agent tool with that prompt and a short description
 
 ### Step 2: Merge Findings and Self-Review
 

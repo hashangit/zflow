@@ -75,7 +75,7 @@ Both commands require explicit invocation (the `disable-model-invocation: true` 
 | related-code-finder | Code affected by the planned changes |
 | ui-system-scout (conditional) | Design system, components, tokens |
 
-Each agent operates in a forked context with focused instructions. The coordinator merges all reports into a unified research document with cross-cutting "Key Findings."
+Each agent operates independently with only the input documents the coordinator explicitly passes to it. The coordinator merges all reports into a unified research document with cross-cutting "Key Findings."
 
 ---
 

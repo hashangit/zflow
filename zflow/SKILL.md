@@ -140,63 +140,10 @@ Before any phase runs, create the `.zflow/` workspace in the project root.
 
 ### Default Configuration
 
-Write this as `.zflow/config.json` on first run. Users may edit it between
-runs to customize behavior.
+For the full default config schema, read `references/default-config.md`.
 
-```json
-{
-  "workflow": {
-    "gates": {
-      "brainstorm": "human",
-      "research": "auto",
-      "design": "human",
-      "review": "human",
-      "ui_design": "human",
-      "implement": "auto",
-      "qa": "human",
-      "document": "auto"
-    },
-    "skip_phases": [],
-    "max_parallel_agents": 5
-  },
-  "ui": {
-    "pencil_enabled": "auto",
-    "design_system": null,
-    "component_library": null
-  },
-  "security": {
-    "audit_depth": "full",
-    "owasp_categories": "all",
-    "dependency_scan": true,
-    "secrets_scan": true,
-    "security_severity_threshold": "medium"
-  },
-  "debug": {
-    "escalation_threshold": 3,
-    "auto_run_tests": true,
-    "security_impact_assessment": true,
-    "gates": {
-      "reproduce": "auto",
-      "investigate": "auto",
-      "analyze": "human",
-      "design_fix": "human",
-      "implement_fix": "auto",
-      "verify": "auto"
-    }
-  },
-  "karpathy": {
-    "simplicity_enforcement": "strict",
-    "surgical_changes_enforcement": "strict",
-    "require_success_criteria": true
-  },
-  "preferences": {
-    "commit_style": "conventional",
-    "test_command": "npm test",
-    "lint_command": "npm run lint",
-    "language": "typescript"
-  }
-}
-```
+Write `.zflow/config.json` on first run. Users may edit it between runs to
+customize behavior.
 
 ### Reading Configuration
 
@@ -219,50 +166,15 @@ Before each phase, read `.zflow/config.json` to check:
 
 ## Pencil.dev Detection
 
-### Detection Method
-
 At runtime, check whether `mcp__pencil__` prefixed tools are available. This
 determines whether Phase 3.5 (UI Design) can use the full Pencil.dev flow.
+For detailed detection steps and the decision flow, read `references/pencil-integration.md`.
 
-**Detection steps:**
-
-1. After Phase 0 (Brainstorm) completes, check `scope.md` for `ui_work: true`.
-2. If UI work is flagged, attempt to detect Pencil.dev availability.
-3. Detection: Check if `mcp__pencil__get_editor_state` tool is callable.
-   If the tool listing contains any `mcp__pencil__` prefixed tools,
-   Pencil.dev is available.
-
-### Decision Flow
-
-```
-scope.md has ui_work: true?
-    |
-    +-- No  -> Skip Phase 3.5 entirely
-    |
-    +-- Yes -> Pencil.dev MCP tools available?
-                  |
-                  +-- Yes -> Set pencil_available: true
-                  |          Invoke skills/zflow-ui-design/SKILL.md
-                  |
-                  +-- No  -> Ask user:
-                            "Your scope includes UI work. Pencil.dev enables
-                             design-first development with a visual canvas.
-                             Would you like to:"
-                             [A] Install Pencil.dev and use design-first flow
-                             [B] Proceed without it (standard code-first UI)
-
-                             If [A] -> Guide installation, then invoke Phase 3.5
-                             If [B] -> Skip Phase 3.5, proceed to Phase 4
-```
-
-### Without Pencil.dev
-
-When Pencil.dev is not available and the user declines installation:
-- Phase 3.5 is skipped
-- Implementation agents work from text-based component specs in
-  `reviewed-solution.md`
-- The `ui-visual-qa` QA agent is skipped (no design reference)
-- The `ux-reviewer` QA agent gets expanded scope for visual consistency
+**Quick summary:**
+1. After Phase 0, check `scope.md` for `ui_work: true`
+2. If UI work is flagged, check if `mcp__pencil__` tools are available
+3. If available: invoke Phase 3.5. If not: ask user to install or skip
+4. When Pencil.dev is unavailable and user declines, Phase 3.5 is skipped
 
 ---
 
@@ -491,245 +403,79 @@ Agents: regression verifier, fix verifier, pattern verifier, security verifier.
 
 Every phase transition follows this protocol:
 
-```
-1. PHASE COMPLETES
-   Sub-skill finishes and writes output artifact
-
-2. ARTIFACT VALIDATION
-   - Output file exists at expected path
-   - File is non-empty and not boilerplate
-   - Required sections are populated
-
-3. UPDATE TRACKING
-   - Write .zflow/phases/<NN>-<phase>/phase-meta.json:
-     {
-       "phase": "<name>",
-       "status": "completed",
-       "started_at": "<ISO 8601>",
-       "completed_at": "<ISO 8601>",
-       "agent_count": <N>,
-       "output_artifact": "<filename>"
-     }
-   - Update .zflow/current-phase.json with next phase
-
-4. GATE CHECK
-   Read config.json for current phase gate setting:
-   - "human" → Present summary to user, ask for approval
-   - "auto"  → Proceed if artifact validation passes
-
-5. NEXT PHASE
-   Invoke the next sub-skill, passing the output artifact path(s)
-```
-
-### Human Gate Prompt
-
-When a human gate is required:
-
-```
-## Phase Complete: {phase_name}
-
-**Output**: {artifact_path}
-**Duration**: {elapsed}
-**Agents Used**: {count}
-
-### Summary
-{2-3 sentence summary of what was produced}
-
-### Key Decisions
-- {decision 1}
-- {decision 2}
-
-Ready to proceed to {next_phase_name}?
-
-  [A] Approve — proceed to next phase
-  [B] Request changes — I'll provide feedback
-  [C] Abort workflow
-```
-
-### Artifact Validation Checklist
-
-For each phase, verify the output has required sections:
-
-| Phase | Artifact | Required Sections |
-|-------|----------|-------------------|
-| Brainstorm | `scope.md` | Problem Statement, Success Criteria, Constraints, Scope Boundaries, MVP Definition, UI Work Flag |
-| Research | `research-report.md` | Architecture Findings, Dependency Map, Patterns, Test Infrastructure, Key Findings synthesis |
-| Design | `solution.md` | Chosen Approach, Architecture Overview, Component Breakdown, Data Flow, Task Breakdown with Dependencies |
-| Review | `reviewed-solution.md` | All solution sections + Reviewer Findings appendix |
-| UI Design | `ui-design-report.md` | Design Tokens, Component Specs, Screen Layouts, Accessibility Requirements |
-| Implement | `impl-report.md` | Task Status, Files Changed, Deviations from Design |
-| QA | `qa-report.md` | Issues by Severity, Completeness Assessment, Security Findings |
-| Document | commit | CHANGELOG entry, Updated docs |
-
-If validation fails, report the specific missing sections and ask the
-sub-skill to address them before proceeding.
+1. **Phase completes** — sub-skill finishes and writes output artifact
+2. **Artifact validation** — output exists, non-empty, required sections populated.
+   For the per-phase validation checklist, read `references/quick-reference.md`.
+3. **Update tracking** — write `phase-meta.json` with status, timestamps, agent count.
+   Update `current-phase.json` with next phase.
+4. **Gate check** — read config for gate setting: `"human"` presents summary to user,
+   `"auto"` proceeds if validation passes. For the human gate prompt template,
+   read `references/quick-reference.md`.
+5. **Next phase** — invoke the next sub-skill with output artifact paths
 
 ---
 
 ## Status Reporting
 
-### Current Status
-
-At any point, the user can ask "status" or "where are we?" Report:
-
-```
-## ZFlow Status
-
-**Workflow**: {dev | debug}
-**Current Phase**: {phase_name} (Phase {index})
-**Status**: {initialized | in_progress | awaiting_gate | completed}
-
-### Completed Phases
-{list of completed phases with artifact paths}
-
-### Current Phase Progress
-{summary of what's happening in the active phase}
-
-### Upcoming Phases
-{list of remaining phases}
-
-### Configuration
-- Gate mode: {human/auto per phase}
-- UI work: {detected/not detected}
-- Pencil.dev: {available/unavailable/not checked}
-```
-
-### Progress Indicators
+When the user asks "status" or "where are we?", report:
+- Workflow type (dev/debug), current phase, status
+- Completed phases with artifact paths
+- Current phase progress summary
+- Upcoming phases and configuration state
 
 During each phase, provide brief progress updates:
-- For interactive phases: natural conversation flow
-- For swarm phases: "Deploying {N} parallel agents..." then
-  "All agents complete. Merging findings..."
-- For tiered phases: "Tier {N}: {count} agents running..."
+- Interactive phases: natural conversation flow
+- Swarm phases: "Deploying {N} parallel agents..." then "All agents complete."
+- Tiered phases: "Tier {N}: {count} agents running..."
 
 ---
 
 ## Phase Resumption
 
-### Resuming a Previous Run
+For detailed resumption steps, archiving, and debug session resumption,
+read `references/phase-resumption.md`.
 
-When `/using-zflow` is invoked and `.zflow/` already exists:
-
-1. **Read `.zflow/current-phase.json`** to determine where the previous
-   run stopped.
-
-2. **Check status field**:
-   - `"completed"` — all phases done, offer to start a new run
-   - `"in_progress"` — phase was interrupted, re-invoke that phase
-   - `"awaiting_gate"` — human gate was pending, re-present the gate
-   - `"initialized"` — workspace was created but no phase started
-
-3. **Verify artifacts**: Check that previous phase outputs still exist
-   and are intact.
-
-4. **Resume prompt**:
-   ```
-   ZFlow workspace found from a previous run.
-
-   **Previous state**: Phase {name} ({status})
-   **Started**: {timestamp}
-
-   Would you like to:
-     [A] Resume from Phase {name}
-     [B] Start fresh (this will archive the existing workspace)
-     [C] View status report
-   ```
-
-### Archiving
-
-If the user chooses to start fresh, rename `.zflow/` to
-`.zflow.archive.<timestamp>/` before creating a new workspace.
+**Quick summary:**
+1. If `.zflow/` exists, read `current-phase.json` to find where you stopped
+2. Check status: `completed`, `in_progress`, `awaiting_gate`, or `initialized`
+3. Verify artifacts exist and offer resume/fresh-start options
+4. Starting fresh archives the existing workspace with a timestamp
 
 ---
 
 ## Error Handling
 
-### Phase Failure
+For detailed error handling procedures, read `references/error-handling.md`.
 
-If a sub-skill fails or produces invalid output:
-
-1. Report the failure clearly to the user
-2. Identify what went wrong (missing sections, validation failure, etc.)
-3. Offer options:
-   - Retry the phase
-   - Skip the phase (with warning about downstream impact)
-   - Abort the workflow
-
-### Artifact Missing
-
-If a previous phase's artifact is missing when the next phase needs it:
-
-1. Check if it exists at an unexpected path
-2. If found, update paths and proceed
-3. If not found, ask user: "Phase {N} output is missing. Re-run Phase {N}
-   or abort?"
-
-### Sub-Skill Not Found
-
-If a referenced sub-skill does not exist:
-
-```
-Phase sub-skill not found: skills/zflow-{phase}/SKILL.md
-
-This phase has not been implemented yet. You can:
-  [A] Skip this phase and proceed to the next
-  [B] Abort and implement the missing sub-skill first
-```
-
-### Configuration Errors
-
-If `.zflow/config.json` is malformed or missing fields, use defaults
-for any missing values and log a warning. Do not abort the workflow
-for configuration issues.
+**Quick summary:**
+- Phase failure: report, identify cause, offer retry/skip/abort
+- Missing artifact: check unexpected paths, ask user to re-run or abort
+- Missing sub-skill: offer to skip or abort
+- Config errors: use defaults, log warning, don't abort
 
 ---
 
 ## Quick Reference
 
-### Dev Workflow Phases
-
-| # | Phase | Sub-Skill | Gate | Key Artifact |
-|---|-------|-----------|------|-------------|
-| 0 | Brainstorm | `skills/zflow-brainstorm/SKILL.md` | human | `scope.md` |
-| 1 | Research | `skills/zflow-research/SKILL.md` | auto | `research-report.md` |
-| 2 | Design | `skills/zflow-design/SKILL.md` | human | `solution.md` |
-| 3 | Review | `skills/zflow-review/SKILL.md` | human | `reviewed-solution.md` |
-| 3.5 | UI Design | `skills/zflow-ui-design/SKILL.md` | human | `ui-design-report.md` |
-| 4 | Implement | `skills/zflow-implement/SKILL.md` | auto | `impl-report.md` |
-| 5 | QA | `skills/zflow-qa/SKILL.md` | human | `qa-report.md` |
-| 6 | Document | `skills/zflow-document/SKILL.md` | auto | changelog + commit |
-
-### Debug Workflow Phases
-
-| # | Phase | Sub-Skill | Gate | Key Artifact |
-|---|-------|-----------|------|-------------|
-| D0 | Reproduce | `skills/zflow-debug/SKILL.md` | auto | `repro-report.md` |
-| D1 | Investigate | `skills/zflow-debug/SKILL.md` | auto | `investigation.md` |
-| D2 | Analyze | `skills/zflow-debug/SKILL.md` | human | `root-cause.md` |
-| D3 | Design Fix | `skills/zflow-debug/SKILL.md` | human | `fix-design.md` |
-| D4 | Implement Fix | `skills/zflow-debug/SKILL.md` | auto | `fix-impl-report.md` |
-| D5 | Verify | `skills/zflow-debug/SKILL.md` | auto | `verification.md` |
-
-### File Naming Conventions
-
-| Item | Convention | Example |
-|------|-----------|---------|
-| Sub-skill dirs | `zflow-{phase}` | `zflow-research` |
-| Agent prompts | `{role-name}.md` | `architecture-scout.md` |
-| Shared files | `_shared/{name}.md` | `_shared/karpathy-preamble.md` |
-| Templates | `{output-name}.md` | `scope.md` |
-| Workspace phase dirs | `{NN}-{phase}/` | `01-research/` |
-| Config files | `{name}.json` | `config.json` |
-| Security findings | `SEV-{NNN}` | `SEV-001` |
+For phase tables, sub-skill paths, and file naming conventions, read
+`references/quick-reference.md`.
 
 ---
 
 ## Important Constraints
 
-**You are the orchestrator, not the implementer.** You invoke sub-skills via
-the Skill tool, passing them the paths to their input artifacts and workspace
-directories. You never write code, design solutions, or perform research
-directly.
+### Sub-Skill Invocation
+
+Invoke phase sub-skills using whatever mechanism your harness provides for
+skill invocation. In Claude Code or Cowork, use the Skill tool. In Gemini CLI,
+use skill activation. Pass the sub-skill name (e.g., `zflow-brainstorm`) and
+ensure the sub-skill's SKILL.md is read and followed.
+
+### Orchestrator Role
+
+**You are the orchestrator, not the implementer.** You invoke sub-skills,
+passing them the paths to their input artifacts and workspace directories.
+You never write code, design solutions, or perform research directly.
 
 **Karpathy rules apply globally.** Every sub-skill and agent receives the
 shared behavioral rules from `agents/_shared/karpathy-preamble.md`. You do

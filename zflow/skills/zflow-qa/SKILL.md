@@ -7,8 +7,9 @@ description: >
   visual regression for UI work. Merges findings into qa-report.md with
   severity categorization. Gates on Critical/Blocker issues with loop-back
   to Phase 4 for targeted fixes. Invoked by the main ZFlow orchestrator
-  during Phase 5. Triggers on: QA phase, quality assurance, testing review,
-  security audit, code review, implementation verification.
+  during Phase 5. Invoked only by the ZFlow orchestrator — does not
+  auto-trigger on user messages.
+disable-model-invocation: true
 ---
 
 # ZFlow Phase 5: QA
@@ -83,7 +84,8 @@ Each agent receives a tailored context package:
 Spawn all agents in a SINGLE tool-use block (parallel fan-out). Each agent:
 
 - Uses its dedicated prompt template from `agents/qa/`
-- Runs with `context: fork` to avoid cross-contamination
+- Runs independently — each agent gets only the documents you explicitly
+  include in its prompt, preventing cross-contamination
 - Produces a dimension report saved to
   `.zflow/phases/05-qa/dimension-reports/{dimension}.md`
 

@@ -5,8 +5,9 @@ description: >
   agents organized by dependency tiers. Reads reviewed-solution.md (and optionally
   ui-design-report.md), builds a dependency graph, tiers tasks, and spawns
   focused-implementer or ui-implementer agents tier by tier. Invoked by the main
-  ZFlow orchestrator during Phase 4. Triggers on: implementation phase, code
-  implementation, parallel implementation, tiered implementation.
+  ZFlow orchestrator during Phase 4. Invoked only by the ZFlow orchestrator
+  — does not auto-trigger on user messages.
+disable-model-invocation: true
 ---
 
 # ZFlow Phase 4: Implement

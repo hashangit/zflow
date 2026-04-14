@@ -4,8 +4,9 @@ description: >
   Design phase for ZFlow multi-agent workflow. Maps research findings and validated scope
   into a concrete, implementable solution through approach selection and section-by-section
   design with user approval. Produces solution.md.
-  Triggers: invoked by main orchestrator after research phase completes.
-  Do not trigger directly — use /using-zflow to run the full workflow.
+  Invoked by main orchestrator after research phase completes.
+  Do not invoke directly — use /using-zflow to run the full workflow.
+disable-model-invocation: true
 ---
 
 # ZFlow Phase 2: Design
@@ -21,7 +22,7 @@ Read these files before starting:
 
 ## Mode
 
-**Interactive** — you run in the main conversation thread (not forked). You need the user's
+**Interactive** — you run in the main conversation thread (not as a spawned agent). You need the user's
 input at multiple points: approach selection and section-by-section approval.
 
 ## Process

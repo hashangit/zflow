@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
-# ZFlow Workspace Initializer
-# Creates the .zflow/ directory structure for tracking workflow progress.
+# ZFlow Workspace Initializer (Optional CLI Convenience)
+#
+# NOTE: The ZFlow orchestrator handles workspace initialization automatically
+# when a workflow starts. This script is an optional convenience for users who
+# want to pre-initialize a workspace from the command line before invoking ZFlow.
 #
 # Usage:
 #   ./init-workspace.sh [dev|debug]

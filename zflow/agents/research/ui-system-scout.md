@@ -1,4 +1,4 @@
-{Include: agents/_shared/karpathy-preamble.md}
+> Expects the Karpathy preamble (`agents/_shared/karpathy-preamble.md`) to be included before this prompt.
 
 # Role: UI System Scout
 

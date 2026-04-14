@@ -16,10 +16,10 @@ ZFlow uses five orchestration patterns to coordinate sub-agents. Each pattern is
 
 ```
 Coordinator reads phase input
-    +-- Spawn Agent A (context: fork) --> Report A
-    +-- Spawn Agent B (context: fork) --> Report B
-    +-- Spawn Agent C (context: fork) --> Report C
-    +-- Spawn Agent D (context: fork) --> Report D
+    +-- Spawn Agent A (independent) --> Report A
+    +-- Spawn Agent B (independent) --> Report B
+    +-- Spawn Agent C (independent) --> Report C
+    +-- Spawn Agent D (independent) --> Report D
               |
               v
     Coordinator merges reports into phase output
@@ -38,7 +38,11 @@ Coordinator reads phase input
 5. Contradictions between agents are flagged for resolution
 6. The merged output follows the phase's template structure
 
-**Agent isolation:** Each fan-out agent runs in `context: fork` mode, meaning it starts with a fresh context containing only what was explicitly passed to it. Agents cannot see each other's work during execution, preventing groupthink.
+**Agent isolation:** Each fan-out agent runs independently — it receives only what
+you explicitly include in its prompt string. Agents launched via the Agent tool
+cannot see each other's work or the parent conversation, preventing groupthink.
+Construct each agent's prompt by combining: the Karpathy preamble, the agent's
+specific prompt file, and the relevant input documents.
 
 **Example -- Research Phase:**
 - architecture-scout maps the project structure
@@ -195,25 +199,29 @@ The `max_parallel_agents` setting in `.zflow/config.json` controls how many agen
 
 ---
 
-## Agent Isolation: Fresh Context vs Shared
+## Agent Isolation
 
-### Fresh Context (context: fork)
+### Independent Agents (most phases)
 
-Most agents run in `context: fork` mode, meaning they start with a clean slate containing only:
-- The Karpathy preamble (behavioral rules)
-- Their specific agent prompt (role, mission, method, output format)
-- The input documents explicitly passed to them (e.g., `scope.md`)
+Most agents run independently — each receives only what you explicitly include
+in its prompt string:
+- The Karpathy preamble (from `agents/_shared/karpathy-preamble.md`)
+- Their specific agent prompt file (role, mission, method, output format)
+- The input documents you include (e.g., `scope.md` contents)
 
 **Why this matters:**
 - Agents cannot be influenced by each other's reasoning during parallel execution
 - Each agent's analysis is independent and unbiased
 - Review agents in Phase 3 deliberately do NOT receive the research report to avoid anchoring bias
 
-**Trade-off:** Fresh context means agents cannot see prior phase context that was not explicitly passed. This is by design -- the document chain ensures all necessary context is persisted in files.
+**Trade-off:** Independent agents cannot see prior phase context that was not explicitly passed. This is by design — the document chain ensures all necessary context is persisted in files.
 
-### Shared Context
+### Interactive Agents
 
-Interactive agents (brainstorming in Phase 0, design in Phase 2) run in the main conversation context because they need to converse with the user. They are not forked.
+Some phases (brainstorming in Phase 0, design in Phase 2) run in the main
+conversation thread because they need to converse with the user. These are not
+spawned as separate agents — the phase runs directly in the orchestrator's
+context.
 
 ---
 

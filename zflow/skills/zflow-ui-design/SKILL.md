@@ -6,8 +6,9 @@ description: >
   through three sub-phases: design system setup, canvas design, and design
   review. Checks Pencil.dev MCP availability and gracefully degrades if
   unavailable. Produces ui-design-report.md with tokens, component specs,
-  and exported designs. Triggers on: UI design phase, Pencil.dev, design
-  system, visual design, component design.
+  and exported designs. Invoked only by the ZFlow orchestrator — does not
+  auto-trigger on user messages.
+disable-model-invocation: true
 ---
 
 # ZFlow Phase 3.5: UI Design (Conditional)

@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # =============================================================================
-# ZFlow Pencil.dev Availability Checker
+# ZFlow Pencil.dev Availability Checker (Claude Code Convenience)
 #
-# Detects whether Pencil.dev MCP tools are available to the current
-# Claude Code session. Used by the ZFlow orchestrator to decide whether
-# to offer the Pencil.dev design-first UI workflow (Phase 3.5).
+# NOTE: The authoritative detection method is runtime tool probing — the
+# orchestrator checks whether mcp__pencil__ prefixed tools are available.
+# This script is a supplementary pre-flight check for Claude Code specifically,
+# which checks settings files and project artifacts for Pencil configuration.
 #
-# The primary mechanism checks for Pencil MCP server configuration in
-# Claude Code settings files and for .pencil/ project artifacts.
+# For other harnesses (Cowork, Gemini CLI, etc.), the orchestrator's runtime
+# detection is the primary method — this script is not needed.
 #
 # Exit codes:
 #   0 — Pencil.dev appears to be available

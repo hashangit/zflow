@@ -6,8 +6,8 @@ description: >
   grounded in the actual project codebase. Triggered by the main ZFlow orchestrator
   during Phase 0. Produces scope.md with problem statement, success criteria,
   constraints, scope boundaries, MVP definition, and UI work detection.
-  Triggers on: brainstorm phase, scope definition, requirements gathering,
-  Socratic discovery, feature scoping.
+  Invoked only by the ZFlow orchestrator — does not auto-trigger on user messages.
+disable-model-invocation: true
 ---
 
 # ZFlow Phase 0: Brainstorm — Guided Socratic Discovery
@@ -19,7 +19,7 @@ time, grounded in their actual codebase.
 ## Phase Rules
 
 1. **Interactive mode** — this skill runs in conversation with the user, not as
-   a forked background agent. Every question needs a response before you proceed.
+   a spawned background agent. Every question needs a response before you proceed.
 2. **Maximum 8-10 questions** — respect the user's time. Pick the dimensions that
    matter most for this specific request.
 3. **No solutions** — this phase captures WHAT and WHY only. The "how" belongs to
@@ -40,12 +40,14 @@ Before asking the user anything, read the project to build context:
 This context informs every question you ask. Questions must be grounded in what
 the project actually looks like, not generic.
 
-To perform this scan, use the `graph_scan` + `graph_retrieve` tools if available,
-or read the project root files directly. Prioritize:
+To perform this scan, read the project root files directly. Prioritize:
 - `package.json` / `requirements.txt` / `Cargo.toml` (tech stack)
 - `CLAUDE.md` / `README.md` (project conventions)
 - Directory structure (architecture)
 - Any existing `.zflow/` workspace state (resume capability)
+
+If `graph_scan` / `graph_retrieve` tools are available (e.g., from a dual-graph
+MCP), use those for faster retrieval.
 
 ### Step 2: Scope Assessment
 

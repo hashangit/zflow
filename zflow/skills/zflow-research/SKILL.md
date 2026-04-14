@@ -6,6 +6,7 @@ description: >
   tests, and related code dimensions. Triggered by the main orchestrator after
   brainstorm produces scope.md. Optionally spawns ui-system-scout when UI work
   is flagged. Merges all agent reports into research-report.md.
+disable-model-invocation: true
 ---
 
 # ZFlow Phase 1: Research — Swarm Coordinator
@@ -44,12 +45,14 @@ Read `scope.md` and check for the `ui_work` flag:
 
 ## Spawn All Agents in Parallel
 
-All agents are sub-agents (`context: fork`). Spawn them all in a **single
-message** with multiple Agent calls to maximize parallelism.
+Spawn all agents in a **single message** using the Agent tool (multiple
+parallel calls). Each agent runs independently with only the documents you
+explicitly include in its prompt.
 
 Each agent receives:
+- The Karpathy preamble (read `agents/_shared/karpathy-preamble.md`)
+- Its specific agent prompt file contents
 - The full contents of `scope.md`
-- A focused mission (its specific research dimension)
 - The project root path
 
 ### Core Agents (always spawned)
@@ -68,20 +71,16 @@ Each agent receives:
 |---|-------------|-------------|
 | 6 | `agents/research/ui-system-scout.md` | `agent-reports/ui-system.md` |
 
-### Spawn Pattern
+### How to Spawn
 
-```
-Agent(prompt=architecture-scout, context=fork, input=scope.md contents)
-Agent(prompt=dependency-mapper, context=fork, input=scope.md contents)
-Agent(prompt=pattern-analyzer, context=fork, input=scope.md contents)
-Agent(prompt=test-surveyor, context=fork, input=scope.md contents)
-Agent(prompt=related-code-finder, context=fork, input=scope.md contents)
-[If ui_work: true]
-Agent(prompt=ui-system-scout, context=fork, input=scope.md contents)
-```
+For each agent, construct a prompt string containing:
+1. The contents of `agents/_shared/karpathy-preamble.md`
+2. The contents of the agent's prompt file (e.g., `agents/research/architecture-scout.md`)
+3. The full contents of `scope.md`
 
-All Agent calls go in one message. Do not wait for one to finish before
-spawning the next.
+Then call the Agent tool with that prompt and a short description (e.g.,
+"research architecture"). Put all Agent calls in one message for parallel
+execution — do not wait for one to finish before spawning the next.
 
 ## Collect and Merge Reports
 

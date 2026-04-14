@@ -434,7 +434,7 @@ def main() -> None:
     if not reader.exists():
         print(
             f"Error: Workspace directory '{args.workspace}' not found. "
-            "Run init-workspace.sh first.",
+            "Run a ZFlow workflow (which auto-initializes) or run init-workspace.sh manually.",
             file=sys.stderr,
         )
         sys.exit(1)
