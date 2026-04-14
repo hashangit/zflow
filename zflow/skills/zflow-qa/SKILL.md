@@ -147,6 +147,50 @@ Create `.zflow/phases/05-qa/phase-meta.json`:
 }
 ```
 
+
+
+### Pre-Flight: Read Pipeline Manifest
+
+Before starting, read `.zflow/pipeline-manifest.json` if it exists. This tells you:
+- Which upstream artifacts to expect (check `artifacts_expected`)
+- Your phase's depth setting (full, abbreviated, lightweight, reduced)
+- Whether you should expect certain inputs or gracefully handle their absence
+
+If an upstream artifact is marked as not expected in the manifest, proceed
+without it rather than halting. Adapt your analysis depth to match the phase
+depth setting.
+
+
+### Reduced QA Mode
+
+When the pipeline manifest indicates `depth: "reduced"` for the QA phase,
+or when the task is trivial:
+
+- Run only: completeness-checker and code-quality-auditor
+- Skip: ux-reviewer, design-alignment-qa, security-auditor, test-coverage-agent,
+  ui-visual-qa
+- The qa-report.md only contains findings from the two dimensions that ran
+- Gate decision uses the same severity thresholds
+- Still classify Root Cause Layer for any Critical/Blocker findings found
+
+### Root Cause Layer Classification
+
+For each Critical or Blocker finding, classify its Root Cause Layer:
+
+- **Implementation**: The reviewed solution's design is correct, but the code does
+  not match it. The fix is a code change.
+- **Design**: The code matches the reviewed solution, but the solution itself has
+  a flaw (wrong abstraction, missing edge case, incorrect data flow). The fix
+  requires a design revision.
+- **Scope**: The scope document missed or misunderstood a requirement. The fix
+  requires revisiting scope.
+- **Unknown**: Cannot determine with confidence. Flag for user decision.
+
+Add the Root Cause Layer to each Critical/Blocker finding in the QA report.
+This classification is used by the orchestrator to recommend a loop-back target.
+
+---
+
 ## Anti-Patterns
 
 - Do NOT run QA yourself -- you are a coordinator, not an auditor
@@ -163,7 +207,7 @@ Create `.zflow/phases/05-qa/phase-meta.json`:
 - All QA agents spawned in parallel and their reports collected
 - Every finding categorized with a severity level
 - Findings cross-referenced (duplicate issues unified)
-- qa-report.md follows the template structure completely
+- qa-report.md follows the template's Required sections (Expected should be present or noted)
 - Gate decision is made and justified
 - If FAIL: specific loop-back instructions identify exactly what to fix
 - Phase metadata is written and accurate

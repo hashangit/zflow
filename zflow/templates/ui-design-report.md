@@ -4,6 +4,16 @@
 > Input: reviewed-solution.md + design tokens + Pencil canvas designs.
 > This document is the visual design handoff for implementation.
 
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
+---
+
 ---
 
 ## Design System

@@ -209,6 +209,19 @@ If a debug session is interrupted, check `.zflow/debug/session-{timestamp}/` for
 the latest completed phase and resume from there. Each phase's output document is
 the input for the next, so any phase can be re-run independently.
 
+
+
+### Pre-Flight: Read Pipeline Manifest
+
+Before starting, read `.zflow/pipeline-manifest.json` if it exists. This tells you:
+- Which upstream artifacts to expect (check `artifacts_expected`)
+- Your phase's depth setting (full, abbreviated, lightweight, reduced)
+- Whether you should expect certain inputs or gracefully handle their absence
+
+If an upstream artifact is marked as not expected in the manifest, proceed
+without it rather than halting. Adapt your analysis depth to match the phase
+depth setting.
+
 ## Anti-Patterns
 
 - Do NOT skip D0 (reproduce) to jump straight to investigation

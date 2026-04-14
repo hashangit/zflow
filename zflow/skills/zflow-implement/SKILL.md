@@ -156,6 +156,39 @@ Create `.zflow/phases/04-implement/phase-meta.json`:
 }
 ```
 
+
+
+### Pre-Flight: Read Pipeline Manifest
+
+Before starting, read `.zflow/pipeline-manifest.json` if it exists. This tells you:
+- Which upstream artifacts to expect (check `artifacts_expected`)
+- Your phase's depth setting (full, abbreviated, lightweight, reduced)
+- Whether you should expect certain inputs or gracefully handle their absence
+
+If an upstream artifact is marked as not expected in the manifest, proceed
+without it rather than halting. Adapt your analysis depth to match the phase
+depth setting.
+
+
+### Step 0: Design Sketch (Quick Fix Profile)
+
+When the pipeline manifest indicates that the design phase was skipped (no
+`solution.md` or `reviewed-solution.md` in artifacts_expected), perform a
+brief design sketch before implementing:
+
+1. State the problem in one sentence
+2. List the files that need to change and why
+3. Describe the approach in 3-5 sentences
+4. List success criteria (verifiable outcomes)
+5. Self-check: "Is this the simplest approach? Could fewer changes accomplish
+   the same goal?"
+
+Write this sketch to `.zflow/phases/04-implement/design-sketch.md` before
+proceeding to implementation. This satisfies the invariant that implementation
+never happens without design intent being documented.
+
+---
+
 ## Anti-Patterns
 
 - Do NOT implement tasks yourself -- you are a coordinator, not an implementer

@@ -3,6 +3,16 @@
 > Template for presenting 2-3 solution approaches to the user during Phase 2 (Design).
 > Each approach is grounded in research-report.md findings with honest trade-off analysis.
 
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
+---
+
 ---
 
 ## Problem Summary

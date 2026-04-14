@@ -17,16 +17,84 @@ sequence, and manage phase transitions with artifact validation and human gates.
 
 ## Table of Contents
 
-1. [Workflow Detection](#workflow-detection)
-2. [Workspace Initialization](#workspace-initialization)
-3. [Configuration](#configuration)
-4. [Pencil.dev Detection](#pencildev-detection)
-5. [Development Workflow](#development-workflow)
-6. [Debug Workflow](#debug-workflow)
-7. [Phase Transitions](#phase-transitions)
-8. [Status Reporting](#status-reporting)
-9. [Phase Resumption](#phase-resumption)
-10. [Error Handling](#error-handling)
+1. [Pipeline Planning](#pipeline-planning)
+2. [Workflow Detection](#workflow-detection)
+3. [Workspace Initialization](#workspace-initialization)
+4. [Configuration](#configuration)
+5. [Pencil.dev Detection](#pencildev-detection)
+6. [Development Workflow](#development-workflow)
+7. [QA Loop-Back Protocol](#qa-loop-back-protocol)
+8. [Debug Workflow](#debug-workflow)
+9. [Phase Transitions](#phase-transitions)
+10. [Status Reporting](#status-reporting)
+11. [Phase Resumption](#phase-resumption)
+12. [Error Handling](#error-handling)
+
+---
+
+## Pipeline Planning
+
+Before creating the workspace, assess the task's complexity and propose a pipeline
+profile. This determines which phases run, how deeply each executes, and how many
+agents deploy. For the complete profile definitions, read `references/pipeline-profiles.md`.
+
+### Step 1: Assess Task Complexity
+
+Score the task on 5 signals (1-3 points each):
+
+| Signal | Trivial (1) | Standard (2) | Complex (3) |
+|--------|-------------|--------------|-------------|
+| Affected systems | 1 module | 2-3 modules | 4+ or cross-cutting |
+| Technical domains | 1 layer | 2 layers | 3+ layers |
+| Existing patterns | Identical exists | Similar exists | Novel |
+| User language | "just", "quick", "fix" | neutral | "redesign", "migrate", "new system" |
+| Ambiguity | Clear spec | Some unknowns | Highly ambiguous |
+
+**Complexity verdict:** Score 4-5 → Trivial (Quick Fix), 6-9 → Standard, 10+ → Complex (Full or Extended).
+
+Use heuristics alongside the score. If user says "quick fix" → lean Quick Fix. If task involves security → minimum Standard. If multi-system → minimum Full. User always has final say.
+
+### Step 2: Present Pipeline Proposal
+
+Present the recommendation to the user:
+
+```
+## ZFlow Pipeline Proposal
+
+**Task**: {user's description}
+**Assessed complexity**: {Trivial/Standard/Complex} (score: {N}/15)
+**Recommended profile**: {Profile name}
+
+### Proposed Pipeline
+
+| Phase | Depth | Agents | Gate |
+|-------|-------|--------|------|
+| {phase} | {depth} | {count} | {human/auto} |
+
+### What's different from full pipeline
+{Explanation of removed/abbreviated phases}
+
+### Your Options
+  [A] Accept proposal
+  [B] Upgrade to {next profile}
+  [C] Downgrade to {next profile}
+  [D] Customize specific phases
+  [E] Use full pipeline (current ZFlow default)
+```
+
+### Step 3: Pipeline Profiles
+
+Four profiles are defined. For complete details, read `references/pipeline-profiles.md`.
+
+- **Quick Fix**: IMPLEMENT (with design sketch) → QA (reduced) → DOCUMENT
+- **Standard**: BRAINSTORM (abbreviated) → DESIGN → REVIEW → IMPLEMENT → QA → DOCUMENT
+- **Full**: Full 8-phase pipeline (current ZFlow default)
+- **Extended**: Full + deeper research + extended security QA
+
+### Step 4: Write Pipeline Manifest
+
+After the user approves, write `pipeline-manifest.json` alongside `config.json`.
+Only create phase directories for phases that will actually run.
 
 ---
 
@@ -301,9 +369,9 @@ Invoke the QA sub-skill. Agents check: completeness, UX, code quality,
 test coverage, design alignment, security audit. If UI work, also runs
 visual QA.
 
-**Gate**: Present QA findings. If critical or blocker issues exist, loop back
-to Phase 4 for targeted fixes (not full re-implementation). Security criticals
-get priority.
+**Gate**: Present QA findings with Root Cause Layer classification. For Critical
+or Blocker issues, follow the [QA Loop-Back Protocol](#qa-loop-back-protocol)
+below instead of automatically looping to Phase 4.
 
 ### Phase 6: Document
 
@@ -316,6 +384,71 @@ Invoke the document sub-skill. Updates relevant documentation, CHANGELOG,
 generates a conventional commit message, and stages changes for commit.
 
 **Gate**: Default `"auto"` — but commit requires human approval.
+
+---
+
+## QA Loop-Back Protocol
+
+When QA finds Critical or Blocker issues, follow this protocol:
+
+### Step 1: Classify Findings
+
+Each Critical/Blocker finding has been classified by the QA coordinator with a
+Root Cause Layer:
+- **Implementation**: Design is sound, code doesn't match it
+- **Design**: Code matches design, but design is flawed
+- **Scope**: Scope missed a requirement
+- **Unknown**: Ambiguous — user must decide
+
+### Step 2: Present Decision to User
+
+```
+## QA Gate: {N} Critical/Blocker Issues Found
+
+### Issue Classification
+
+| ID | Severity | Finding | Root Cause Layer | Recommended Loop-Back |
+|----|----------|---------|-----------------|----------------------|
+| {id} | {severity} | {description} | {layer} | {phase} |
+
+### System Recommendation: {phase}
+
+{If most issues are Implementation:}
+The design is sound; only the implementation needs correction. Loop back to
+Phase 4 for targeted fixes.
+
+{If any issues are Design:}
+The design has flaws. Loop back to Phase 2 to revise affected components,
+then re-run Review and Implement.
+
+{If any issues are Scope:}
+The fundamental requirements may be wrong. Loop back to Phase 0 to revisit scope.
+
+### Your Options
+  [A] Accept recommendation — loop back to {recommended phase}
+  [B] Override — loop back to a different phase:
+      - Phase 4 (Implement only)
+      - Phase 2 (Design + Review + Implement)
+      - Phase 0 (Full restart with preserved research)
+  [C] Fix manually — I will fix these issues outside ZFlow
+  [D] Accept risk — proceed despite findings (exceptions documented)
+```
+
+### Step 3: Execute User Decision
+
+**Loop to Phase 4**: Preserved = all design artifacts. Regenerated = code + impl-report. Max 3 iterations total.
+
+**Loop to Phase 2**: Preserved = scope.md, research-report.md, qa-report.md (as context). Regenerated = solution.md, reviewed-solution.md, impl-report.md. Design agent receives qa-report.md.
+
+**Loop to Phase 0**: Preserved = research-report.md. Regenerated = everything else. Soft restart — user only revisits changed requirements.
+
+### Constraints
+
+1. ALWAYS classify Root Cause Layer before recommending a loop-back target
+2. ALWAYS present options and a recommendation to the user
+3. NEVER automatically loop back to Phase 2 or Phase 0 without user confirmation
+4. Security Criticals always get priority regardless of loop-back target
+5. Maximum 3 iterations for the total QA feedback loop (not per-target)
 
 ---
 
@@ -404,8 +537,11 @@ Agents: regression verifier, fix verifier, pattern verifier, security verifier.
 Every phase transition follows this protocol:
 
 1. **Phase completes** — sub-skill finishes and writes output artifact
-2. **Artifact validation** — output exists, non-empty, required sections populated.
-   For the per-phase validation checklist, read `references/quick-reference.md`.
+2. **Artifact validation** — output exists, non-empty, Required sections from the
+   template are populated, Expected sections are either populated or explicitly
+   noted as omitted with a reason. Optional sections are not validated. For the
+   per-phase validation checklist with section classifications, read
+   `references/quick-reference.md`.
 3. **Update tracking** — write `phase-meta.json` with status, timestamps, agent count.
    Update `current-phase.json` with next phase.
 4. **Gate check** — read config for gate setting: `"human"` presents summary to user,
@@ -493,3 +629,12 @@ Never auto-approve a human-gated phase.
 **Token efficiency matters.** Report status concisely. Do not dump full
 artifact contents when presenting gate summaries — provide the key decisions
 and ask the user if they want to review details.
+
+### Pipeline Invariants
+
+Regardless of pipeline profile:
+1. Implementation MUST be preceded by some form of design (full phase or embedded sketch)
+2. QA MUST follow implementation
+3. Human gates MUST exist at: pipeline approval, design/design-sketch, QA findings, commit
+4. Scope MUST be documented (even if minimal, within the design sketch)
+5. Document chain coherence MUST be maintained — missing artifacts handled via manifest

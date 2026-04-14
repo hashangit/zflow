@@ -221,6 +221,19 @@ This phase has three human approval points:
 - If the design review agent finds critical accessibility issues, those must
   be fixed before the report is generated.
 
+
+
+### Pre-Flight: Read Pipeline Manifest
+
+Before starting, read `.zflow/pipeline-manifest.json` if it exists. This tells you:
+- Which upstream artifacts to expect (check `artifacts_expected`)
+- Your phase's depth setting (full, abbreviated, lightweight, reduced)
+- Whether you should expect certain inputs or gracefully handle their absence
+
+If an upstream artifact is marked as not expected in the manifest, proceed
+without it rather than halting. Adapt your analysis depth to match the phase
+depth setting.
+
 ## Anti-Patterns
 
 - Do NOT skip the Pencil.dev availability check

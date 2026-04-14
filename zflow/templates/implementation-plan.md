@@ -2,6 +2,16 @@
 
 _Phase 4 of ZFlow -- generated before agent execution._
 
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
+---
+
 ---
 
 ## Overview
@@ -14,7 +24,7 @@ _Phase 4 of ZFlow -- generated before agent execution._
 
 ---
 
-## Dependency Graph
+## Dependency Graph [Required]
 
 ```
 {ASCII visualization of the task dependency graph}
@@ -28,7 +38,7 @@ Example:
 
 ---
 
-## Tier Breakdown
+## Tier Breakdown [Required]
 
 ### Tier 0 -- Independent Tasks (no dependencies)
 
@@ -53,7 +63,7 @@ Example:
 
 ---
 
-## Per-Task Details
+## Per-Task Details [Expected]
 
 ### Task 1: {Task Name}
 
@@ -82,7 +92,7 @@ Example:
 
 ---
 
-## Execution Order
+## Execution Order [Required]
 
 ```
 Phase 1: Tier 0
@@ -106,7 +116,7 @@ Estimated wall-clock phases: {N} (one per tier)
 
 ---
 
-## Parallelization Strategy
+## Parallelization Strategy [Optional]
 
 ### Within Each Tier
 - All tasks in the same tier are spawned simultaneously in a single

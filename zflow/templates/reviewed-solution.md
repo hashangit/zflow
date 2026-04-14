@@ -4,9 +4,19 @@
 > Date: {DATE}
 > Reviewers: gap-detector, overengineering-critic, security-reviewer, performance-reviewer, alignment-checker
 
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
 ---
 
-## Original Solution (with Adjustments Applied)
+---
+
+## Original Solution (with Adjustments Applied) [Required]
 
 > The solution below incorporates adjustments from the review phase. Additions are marked with **[Added]** and removals with ~~struck through~~ **[Removed]**. Unmarked text is unchanged from the original `solution.md`.
 
@@ -44,7 +54,7 @@
 
 ---
 
-## Review Appendix
+## Review Appendix [Required]
 
 ### Gap Detection Findings
 
@@ -88,7 +98,7 @@
 
 ---
 
-## Self-Review Fixes
+## Self-Review Fixes [Expected]
 
 > Structural integrity corrections applied by the review coordinator.
 
@@ -110,7 +120,7 @@
 
 ---
 
-## Updated Risk Register
+## Updated Risk Register [Expected]
 
 > Merged from original solution risk register + reviewer-identified risks.
 
@@ -120,7 +130,7 @@
 
 ---
 
-## Updated Open Questions
+## Updated Open Questions [Optional]
 
 > Merged from original solution open questions + reviewer-identified questions.
 
@@ -130,7 +140,7 @@
 
 ---
 
-## Review Statistics
+## Review Statistics [Optional]
 
 - **Reviewers deployed**: 5
 - **Total findings**: {N}

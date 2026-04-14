@@ -2,9 +2,19 @@
 
 _Phase 4 of ZFlow -- generated after all tiers complete._
 
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
 ---
 
-## Executive Summary
+---
+
+## Executive Summary [Required]
 
 | Metric | Value |
 |--------|-------|
@@ -25,7 +35,7 @@ state.}
 
 ---
 
-## Per-Task Reports
+## Per-Task Reports [Required]
 
 ### Task 1: {Task Name}
 
@@ -68,7 +78,7 @@ state.}
 
 ---
 
-## Integration Notes
+## Integration Notes [Expected]
 
 _How the results from each tier compose together._
 
@@ -89,7 +99,7 @@ issues discovered during tier transitions.}
 
 ---
 
-## Deviation Summary
+## Deviation Summary [Expected]
 
 _Aggregate view of all deviations from the reviewed solution across all tasks._
 
@@ -115,7 +125,7 @@ _Issues that were not resolved during implementation._
 
 ---
 
-## Issues Found Outside Scope
+## Issues Found Outside Scope [Optional]
 
 _Problems discovered by implementation agents in adjacent code that were not
 part of their assigned tasks._
@@ -129,7 +139,7 @@ scope). They should be triaged separately.
 
 ---
 
-## Ready for QA
+## Ready for QA [Required]
 
 **Verdict**: {Yes / No}
 

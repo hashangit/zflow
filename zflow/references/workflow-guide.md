@@ -398,3 +398,55 @@ This tells the orchestrator to start from the implement phase, assuming prior ph
 7. **Review the security audit.** Even if you are not a security expert, read the executive summary of the security audit report. It highlights the most important findings.
 
 8. **Let UI design iterate.** If you are using Pencil.dev, take the time to iterate on the design before implementation. Fixing a design in code is more expensive than fixing it on the canvas.
+
+---
+
+## Dynamic Pipeline Construction
+
+ZFlow assesses task complexity before starting and proposes an appropriate pipeline
+profile. The user approves or customizes the pipeline before any work begins.
+
+### How Complexity is Assessed
+
+The orchestrator scores 5 signals (1-3 points each): affected systems, technical
+domains, existing patterns, user language, and ambiguity.
+
+- Score 4-5 → Trivial → Quick Fix profile
+- Score 6-9 → Standard → Standard profile
+- Score 10+ → Complex → Full or Extended profile
+
+### Four Pipeline Profiles
+
+| Profile | Phases | Use Case |
+|---------|--------|----------|
+| **Quick Fix** | IMPLEMENT (with design sketch) → QA (reduced) → DOCUMENT | Single-function fix, config change |
+| **Standard** | BRAINSTORM (abbreviated) → DESIGN → REVIEW → IMPLEMENT → QA → DOCUMENT | Typical feature, 2-3 modules |
+| **Full** | Full 8-phase pipeline | Cross-cutting, multi-system |
+| **Extended** | Full + deeper research + extended security | Greenfield, security-critical |
+
+For complete profile definitions, see `references/pipeline-profiles.md`.
+
+### Overriding the Recommendation
+
+The user always has final say. Options presented: Accept, Upgrade, Downgrade,
+Customize specific phases, or Use full pipeline.
+
+### QA Loop-Back Options
+
+When QA finds Critical/Blocker issues, findings are classified by Root Cause Layer:
+- **Implementation** issues → Loop back to Phase 4
+- **Design** issues → Loop back to Phase 2
+- **Scope** issues → Loop back to Phase 0
+
+The orchestrator recommends a loop-back target, but the user decides. Artifact
+preservation rules depend on the loop-back target (see `references/phase-gates.md`).
+
+### Template Flexibility
+
+Templates use a three-tier section classification:
+- **Required** — must be present or gate fails
+- **Expected** — should be present; if omitted, note why
+- **Optional** — include, restructure, or omit freely
+
+Agents produce output proportional to task complexity. Simple tasks should produce
+proportional output, not padded boilerplate.

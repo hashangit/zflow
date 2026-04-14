@@ -3,6 +3,16 @@
 ## Executive Summary
 <!-- One-paragraph summary of investigation findings. What did the team find? Where does the bug originate? -->
 
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
+---
+
 ---
 
 ## Call Chain Analysis

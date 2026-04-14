@@ -6,7 +6,17 @@
 
 ---
 
-## Chosen Approach
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
+---
+
+## Chosen Approach [Required]
 
 **Approach:** {Name}
 
@@ -15,7 +25,7 @@ and scope constraints. Explicitly notes if this is the simplest viable approach.
 
 ---
 
-## Alternatives Considered
+## Alternatives Considered [Optional]
 
 ### {Alternative A Name}
 - **Summary:** {One paragraph}
@@ -28,7 +38,7 @@ and scope constraints. Explicitly notes if this is the simplest viable approach.
 
 ---
 
-## Architecture Overview
+## Architecture Overview [Required]
 
 {High-level structure of the solution. How it fits into the existing system.
 Key design decisions and their rationale. Diagrams or descriptions as appropriate.
@@ -37,7 +47,7 @@ Scaled to complexity: a few sentences if straightforward, up to 200-300 words if
 
 ---
 
-## Component Breakdown
+## Component Breakdown [Required]
 
 ### {Component 1 Name} ({New | Modified})
 - **Responsibility:** {What this component does}
@@ -53,7 +63,7 @@ Scaled to complexity: a few sentences if straightforward, up to 200-300 words if
 
 ---
 
-## Data Flow
+## Data Flow [Expected]
 
 {How data moves through the system end-to-end. State management approach.
 Input/output contracts between components. What gets persisted and where.
@@ -62,7 +72,7 @@ Scaled to complexity.}
 
 ---
 
-## Error Handling & Edge Cases
+## Error Handling & Edge Cases [Expected]
 
 ### Failure Modes
 | Component | Failure | Recovery | User Impact |
@@ -75,7 +85,7 @@ Scaled to complexity.}
 
 ---
 
-## Testing Strategy
+## Testing Strategy [Expected]
 
 ### Test Categories
 | Category | Scope | Priority | Approach |
@@ -93,7 +103,7 @@ Scaled to complexity.}
 
 ---
 
-## [If UI: Interface Design]
+## [If UI: Interface Design] [Optional]
 
 > This section is included only when scope.md has ui_work: true.
 
@@ -124,7 +134,7 @@ Scaled to complexity.}
 
 ---
 
-## Task Breakdown
+## Task Breakdown [Required]
 
 ### Dependency Graph
 ```
@@ -166,7 +176,7 @@ Tier 2 (depends on Tier 0+1):
 
 ---
 
-## Risk Register
+## Risk Register [Expected]
 
 | # | Risk | Likelihood | Impact | Mitigation | Raised During |
 |---|------|-----------|--------|------------|---------------|

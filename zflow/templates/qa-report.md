@@ -6,7 +6,16 @@
 
 ---
 
-## Executive Summary
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions. When the task is simple, produce output proportional to the complexity.
+
+---
+
+## Executive Summary [Required]
 
 - **Gate Decision**: PASS | FAIL
 - **Total Findings**: N
@@ -16,7 +25,7 @@
 
 ---
 
-## Severity Breakdown
+## Severity Breakdown [Required]
 
 | Severity | Count | Description |
 |----------|-------|-------------|
@@ -28,12 +37,13 @@
 
 ---
 
-## Detailed Findings
+## Detailed Findings [Expected]
 
 ### QA-001: {Finding Title}
 
 - **Severity**: Critical (Security) | Blocker | Major | Minor | Note
 - **Dimension**: Completeness | UX | Code Quality | Test Coverage | Design Alignment | Security | UI Visual
+- **Root Cause Layer** (Critical/Blocker only): Implementation | Design | Scope | Unknown
 - **Description**: {What was found, why it matters}
 - **Location**: `file:line` or `{component/module}`
 - **Remediation**: {Specific action to fix}
@@ -43,6 +53,7 @@
 
 - **Severity**: {Level}
 - **Dimension**: {Dimension}
+- **Root Cause Layer** (Critical/Blocker only): Implementation | Design | Scope | Unknown
 - **Description**: {What was found}
 - **Location**: `file:line`
 - **Remediation**: {Fix}
@@ -52,7 +63,7 @@
 
 ---
 
-## Dimension Summaries
+## Dimension Summaries [Expected]
 
 ### Completeness Check
 - **Status**: Pass | Issues Found
@@ -98,7 +109,7 @@
 
 ---
 
-## Gate Decision
+## Gate Decision [Required]
 
 ### Decision: PASS | FAIL
 
@@ -118,7 +129,7 @@ resolved before proceeding.}
 
 ---
 
-## Recommended Actions
+## Recommended Actions [Required]
 
 ### Before Merge (Critical + Blocker)
 1. {Specific action tied to a finding ID}
@@ -134,7 +145,29 @@ resolved before proceeding.}
 
 ---
 
-## Appendix: Agent Reports
+## Root Cause Analysis [Expected]
+
+_Required when Critical or Blocker findings exist. Used by the orchestrator to
+recommend a loop-back target to the user._
+
+### By Layer
+
+| Root Cause Layer | Count | Finding IDs | Recommended Loop-Back |
+|-----------------|-------|-------------|----------------------|
+| Implementation | N | QA-{NNN}, QA-{NNN} | Phase 4 (Implement) |
+| Design | N | QA-{NNN} | Phase 2 (Design) |
+| Scope | N | QA-{NNN} | Phase 0 (Brainstorm) |
+| Unknown | N | QA-{NNN} | User decision needed |
+
+### Loop-Back Recommendation
+
+**Primary recommendation**: {Phase N} — {reasoning}
+
+{Detail about what is preserved and what is regenerated for the recommended loop-back.}
+
+---
+
+## Appendix: Agent Reports [Optional]
 
 Individual dimension reports are available at:
 - `.zflow/phases/05-qa/dimension-reports/completeness.md`

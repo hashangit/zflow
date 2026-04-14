@@ -92,7 +92,7 @@ only when the topic is genuinely open.
 ### Step 4: Synthesize scope.md
 
 After all questions are answered (or the user provides enough context), assemble
-findings into `scope.md` using the template at `templates/scope.md`.
+findings into `scope.md` using the template at `templates/scope.md` as a starting point. Follow the template\'s section classifications: Required sections must be present, Expected sections should be present unless you note a reason, Optional sections are at your discretion. Produce output proportional to task complexity..
 
 Write the file to `.zflow/phases/00-brainstorm/scope.md` in the project root.
 
@@ -109,6 +109,34 @@ Once the user approves scope.md:
 ## Output
 
 A completed `scope.md` at `.zflow/phases/00-brainstorm/scope.md`.
+
+
+
+### Pre-Flight: Read Pipeline Manifest
+
+Before starting, read `.zflow/pipeline-manifest.json` if it exists. This tells you:
+- Which upstream artifacts to expect (check `artifacts_expected`)
+- Your phase's depth setting (full, abbreviated, lightweight, reduced)
+- Whether you should expect certain inputs or gracefully handle their absence
+
+If an upstream artifact is marked as not expected in the manifest, proceed
+without it rather than halting. Adapt your analysis depth to match the phase
+depth setting.
+
+
+### Abbreviated Mode
+
+When the pipeline manifest indicates `depth: "abbreviated"` for the brainstorm
+phase, or when the task complexity suggests a lighter touch:
+
+1. Still perform the silent codebase scan
+2. Ask only the 3-4 most critical questions (Problem & Users, Success Criteria,
+   Scope Boundaries)
+3. Produce an abbreviated scope.md with only Required sections
+4. Skip conditional dimensions entirely unless the user's description clearly
+   calls for them
+
+---
 
 ## Anti-Patterns
 

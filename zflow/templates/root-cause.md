@@ -1,5 +1,16 @@
 # Root Cause Analysis
 
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
+---
+
+
 ## Symptom Description
 <!-- What the user observes: error message, wrong output, crash behavior. Be specific and factual. -->
 

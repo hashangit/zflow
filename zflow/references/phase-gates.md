@@ -18,13 +18,21 @@ Each gate performs up to three checks:
 
 The output document exists and follows the expected template structure. This is always performed regardless of gate mode.
 
+**Template Section Classification:**
+
+Templates use a three-tier section classification:
+- **Required** sections MUST be present and populated. Absence causes gate failure.
+- **Expected** sections SHOULD be present. If omitted, a one-line note explaining why is required.
+- **Optional** sections are NOT validated. Include, restructure, or omit freely.
+
 **Checks:**
 - The output file exists at the expected path in `.zflow/phases/`
-- The document contains all required sections from the template
-- Sections are not left as boilerplate (no "TBD", "TODO", or unmodified template text)
+- All **Required** sections from the template are present and populated
+- **Expected** sections are either present or explicitly noted as omitted with a reason
+- No required section is left as boilerplate (no "TBD", "TODO", or unmodified template text in Required sections)
 - The document is non-empty and well-formed
 
-**Example:** `scope.md` must contain sections for Problem Statement, Success Criteria, Constraints, Affected Systems, Scope Boundaries, MVP Definition, and Known Risks. If any section is missing or still contains template placeholder text, validation fails.
+**Example:** `scope.md` must contain Required sections (Problem Statement, Success Criteria, Scope Boundaries, MVP Definition). Expected sections (Constraints, Affected Systems, Known Risks) should be present or noted as omitted. Optional sections (User's Mental Model, Explicitly Deferred) are not validated.
 
 ### 2. Completeness Check
 
@@ -298,3 +306,47 @@ Required:
 - Updated documentation files
 - CHANGELOG entry
 - Commit message (conventional commits format)
+
+---
+
+## QA Gate Loop-Back Protocol
+
+When QA finds Critical or Blocker issues, the orchestrator classifies findings by
+Root Cause Layer and presents a recommendation to the user:
+
+### Root Cause Layer Classification
+
+| Layer | Meaning | Recommended Loop-Back |
+|-------|---------|----------------------|
+| Implementation | Design is sound, code doesn't match it | Phase 4 (Implement) |
+| Design | Code matches design, design is flawed | Phase 2 (Design) |
+| Scope | Scope missed a requirement | Phase 0 (Brainstorm) |
+| Unknown | Ambiguous | User decides |
+
+### Artifact Preservation by Loop-Back Target
+
+| Loop-Back To | Preserved | Regenerated |
+|-------------|-----------|-------------|
+| Phase 4 | All design artifacts | code + impl-report |
+| Phase 2 | scope.md, research-report.md, qa-report.md (as context) | solution.md, reviewed-solution.md, impl-report.md |
+| Phase 0 | research-report.md | Everything else (soft restart) |
+
+### Constraints
+
+- Security Criticals always get priority regardless of loop-back target
+- Maximum 3 iterations for the total QA feedback loop
+- Phase 2 and Phase 0 loop-backs always require user confirmation
+- The orchestrator presents options and a recommendation; the user decides
+
+---
+
+## Dynamic Pipeline Gates
+
+When a pipeline profile other than Full is selected, gate behavior adapts:
+
+- **Quick Fix**: Only implement, QA, and document phases have gates. Design sketch gate replaces design gate.
+- **Standard**: Research gate is skipped (phase not run). Brainstorm gate is abbreviated.
+- **Full**: Standard gate configuration as documented above.
+- **Extended**: All gates default to human.
+
+Gate modes are recorded in `pipeline-manifest.json` per phase.

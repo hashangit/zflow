@@ -4,7 +4,27 @@
 
 ---
 
-## Problem Statement
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you have a specific reason to omit them; if omitted, add a
+one-line note explaining why. Sections marked **Optional** are suggestions — include
+them when they add value, or leave them out.
+
+**When to follow closely:** The task is complex, spans multiple systems, or
+involves non-trivial decisions.
+
+**When to deviate:** The task is simple and a section would contain only padding.
+Produce output proportional to the complexity.
+
+**Risk of going off-template:** Required sections must exist or the phase gate
+will fail. If you restructure Expected sections, include the same content under
+different headings.
+
+---
+
+## Problem Statement [Required]
 
 **Who is this for**: {Primary user persona or segment}
 
@@ -14,7 +34,7 @@
 
 ---
 
-## Success Criteria
+## Success Criteria [Required]
 
 Measurable outcomes that define "done":
 
@@ -24,7 +44,7 @@ Measurable outcomes that define "done":
 
 ---
 
-## Constraints
+## Constraints [Expected]
 
 - **Tech stack**: {Relevant technologies and versions, based on codebase}
 - **Timeline**: {If applicable — deadline or timebox}
@@ -34,7 +54,7 @@ Measurable outcomes that define "done":
 
 ---
 
-## Affected Systems
+## Affected Systems [Expected]
 
 Based on codebase analysis:
 
@@ -44,7 +64,7 @@ Based on codebase analysis:
 
 ---
 
-## Scope Boundaries
+## Scope Boundaries [Required]
 
 ### In Scope
 
@@ -64,7 +84,7 @@ Based on codebase analysis:
 
 ---
 
-## MVP Definition
+## MVP Definition [Required]
 
 **The simplest version that delivers core value:**
 
@@ -81,7 +101,7 @@ needed to validate the feature solves the stated problem.}
 
 ---
 
-## Known Risks
+## Known Risks [Expected]
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
@@ -91,7 +111,7 @@ needed to validate the feature solves the stated problem.}
 
 ---
 
-## User's Mental Model
+## User's Mental Model [Optional]
 
 **How the user expects this to work** (in their words or paraphrased from
 conversation):

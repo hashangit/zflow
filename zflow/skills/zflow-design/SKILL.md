@@ -124,6 +124,41 @@ Write the final `solution.md` to `.zflow/phases/02-design/solution.md`.
 - [ ] Every task has success criteria and a dependency tier assignment
 - [ ] Risk Register captures all concerns raised during the conversation
 
+
+
+### Pre-Flight: Read Pipeline Manifest
+
+Before starting, read `.zflow/pipeline-manifest.json` if it exists. This tells you:
+- Which upstream artifacts to expect (check `artifacts_expected`)
+- Your phase's depth setting (full, abbreviated, lightweight, reduced)
+- Whether you should expect certain inputs or gracefully handle their absence
+
+If an upstream artifact is marked as not expected in the manifest, proceed
+without it rather than halting. Adapt your analysis depth to match the phase
+depth setting.
+
+
+### Operating Without Research Report
+
+When the pipeline manifest indicates `research-report.md` is not expected:
+
+1. Perform your own lightweight codebase scan before designing
+2. Read project structure, key configuration files, and any files directly
+   related to the scope
+3. Note in the solution.md: "Design based on direct codebase inspection
+   (no research phase)"
+4. Make your design slightly more conservative — when in doubt, follow
+   existing patterns more closely since you lack detailed research analysis
+
+### Conditional Input: QA Loop-Back
+
+When looping back from QA (qa-report.md exists as input):
+- Read the QA report to understand what went wrong with the previous design
+- Focus on findings classified as "Design" or "Unknown" root cause layer
+- Preserve the valid parts of the previous design; only revise what QA identified as flawed
+
+---
+
 ## Anti-Patterns
 
 - Do NOT dump a monolithic design document for rubber-stamping. Section-by-section or fail.

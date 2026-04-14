@@ -202,6 +202,8 @@ detailed only in server logs.
 ```markdown
 # Security Audit Report
 
+
+> **Flexibility note:** This output format is recommended, not rigid. If the task's nature calls for a different structure, adapt it. The key requirement is that the information needed by downstream consumers is present and findable. When the task is simple, produce output proportional to the complexity — do not pad to fill template sections. When the task is complex and the template structure doesn't capture an important dimension, extend it.
 ## Executive Summary
 - Total findings: N
 - Critical: N | High: N | Medium: N | Low: N | Informational: N

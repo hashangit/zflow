@@ -3,6 +3,16 @@
 > Quick reference checklist for each QA dimension.
 > Use as a hand-off summary or rapid verification guide.
 
+## Template Guidance
+
+This template provides a recommended structure. Sections marked **Required** must
+be present — downstream phases depend on them. Sections marked **Expected** should
+be present unless you note a reason for omission. Sections marked **Optional** are
+suggestions — include, restructure, or omit as the task demands. Produce output
+proportional to complexity.
+
+---
+
 ---
 
 ## Completeness Check

@@ -132,6 +132,19 @@ Ready to proceed to Phase 4 (Implementation)?
 - `.zflow/phases/03-review/reviewer-reports/alignment.md` — alignment check report
 - `.zflow/phases/03-review/phase-meta.json` — phase metadata
 
+
+
+### Pre-Flight: Read Pipeline Manifest
+
+Before starting, read `.zflow/pipeline-manifest.json` if it exists. This tells you:
+- Which upstream artifacts to expect (check `artifacts_expected`)
+- Your phase's depth setting (full, abbreviated, lightweight, reduced)
+- Whether you should expect certain inputs or gracefully handle their absence
+
+If an upstream artifact is marked as not expected in the manifest, proceed
+without it rather than halting. Adapt your analysis depth to match the phase
+depth setting.
+
 ## Anti-Patterns
 
 - Do NOT give review agents `research-report.md` — fresh eyes only

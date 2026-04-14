@@ -106,6 +106,8 @@ Produce `root-cause.md` using the template at `templates/root-cause.md`:
 ```markdown
 # Root Cause Analysis
 
+
+> **Flexibility note:** This output format is recommended, not rigid. If the task's nature calls for a different structure, adapt it. The key requirement is that the information needed by downstream consumers is present and findable. When the task is simple, produce output proportional to the complexity — do not pad to fill template sections. When the task is complex and the template structure doesn't capture an important dimension, extend it.
 ## Symptom Description
 {What the user observes — the error, wrong output, crash}
 
