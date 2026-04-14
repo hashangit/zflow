@@ -1,13 +1,3 @@
----
-name: zflow-research
-description: >
-  Research phase for ZFlow multi-agent workflows. Fans out parallel research
-  agents to analyze the codebase across architecture, dependencies, patterns,
-  tests, and related code dimensions. Triggered by the main orchestrator after
-  brainstorm produces scope.md. Optionally spawns ui-system-scout when UI work
-  is flagged. Merges all agent reports into research-report.md.
-disable-model-invocation: true
----
 
 # ZFlow Phase 1: Research — Swarm Coordinator
 
@@ -50,7 +40,7 @@ parallel calls). Each agent runs independently with only the documents you
 explicitly include in its prompt.
 
 Each agent receives:
-- The Karpathy preamble (read `agents/_shared/karpathy-preamble.md`)
+- The Karpathy preamble (read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
 - Its specific agent prompt file contents
 - The full contents of `scope.md`
 - The project root path
@@ -59,23 +49,23 @@ Each agent receives:
 
 | # | Agent Prompt | Output File |
 |---|-------------|-------------|
-| 1 | `agents/research/architecture-scout.md` | `agent-reports/architecture.md` |
-| 2 | `agents/research/dependency-mapper.md` | `agent-reports/dependencies.md` |
-| 3 | `agents/research/pattern-analyzer.md` | `agent-reports/patterns.md` |
-| 4 | `agents/research/test-surveyor.md` | `agent-reports/tests.md` |
-| 5 | `agents/research/related-code-finder.md` | `agent-reports/related-code.md` |
+| 1 | `${CLAUDE_SKILL_DIR}/agents/research/architecture-scout.md` | `agent-reports/architecture.md` |
+| 2 | `${CLAUDE_SKILL_DIR}/agents/research/dependency-mapper.md` | `agent-reports/dependencies.md` |
+| 3 | `${CLAUDE_SKILL_DIR}/agents/research/pattern-analyzer.md` | `agent-reports/patterns.md` |
+| 4 | `${CLAUDE_SKILL_DIR}/agents/research/test-surveyor.md` | `agent-reports/tests.md` |
+| 5 | `${CLAUDE_SKILL_DIR}/agents/research/related-code-finder.md` | `agent-reports/related-code.md` |
 
 ### Conditional Agent (UI work only)
 
 | # | Agent Prompt | Output File |
 |---|-------------|-------------|
-| 6 | `agents/research/ui-system-scout.md` | `agent-reports/ui-system.md` |
+| 6 | `${CLAUDE_SKILL_DIR}/agents/research/ui-system-scout.md` | `agent-reports/ui-system.md` |
 
 ### How to Spawn
 
 For each agent, construct a prompt string containing:
-1. The contents of `agents/_shared/karpathy-preamble.md`
-2. The contents of the agent's prompt file (e.g., `agents/research/architecture-scout.md`)
+1. The contents of `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`
+2. The contents of the agent's prompt file (e.g., `${CLAUDE_SKILL_DIR}/agents/research/architecture-scout.md`)
 3. The full contents of `scope.md`
 
 Then call the Agent tool with that prompt and a short description (e.g.,
@@ -88,7 +78,7 @@ After all agents complete:
 
 1. Read each agent's output from `.zflow/phases/01-research/agent-reports/`
 2. Merge into a single `research-report.md` using the template at
-   `templates/research-report.md`
+   `${CLAUDE_SKILL_DIR}/templates/research-report.md`
 3. The merge is not a copy-paste concatenation — synthesize overlapping
    findings, flag contradictions, and highlight cross-cutting insights in
    the "Key Findings" section

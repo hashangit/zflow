@@ -1,14 +1,3 @@
----
-name: zflow-implement
-description: >
-  Implementation phase coordinator for ZFlow. Deploys parallel implementation
-  agents organized by dependency tiers. Reads reviewed-solution.md (and optionally
-  ui-design-report.md), builds a dependency graph, tiers tasks, and spawns
-  focused-implementer or ui-implementer agents tier by tier. Invoked by the main
-  ZFlow orchestrator during Phase 4. Invoked only by the ZFlow orchestrator
-  — does not auto-trigger on user messages.
-disable-model-invocation: true
----
 
 # ZFlow Phase 4: Implement
 
@@ -73,7 +62,7 @@ Tier 2: [Task F (deps: D, E)]        -- single task
 ### Step 4: Generate Implementation Plan
 
 Write `.zflow/phases/04-implement/implementation-plan.md` using the
-`templates/implementation-plan.md` template. Populate:
+`${CLAUDE_SKILL_DIR}/templates/implementation-plan.md` template. Populate:
 - The dependency graph visualization
 - The tier breakdown with task assignments
 - Per-task details: agent type, input files, success criteria, complexity
@@ -85,8 +74,8 @@ For each tier, from Tier 0 to the highest tier:
 
 1. **Identify agent type per task**:
    - If the task involves UI components AND `ui-design-report.md` exists:
-     use `agents/implement/ui-implementer.md`
-   - Otherwise: use `agents/implement/focused-implementer.md`
+     use `${CLAUDE_SKILL_DIR}/agents/implement/ui-implementer.md`
+   - Otherwise: use `${CLAUDE_SKILL_DIR}/agents/implement/focused-implementer.md`
 
 2. **Prepare each agent's context**:
    - The specific task description from the solution
@@ -96,7 +85,7 @@ For each tier, from Tier 0 to the highest tier:
    - File paths to work on (from research phase findings)
    - Coding conventions (from pattern analysis in research report)
    - Related test patterns (from test survey in research report)
-   - The Karpathy preamble (`agents/_shared/karpathy-preamble.md`) is included
+   - The Karpathy preamble (`${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`) is included
      in each agent prompt automatically
    - For UI tasks with Pencil.dev designs: the relevant section of
      `ui-design-report.md` with design tokens and component specs, plus
@@ -124,7 +113,7 @@ For each tier, from Tier 0 to the highest tier:
 ### Step 6: Compile Implementation Report
 
 After all tiers complete, write `.zflow/phases/04-implement/impl-report.md`
-using the `templates/impl-report.md` template. This report must include:
+using the `${CLAUDE_SKILL_DIR}/templates/impl-report.md` template. This report must include:
 - Executive summary: tasks completed, failed, or partially completed
 - Per-task reports: status, files changed, deviations from design with
   justification, verification results
@@ -187,24 +176,3 @@ Write this sketch to `.zflow/phases/04-implement/design-sketch.md` before
 proceeding to implementation. This satisfies the invariant that implementation
 never happens without design intent being documented.
 
----
-
-## Anti-Patterns
-
-- Do NOT implement tasks yourself -- you are a coordinator, not an implementer
-- Do NOT modify the dependency graph to simplify it -- respect the solution's
-  dependency structure
-- Do NOT skip failed tasks silently -- always surface failures with context
-- Do NOT merge changes between tiers -- let each tier complete independently
-- Do NOT add tasks that were not in the reviewed solution
-- Do NOT reorder tiers -- Tier N+1 must never start before Tier N completes
-
-## Success Criteria
-
-- All tasks from the reviewed solution are attempted (completed or documented as failed)
-- Implementation plan is written before execution begins
-- Every tier's agents run in parallel within the tier
-- Tiers execute strictly in order (Tier 0 before Tier 1, etc.)
-- Every deviation from the design is documented with justification
-- `impl-report.md` accurately reflects the final state of all changes
-- Phase metadata is written and accurate

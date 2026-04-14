@@ -1,16 +1,3 @@
----
-name: zflow-qa
-description: >
-  QA phase coordinator for ZFlow. Deploys 6-7 parallel QA agents across
-  dimensions: completeness, UX, code quality (Karpathy enforcement), test
-  coverage, design alignment, security (OWASP Top 10 2025), and optionally
-  visual regression for UI work. Merges findings into qa-report.md with
-  severity categorization. Gates on Critical/Blocker issues with loop-back
-  to Phase 4 for targeted fixes. Invoked by the main ZFlow orchestrator
-  during Phase 5. Invoked only by the ZFlow orchestrator — does not
-  auto-trigger on user messages.
-disable-model-invocation: true
----
 
 # ZFlow Phase 5: QA
 
@@ -83,7 +70,7 @@ Each agent receives a tailored context package:
 
 Spawn all agents in a SINGLE tool-use block (parallel fan-out). Each agent:
 
-- Uses its dedicated prompt template from `agents/qa/`
+- Uses its dedicated prompt template from `${CLAUDE_SKILL_DIR}/agents/qa/`
 - Runs independently — each agent gets only the documents you explicitly
   include in its prompt, preventing cross-contamination
 - Produces a dimension report saved to
@@ -95,7 +82,7 @@ After all agents complete:
 
 1. Read every dimension report from `dimension-reports/`.
 2. Merge all findings into a unified `qa-report.md` using
-   `templates/qa-report.md`.
+   `${CLAUDE_SKILL_DIR}/templates/qa-report.md`.
 3. Categorize each finding by severity:
    - **Critical (Security)**: Security vulnerability -- must fix immediately
    - **Blocker**: Must fix before merge (broken functionality, missing core
@@ -189,25 +176,3 @@ For each Critical or Blocker finding, classify its Root Cause Layer:
 Add the Root Cause Layer to each Critical/Blocker finding in the QA report.
 This classification is used by the orchestrator to recommend a loop-back target.
 
----
-
-## Anti-Patterns
-
-- Do NOT run QA yourself -- you are a coordinator, not an auditor
-- Do NOT cherry-pick findings -- every agent's findings must be represented
-- Do NOT downgrade severity without justification -- the agents' assessments
-  stand unless you have concrete evidence to the contrary
-- Do NOT skip the security-auditor -- it always runs, regardless of scope size
-- Do NOT skip the gate -- even one Critical finding means FAIL
-- Do NOT re-run all agents on loop-back -- only re-run affected dimensions
-- Do NOT add speculative findings that no agent reported
-
-## Success Criteria
-
-- All QA agents spawned in parallel and their reports collected
-- Every finding categorized with a severity level
-- Findings cross-referenced (duplicate issues unified)
-- qa-report.md follows the template's Required sections (Expected should be present or noted)
-- Gate decision is made and justified
-- If FAIL: specific loop-back instructions identify exactly what to fix
-- Phase metadata is written and accurate

@@ -1,14 +1,3 @@
----
-name: zflow-brainstorm
-description: >
-  Guided Socratic brainstorming phase for ZFlow. Transforms a vague idea into a
-  crisp, validated scope specification through one-at-a-time multiple-choice questions
-  grounded in the actual project codebase. Triggered by the main ZFlow orchestrator
-  during Phase 0. Produces scope.md with problem statement, success criteria,
-  constraints, scope boundaries, MVP definition, and UI work detection.
-  Invoked only by the ZFlow orchestrator — does not auto-trigger on user messages.
-disable-model-invocation: true
----
 
 # ZFlow Phase 0: Brainstorm — Guided Socratic Discovery
 
@@ -63,8 +52,8 @@ Your first interaction with the user:
 
 ### Step 3: Guided Questions (One at a Time)
 
-Load the question patterns from `agents/brainstorm/question-patterns.md` and the
-Socratic interviewer persona from `agents/brainstorm/socratic-interviewer.md`.
+Load the question patterns from `${CLAUDE_SKILL_DIR}/agents/brainstorm/question-patterns.md` and the
+Socratic interviewer persona from `${CLAUDE_SKILL_DIR}/agents/brainstorm/socratic-interviewer.md`.
 
 Ask questions **one at a time** using this priority:
 
@@ -92,7 +81,7 @@ only when the topic is genuinely open.
 ### Step 4: Synthesize scope.md
 
 After all questions are answered (or the user provides enough context), assemble
-findings into `scope.md` using the template at `templates/scope.md` as a starting point. Follow the template\'s section classifications: Required sections must be present, Expected sections should be present unless you note a reason, Optional sections are at your discretion. Produce output proportional to task complexity..
+findings into `scope.md` using the template at `${CLAUDE_SKILL_DIR}/templates/scope.md` as a starting point. Follow the template\'s section classifications: Required sections must be present, Expected sections should be present unless you note a reason, Optional sections are at your discretion. Produce output proportional to task complexity..
 
 Write the file to `.zflow/phases/00-brainstorm/scope.md` in the project root.
 
@@ -136,14 +125,3 @@ phase, or when the task complexity suggests a lighter touch:
 4. Skip conditional dimensions entirely unless the user's description clearly
    calls for them
 
----
-
-## Anti-Patterns
-
-- **Never dump all questions at once** — one at a time, always.
-- **Never skip the codebase scan** — questions without context are generic and
-  low-value.
-- **Never propose solution approaches** — that's Phase 2's job after research.
-- **Never ask more than 10 questions** — if you need more, the scope is too
-  broad. Suggest decomposition instead.
-- **Never ask questions the user already answered** in their initial request.

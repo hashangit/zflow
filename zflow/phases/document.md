@@ -1,14 +1,3 @@
----
-name: zflow-document
-description: >
-  Documentation and commit phase for ZFlow. Reads the full document chain
-  (scope.md through qa-report.md), updates/creates documentation (README,
-  API docs, inline comments), updates CHANGELOG, generates a conventional
-  commit message, and stages changes for commit with a human approval gate.
-  Invoked by the main ZFlow orchestrator during Phase 6. Does not
-  auto-trigger on user messages.
-disable-model-invocation: true
----
 
 # ZFlow Phase 6: Document & Commit
 
@@ -77,8 +66,8 @@ a bug fix with no API impact, only the CHANGELOG needs updating.
 ### Step 3: Deploy the Documentation Writer Agent
 
 Spawn the documentation writer agent. For its prompt:
-1. Read `agents/document/documentation-writer.md`
-2. Read `agents/_shared/karpathy-preamble.md` (include the Karpathy preamble)
+1. Read `${CLAUDE_SKILL_DIR}/agents/document/documentation-writer.md`
+2. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` (include the Karpathy preamble)
 3. Include the full contents of: `scope.md`, `impl-report.md`,
    `qa-report.md`, and the list of changed files from `impl-report.md`
 4. Call the Agent tool with that prompt and description "documentation writer"

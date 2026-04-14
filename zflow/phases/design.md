@@ -1,13 +1,3 @@
----
-name: zflow-design
-description: >
-  Design phase for ZFlow multi-agent workflow. Maps research findings and validated scope
-  into a concrete, implementable solution through approach selection and section-by-section
-  design with user approval. Produces solution.md.
-  Invoked by main orchestrator after research phase completes.
-  Do not invoke directly — use /using-zflow to run the full workflow.
-disable-model-invocation: true
----
 
 # ZFlow Phase 2: Design
 
@@ -157,13 +147,3 @@ When looping back from QA (qa-report.md exists as input):
 - Focus on findings classified as "Design" or "Unknown" root cause layer
 - Preserve the valid parts of the previous design; only revise what QA identified as flawed
 
----
-
-## Anti-Patterns
-
-- Do NOT dump a monolithic design document for rubber-stamping. Section-by-section or fail.
-- Do NOT skip user approval between sections.
-- Do NOT design beyond what scope.md defines. Out-of-scope ideas go in Open Questions only.
-- Do NOT present approaches that ignore research findings. Every approach must be codebase-grounded.
-- Do NOT add speculative features, abstractions, or flexibility (Karpathy: Simplicity First).
-- Do NOT proceed past disagreements. Resolve first, then continue.

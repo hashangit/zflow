@@ -1,12 +1,3 @@
----
-name: zflow-debug
-description: >
-  Structured multi-agent debugging workflow. Use when the user reports a bug,
-  regression, crash, wrong output, performance issue, or security vulnerability
-  and wants a systematic root-cause analysis and fix. Invoked only by the
-  ZFlow orchestrator — does not auto-trigger on user messages.
-disable-model-invocation: true
----
 
 # ZFlow Debug Workflow Orchestrator
 
@@ -58,7 +49,7 @@ D0: REPRODUCE ──► D1: INVESTIGATE ──► D2: ANALYZE ──► D3: DESI
 
 ### Phase D0: Reproduce
 
-**Agent prompt**: Read `agents/debug/reproducer.md` (include the Karpathy preamble from `agents/_shared/karpathy-preamble.md`)
+**Agent prompt**: Read `${CLAUDE_SKILL_DIR}/agents/debug/reproducer.md` (include the Karpathy preamble from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
 **Mode**: Interactive (agent needs to run code and observe output)
 **Gate**: `auto` by default (reproduction is self-validating)
 
@@ -80,11 +71,11 @@ If bug is NOT reproducible:
 
 | Agent | Prompt File | Focus |
 |-------|----------|-------|
-| Call Chain Tracer | `agents/debug/call-chain-tracer.md` | Trace execution backward from symptom |
-| Data Flow Tracer | `agents/debug/data-flow-tracer.md` | Follow invalid data to its source |
-| Pattern Scanner | `agents/debug/pattern-scanner.md` | Find similar patterns that may share the bug |
-| History Investigator | `agents/debug/history-investigator.md` | Git blame/log analysis |
-| Security Impact Assessor | `agents/debug/security-impact-assessor.md` | Security implications of the bug |
+| Call Chain Tracer | `${CLAUDE_SKILL_DIR}/agents/debug/call-chain-tracer.md` | Trace execution backward from symptom |
+| Data Flow Tracer | `${CLAUDE_SKILL_DIR}/agents/debug/data-flow-tracer.md` | Follow invalid data to its source |
+| Pattern Scanner | `${CLAUDE_SKILL_DIR}/agents/debug/pattern-scanner.md` | Find similar patterns that may share the bug |
+| History Investigator | `${CLAUDE_SKILL_DIR}/agents/debug/history-investigator.md` | Git blame/log analysis |
+| Security Impact Assessor | `${CLAUDE_SKILL_DIR}/agents/debug/security-impact-assessor.md` | Security implications of the bug |
 
 **Mode**: All agents run independently in parallel
 **Gate**: `auto` by default
@@ -93,7 +84,7 @@ Steps:
 1. Read `repro-report.md` from D0
 2. Spawn all 5 investigation agents simultaneously in a single tool-use block.
    For each agent, read its prompt file and the Karpathy preamble from
-   `agents/_shared/karpathy-preamble.md`, and include both plus the
+   `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`, and include both plus the
    `repro-report.md` contents in the agent's prompt.
 3. Each agent receives `repro-report.md` as input
 4. Merge individual reports into `investigation.md`
@@ -102,7 +93,7 @@ Steps:
 
 ### Phase D2: Root Cause Analysis
 
-**Agent prompt**: Read `agents/debug/root-cause-analyst.md` (include Karpathy preamble from `agents/_shared/karpathy-preamble.md`)
+**Agent prompt**: Read `${CLAUDE_SKILL_DIR}/agents/debug/root-cause-analyst.md` (include Karpathy preamble from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
 **Mode**: Independent agent
 **Gate**: `human` by default (critical checkpoint)
 
@@ -119,7 +110,7 @@ Steps:
 
 ### Phase D3: Design Fix
 
-**Agent prompt**: Read `agents/debug/fix-designer.md` (include Karpathy preamble from `agents/_shared/karpathy-preamble.md`)
+**Agent prompt**: Read `${CLAUDE_SKILL_DIR}/agents/debug/fix-designer.md` (include Karpathy preamble from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
 **Mode**: Independent agent
 **Gate**: `human` by default (critical checkpoint)
 
@@ -138,7 +129,7 @@ Steps:
 
 ### Phase D4: Implement Fix
 
-**Agent**: `agents/implement/focused-implementer.md` (shared with dev workflow)
+**Agent**: `${CLAUDE_SKILL_DIR}/agents/implement/focused-implementer.md` (shared with dev workflow)
 **Mode**: Independent agent
 **Gate**: `auto` by default
 
@@ -170,7 +161,7 @@ ESCALATE: Pause. Present full context to user.
 
 ### Phase D5: Verify
 
-**Agent prompt**: Read `agents/debug/fix-verifier.md` (include Karpathy preamble from `agents/_shared/karpathy-preamble.md`)
+**Agent prompt**: Read `${CLAUDE_SKILL_DIR}/agents/debug/fix-verifier.md` (include Karpathy preamble from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
 **Mode**: Independent agent (4 parallel verification dimensions)
 **Gate**: `auto` by default
 

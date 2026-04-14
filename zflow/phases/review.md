@@ -1,13 +1,3 @@
----
-name: zflow-review
-description: >
-  Multi-perspective review phase for ZFlow. Spawns 5 parallel review agents
-  (gap detection, overengineering critique, security review, performance review,
-  architecture alignment) to examine scope.md + solution.md with fresh eyes.
-  Coordinator then performs structural self-review and produces reviewed-solution.md.
-  Triggered by the main ZFlow orchestrator during Phase 3.
-disable-model-invocation: true
----
 
 # ZFlow Phase 3: Review
 
@@ -36,15 +26,15 @@ runs independently with only the documents you explicitly include in its prompt.
 
 | Agent | Prompt File | Focus |
 |---|---|---|
-| gap-detector | `agents/review/gap-detector.md` | Missing requirements, edge cases, assumptions |
-| overengineering-critic | `agents/review/overengineering-critic.md` | Unnecessary complexity, YAGNI, Karpathy simplicity |
-| security-reviewer | `agents/review/security-reviewer.md` | Design-level security implications |
-| performance-reviewer | `agents/review/performance-reviewer.md` | Performance bottlenecks, scaling concerns |
-| alignment-checker | `agents/review/alignment-checker.md` | Architecture consistency, naming, conventions |
+| gap-detector | `${CLAUDE_SKILL_DIR}/agents/review/gap-detector.md` | Missing requirements, edge cases, assumptions |
+| overengineering-critic | `${CLAUDE_SKILL_DIR}/agents/review/overengineering-critic.md` | Unnecessary complexity, YAGNI, Karpathy simplicity |
+| security-reviewer | `${CLAUDE_SKILL_DIR}/agents/review/security-reviewer.md` | Design-level security implications |
+| performance-reviewer | `${CLAUDE_SKILL_DIR}/agents/review/performance-reviewer.md` | Performance bottlenecks, scaling concerns |
+| alignment-checker | `${CLAUDE_SKILL_DIR}/agents/review/alignment-checker.md` | Architecture consistency, naming, conventions |
 
 For each agent, construct a prompt string containing:
-1. Read `agents/_shared/karpathy-preamble.md` and include its contents (the Karpathy behavioral rules)
-2. Read the agent's prompt file (e.g., `agents/review/gap-detector.md`) and include its contents
+1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents (the Karpathy behavioral rules)
+2. Read the agent's prompt file (e.g., `${CLAUDE_SKILL_DIR}/agents/review/gap-detector.md`) and include its contents
 3. Include the full contents of `scope.md` and `solution.md` as input context
 4. Call the Agent tool with that prompt and a short description
 
@@ -78,7 +68,7 @@ Once all 5 agents return their reports:
 
 ### Step 3: Produce Reviewed Solution
 
-Write the final output to `.zflow/phases/03-review/reviewed-solution.md` using the `templates/reviewed-solution.md` template structure.
+Write the final output to `.zflow/phases/03-review/reviewed-solution.md` using the `${CLAUDE_SKILL_DIR}/templates/reviewed-solution.md` template structure.
 
 The document contains:
 - **Original Solution with Adjustments Applied**: The solution text with inline modifications clearly marked (additions noted, deletions struck through)
