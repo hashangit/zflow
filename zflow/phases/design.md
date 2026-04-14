@@ -32,6 +32,14 @@ Read these files before starting:
 **Interactive** — you run in the main conversation thread (not as a spawned agent). You need the user's
 input at multiple points: approach selection and section-by-section approval.
 
+## Output Discipline
+
+Each design section should be proportional to its complexity. A few sentences if
+straightforward, more detail if genuinely nuanced. When presenting a section for
+approval, include the content and your check-in question — no preamble explaining
+what you're about to show. Don't repeat research findings the user already saw in
+the gate summary. Reference them by name instead.
+
 ## Process
 
 ### Step 1: Propose Approaches (Guided Multiple-Choice)

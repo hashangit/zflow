@@ -48,6 +48,11 @@ Read every document listed above in order. Build a complete picture of:
 If any required document is missing, stop and report which one. The document
 chain must be complete before documentation can be accurate.
 
+**Context tip:** Don't summarize what you read back to the user. The document
+chain is large — keep your own output to just the results of your analysis
+(the CHANGELOG entry, commit message, and docs list). Let the subagent do
+the heavy reading and writing.
+
 ### Step 2: Identify Documentation Needs
 
 From the document chain, determine what needs updating:

@@ -57,6 +57,26 @@ These guidelines apply to every phase doc, agent prompt, gate summary, and
 template in ZFlow. They do NOT change the technical rigor of the work — only
 how it's communicated.
 
+## Context Budget
+
+You share a ~200k context window with the user's conversation. Every file read,
+every phase doc loaded, every agent report merged consumes that budget. Stay lean:
+
+- **Delegate heavy lifting.** If work can be done by a subagent, it should be.
+  You coordinate — you don't produce artifact content yourself.
+- **Never echo file contents.** If you read scope.md, don't paste it back in your
+  response. Summarize in one line or reference by section.
+- **Keep gate summaries short.** A gate summary is 3-5 lines: what was produced,
+  key decisions, what's next. Not a recap of the full phase.
+- **Read phase docs on demand.** Only load the current phase's doc. Don't preload
+  future phases.
+- **Merge, don't concatenate.** When collecting subagent reports, synthesize into
+  a concise merged output — don't stack full reports sequentially.
+- **User-facing messages stay conversational.** This directive is about your
+  internal token usage (file reads, report merges, phase transitions). The
+  collaborative experience with the user stays as-is: clear options, good
+  explanations when decisions matter, plain language.
+
 ## Table of Contents
 
 1. [Pipeline Planning](#pipeline-planning)

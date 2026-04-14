@@ -1,17 +1,14 @@
 # QA Report
 
 > Produced by ZFlow Phase 5: QA.
-> Input: reviewed-solution.md + impl-report.md + actual code changes.
-> This document is the gate for Phase 6. Critical or Blocker findings block progression.
+> Critical or Blocker findings block progression to Phase 6.
 
 ---
 
 ## Template Guidance
 
-This template provides a recommended structure. Sections marked **Required** must
-be present — downstream phases depend on them. Sections marked **Expected** should
-be present unless you note a reason for omission. Sections marked **Optional** are
-suggestions. When the task is simple, produce output proportional to the complexity.
+**Required** = must exist. **Expected** = include unless noted. **Optional** = discretionary.
+Scale output to task complexity.
 
 ---
 
@@ -19,21 +16,19 @@ suggestions. When the task is simple, produce output proportional to the complex
 
 - **Gate Decision**: PASS | FAIL
 - **Total Findings**: N
-- **Security Agent Deployed**: Yes | No
-- **UI Visual QA Deployed**: Yes | No
 - **Loop-back Iterations**: N (0 = first pass)
 
 ---
 
 ## Severity Breakdown [Required]
 
-| Severity | Count | Description |
-|----------|-------|-------------|
-| **Critical (Security)** | N | Security vulnerability -- must fix immediately |
-| **Blocker** | N | Must fix before merge |
-| **Major** | N | Should fix; creates technical debt if not |
-| **Minor** | N | Nice to fix; cosmetic or stylistic |
-| **Note** | N | Observation for future consideration |
+| Severity | Count |
+|----------|-------|
+| **Critical (Security)** | N |
+| **Blocker** | N |
+| **Major** | N |
+| **Minor** | N |
+| **Note** | N |
 
 ---
 
@@ -44,68 +39,22 @@ suggestions. When the task is simple, produce output proportional to the complex
 - **Severity**: Critical (Security) | Blocker | Major | Minor | Note
 - **Dimension**: Completeness | UX | Code Quality | Test Coverage | Design Alignment | Security | UI Visual
 - **Root Cause Layer** (Critical/Blocker only): Implementation | Design | Scope | Unknown
+- **Location**: `file:line` or `{component}`
 - **Description**: {What was found, why it matters}
-- **Location**: `file:line` or `{component/module}`
-- **Remediation**: {Specific action to fix}
-- **Verification**: {How to confirm the fix works}
+- **Remediation**: {Specific fix}
+- **Verification**: {How to confirm}
 
-### QA-002: {Finding Title}
-
-- **Severity**: {Level}
-- **Dimension**: {Dimension}
-- **Root Cause Layer** (Critical/Blocker only): Implementation | Design | Scope | Unknown
-- **Description**: {What was found}
-- **Location**: `file:line`
-- **Remediation**: {Fix}
-- **Verification**: {Check}
-
-{Continue for each finding. Number sequentially across all dimensions.}
+{Continue for each finding. Number sequentially.}
 
 ---
 
 ## Dimension Summaries [Expected]
 
-### Completeness Check
-- **Status**: Pass | Issues Found
-- **Tasks verified**: N complete / N partial / N missing
-- **Key finding**: {Most significant, if any}
+{For each dimension that ran, one entry:}
 
-### UX Review
+### {Dimension Name}
 - **Status**: Pass | Issues Found
-- **APIs reviewed**: N
-- **Error paths reviewed**: N
-- **Key finding**: {Most significant, if any}
-
-### Code Quality (Karpathy Enforcement)
-- **Status**: Pass | Issues Found
-- **Files reviewed**: N
-- **Karpathy violations**: N (scope trace failures / speculative code / unnecessary abstractions / non-surgical changes)
-- **Key finding**: {Most significant, if any}
-
-### Test Coverage
-- **Status**: Pass | Issues Found
-- **Units with tests**: N / N total
-- **Estimated coverage**: High | Medium | Low
-- **Key finding**: {Most significant, if any}
-
-### Design Alignment
-- **Status**: Pass | Issues Found
-- **Components aligned**: N / N total
-- **Unjustified deviations**: N
-- **Key finding**: {Most significant, if any}
-
-### Security Audit
-- **Status**: Pass | Issues Found
-- **OWASP categories reviewed**: 10/10
-- **Findings by severity**: Critical: N / High: N / Medium: N / Low: N / Info: N
-- **Key finding**: {Most significant, if any}
-- **Full report**: See `dimension-reports/security-audit.md`
-
-### UI Visual QA (Conditional)
-- **Status**: Pass | Issues Found | Not Applicable
-- **Components verified**: N
-- **Design token compliance**: N% compliant
-- **Key finding**: {Most significant, if any}
+- **Key finding**: {Most significant, if any. "None" if clean.}
 
 ---
 
@@ -113,67 +62,47 @@ suggestions. When the task is simple, produce output proportional to the complex
 
 ### Decision: PASS | FAIL
 
-**Reasoning:**
-{Why the gate passes or fails. If PASS, note any Major/Minor items that should
-be tracked. If FAIL, list the specific Critical/Blocker findings that must be
-resolved before proceeding.}
+{If PASS: note any Major/Minor items to track.}
+{If FAIL: list Critical/Blocker findings that must be resolved.}
 
-**If FAIL -- Loop-back instructions:**
+**If FAIL — Loop-back instructions:**
 
 | Finding ID | Severity | Fix Target | Priority |
 |-----------|----------|-----------|----------|
-| QA-{NNN} | {Level} | `{file or component}` | {1 = highest} |
-| QA-{NNN} | {Level} | `{file or component}` | {2} |
+| QA-{NNN} | {Level} | `{file or component}` | {1=highest} |
 
-**Security findings are always prioritized first.**
+Security findings prioritized first.
 
 ---
 
 ## Recommended Actions [Required]
 
 ### Before Merge (Critical + Blocker)
-1. {Specific action tied to a finding ID}
-2. {Specific action}
+1. {Action tied to finding ID}
 
 ### Before Next Release (Major)
-1. {Specific action}
-2. {Specific action}
+1. {Action}
 
-### Future Consideration (Minor + Note)
-1. {Specific action}
-2. {Specific action}
+### Future (Minor + Note)
+1. {Action}
 
 ---
 
 ## Root Cause Analysis [Expected]
 
-_Required when Critical or Blocker findings exist. Used by the orchestrator to
-recommend a loop-back target to the user._
+_Required when Critical or Blocker findings exist._
 
-### By Layer
-
-| Root Cause Layer | Count | Finding IDs | Recommended Loop-Back |
-|-----------------|-------|-------------|----------------------|
-| Implementation | N | QA-{NNN}, QA-{NNN} | Phase 4 (Implement) |
-| Design | N | QA-{NNN} | Phase 2 (Design) |
-| Scope | N | QA-{NNN} | Phase 0 (Brainstorm) |
-| Unknown | N | QA-{NNN} | User decision needed |
-
-### Loop-Back Recommendation
-
-**Primary recommendation**: {Phase N} — {reasoning}
-
-{Detail about what is preserved and what is regenerated for the recommended loop-back.}
+| Root Cause Layer | Count | Finding IDs | Loop-Back Target |
+|-----------------|-------|-------------|------------------|
+| Implementation | N | QA-{NNN} | Phase 4 |
+| Design | N | QA-{NNN} | Phase 2 |
+| Scope | N | QA-{NNN} | Phase 0 |
+| Unknown | N | QA-{NNN} | User decision |
 
 ---
 
 ## Appendix: Agent Reports [Optional]
 
-Individual dimension reports are available at:
-- `.zflow/phases/05-qa/dimension-reports/completeness.md`
-- `.zflow/phases/05-qa/dimension-reports/ux.md`
-- `.zflow/phases/05-qa/dimension-reports/code-quality.md`
-- `.zflow/phases/05-qa/dimension-reports/test-coverage.md`
-- `.zflow/phases/05-qa/dimension-reports/design-alignment.md`
-- `.zflow/phases/05-qa/dimension-reports/security-audit.md`
-- `.zflow/phases/05-qa/dimension-reports/ui-visual-qa.md` (if applicable)
+Individual dimension reports at `.zflow/phases/05-qa/dimension-reports/`:
+completeness.md, ux.md, code-quality.md, test-coverage.md, design-alignment.md,
+security-audit.md{, ui-visual-qa.md if applicable}

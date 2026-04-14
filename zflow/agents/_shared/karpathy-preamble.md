@@ -32,3 +32,14 @@ You MUST follow these rules in addition to your specific mission:
 - Ask. Don't assume.
 - Surface tradeoffs rather than hiding them.
 - If you notice unrelated issues, mention them — don't fix them.
+
+## Token Discipline
+
+Every token you produce costs context budget. Be efficient without being terse:
+
+- **Structured over prose.** Use tables, lists, and labeled sections. Not paragraphs.
+- **No repetition.** State something once. Don't re-summarize what you already said.
+- **No padding.** Skip "In summary", "Overall", "To conclude". If a section has no findings, write "None found." and stop.
+- **Reference, don't echo.** Don't quote input documents back. Reference them by section name or line number.
+- **Right-size your output.** A simple finding gets one line. A complex one gets what it needs — no more.
+- **Skip pleasantries.** No "Great question" or "Let me explain". Get to the content.

@@ -8,11 +8,8 @@
 
 ## Template Guidance
 
-This template provides a recommended structure. Sections marked **Required** must
-be present — downstream phases depend on them. Sections marked **Expected** should
-be present unless you note a reason for omission. Sections marked **Optional** are
-suggestions — include, restructure, or omit as the task demands. Produce output
-proportional to complexity.
+**Required** = must exist. **Expected** = include unless noted. **Optional** = discretionary.
+Scale output to task complexity — a few sentences if straightforward, more detail if nuanced.
 
 ---
 
@@ -20,55 +17,39 @@ proportional to complexity.
 
 **Approach:** {Name}
 
-**Rationale:** {Why this approach was selected over alternatives. Tied to research findings
-and scope constraints. Explicitly notes if this is the simplest viable approach.}
+**Rationale:** {Why selected. Tied to research findings and scope. Notes if simplest viable.}
 
 ---
 
 ## Alternatives Considered [Optional]
 
-### {Alternative A Name}
+### {Alternative A}
 - **Summary:** {One paragraph}
-- **Why rejected:** {Specific reason — effort too high, doesn't fit codebase, risk too great,
-  unnecessary complexity, etc.}
-
-### {Alternative B Name}
-- **Summary:** {One paragraph}
-- **Why rejected:** {Specific reason}
+- **Why rejected:** {Reason}
 
 ---
 
 ## Architecture Overview [Required]
 
-{High-level structure of the solution. How it fits into the existing system.
-Key design decisions and their rationale. Diagrams or descriptions as appropriate.
-
-Scaled to complexity: a few sentences if straightforward, up to 200-300 words if nuanced.}
+{High-level structure. How it fits into existing system. Key decisions and rationale.
+Scaled to complexity.}
 
 ---
 
 ## Component Breakdown [Required]
 
-### {Component 1 Name} ({New | Modified})
-- **Responsibility:** {What this component does}
-- **Files affected:** {Paths}
-- **Key decisions:** {Any non-obvious choices with rationale}
+### {Component 1} ({New | Modified})
+- **Responsibility:** {What it does}
+- **Files:** {Paths}
+- **Key decisions:** {Non-obvious choices}
 
-### {Component 2 Name} ({New | Modified})
-- **Responsibility:** {What this component does}
-- **Files affected:** {Paths}
-- **Key decisions:** {Any non-obvious choices with rationale}
-
-{Continue for each component.}
+{Repeat per component.}
 
 ---
 
 ## Data Flow [Expected]
 
-{How data moves through the system end-to-end. State management approach.
-Input/output contracts between components. What gets persisted and where.
-
-Scaled to complexity.}
+{How data moves end-to-end. State management. Input/output contracts between components.}
 
 ---
 
@@ -77,60 +58,38 @@ Scaled to complexity.}
 ### Failure Modes
 | Component | Failure | Recovery | User Impact |
 |-----------|---------|----------|-------------|
-| {Component} | {What fails} | {How it recovers} | {What user sees} |
 
 ### Edge Cases
-- {Edge case 1}: {Handling strategy}
-- {Edge case 2}: {Handling strategy}
+- {Case}: {Handling}
 
 ---
 
 ## Testing Strategy [Expected]
 
-### Test Categories
 | Category | Scope | Priority | Approach |
 |----------|-------|----------|----------|
-| Unit | {What's tested} | {Must/Should/Nice} | {How} |
-| Integration | {What's tested} | {Must/Should/Nice} | {How} |
-| E2E | {What's tested} | {Must/Should/Nice} | {How} |
+| Unit | {What} | Must/Should | {How} |
+| Integration | {What} | Must/Should | {How} |
 
 ### Critical Path Tests
-- {Test 1}: Verifies {behavior}
-- {Test 2}: Verifies {behavior}
-
-### Edge Case Tests
-- {Test 1}: Verifies {edge case behavior}
+- {Test}: Verifies {behavior}
 
 ---
 
 ## [If UI: Interface Design] [Optional]
 
-> This section is included only when scope.md has ui_work: true.
+> Only when scope.md has ui_work: true.
 
 ### Component Hierarchy
-```
-{Parent Component}
-├── {Child Component A}
-│   ├── {Sub-component}
-│   └── {Sub-component}
-└── {Child Component B}
-    └── {Sub-component}
-```
+{Tree structure of components}
 
 ### User Interactions
-| Interaction | Trigger | State Change | Component Response |
-|-------------|---------|--------------|-------------------|
-| {Action} | {User does X} | {State updates} | {Component re-renders / navigates} |
-
-### Responsive Behavior
-- **Desktop:** {Layout description}
-- **Tablet:** {Layout changes}
-- **Mobile:** {Layout changes}
+| Interaction | Trigger | State Change | Response |
+|-------------|---------|--------------|----------|
 
 ### Design-to-Code Mapping
-| Design Element | Code Construct | Design Token |
-|----------------|---------------|--------------|
-| {Button style} | {Component path} | {Token name} |
+| Design Element | Code Construct | Token |
+|----------------|---------------|-------|
 
 ---
 
@@ -138,56 +97,32 @@ Scaled to complexity.}
 
 ### Dependency Graph
 ```
-Tier 0 (no dependencies):
-  - Task A
-  - Task B
-
-Tier 1 (depends on Tier 0):
-  - Task C (depends on: Task A)
-  - Task D (depends on: Task A, Task B)
-
-Tier 2 (depends on Tier 0+1):
-  - Task E (depends on: Task C, Task D)
+Tier 0: [Task A, Task B]
+Tier 1: [Task C (deps: A), Task D (deps: A, B)]
+Tier 2: [Task E (deps: C, D)]
 ```
 
 ### Task Details
 
 #### Task 1: {Name}
-- **Description:** {What needs to be done}
-- **Files:** {Paths to create or modify}
-- **Dependencies:** {Which tasks must complete first}
-- **Tier:** {0/1/2/...}
-- **Complexity:** {S/M/L}
-- **Success Criteria:**
-  - {Criterion 1 — verifiable}
-  - {Criterion 2 — verifiable}
-
-#### Task 2: {Name}
-- **Description:** {What needs to be done}
+- **Description:** {What}
 - **Files:** {Paths}
 - **Dependencies:** {Prerequisites}
-- **Tier:** {0/1/2/...}
-- **Complexity:** {S/M/L}
-- **Success Criteria:**
-  - {Criterion 1 — verifiable}
-  - {Criterion 2 — verifiable}
+- **Tier:** {N} | **Complexity:** {S/M/L}
+- **Success Criteria:** {verifiable outcomes}
 
-{Continue for each task.}
+{Repeat per task.}
 
 ---
 
 ## Risk Register [Expected]
 
-| # | Risk | Likelihood | Impact | Mitigation | Raised During |
-|---|------|-----------|--------|------------|---------------|
-| R1 | {Description} | {Low/Med/High} | {Low/Med/High} | {Strategy} | {Which section review} |
-| R2 | {Description} | {Low/Med/High} | {Low/Med/High} | {Strategy} | {Which section review} |
+| # | Risk | Likelihood | Impact | Mitigation |
+|---|------|-----------|--------|------------|
 
 ---
 
 ## Open Questions
 
-- {Question 1}: {Context / what needs to be decided / by when}
-- {Question 2}: {Context / what needs to be decided / by when}
-
-{Leave empty if no open questions remain. Do not fabricate questions.}
+- {Question}: {Context}
+{Leave empty if none. Don't fabricate.}

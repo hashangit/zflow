@@ -19,6 +19,8 @@ technical spec. See the question patterns file for detailed plain language rules
    matter most for this specific request.
 3. **No solutions** — this phase captures WHAT and WHY only. The "how" belongs to
    Phase 2 (Design), which benefits from real codebase research from Phase 1.
+4. **Be concise between questions** — a brief acknowledgment of the user's answer,
+   then the next question. No need to re-explain what they just told you.
 
 ## Execution Steps
 
