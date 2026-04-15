@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt="Status">
-  <img src="https://img.shields.io/badge/version-v1.0.1-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.0.2-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-orange.svg" alt="License">
   <img src="https://img.shields.io/badge/agents-35-blueviolet.svg" alt="Agents">
 </p>
@@ -476,6 +476,18 @@ ZFlow builds on two foundational ideas:
 ---
 
 ## 🚀 Changelog
+
+### v1.0.2 (2026-04-15) — Token Efficiency & Coordinator Delegation
+
+Optimizes how the coordinator manages context and delegates work to subagents, reducing token consumption and adding resilience against API rate limits.
+
+- **Coordinator is now a pure dispatcher** — no longer reads artifacts for analysis, merges reports, or writes outputs itself; delegates all of that to subagents
+- **Pass paths, not contents** — subagents receive file paths and read them themselves, keeping coordinator context lean
+- **Synthesis agent pattern** — a dedicated agent merges worker reports and writes the final phase output
+- **Rate-limit retry with sequential fallback** — if parallel agent spawning hits rate limits or server errors, automatically falls back to sequential deployment
+- **Token efficiency across all files** — trimmed verbose prose, shortened labels, condensed explanations in references, agents, templates, and phase docs
+
+No breaking changes — only coordinator behavior and internal optimization changed.
 
 ### v1.0.1 (2026-04-15) — Plain Language Communication
 

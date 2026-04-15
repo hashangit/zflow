@@ -1,7 +1,7 @@
 {
   "name": "zflow",
   "description": "Multi-agent development workflow orchestrator with structured phases: brainstorm, research, design, review, implement, QA, and document.",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": {
     "name": "Hashan Wickramasinghe"
   },

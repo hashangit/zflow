@@ -5,6 +5,84 @@ All notable changes to ZFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.2] - 2026-04-15
+
+### Added
+
+- **Token efficiency directives** (`SKILL.md`) — New context budget section establishing
+  lean coordinator behavior: delegate heavy lifting to subagents, never echo file contents,
+  keep gate summaries short, read phase docs on demand, merge reports via synthesis agents,
+  and keep user-facing messages conversational.
+
+- **Subagent delegation for heavy work** (`SKILL.md`, `references/workflow-guide.md`,
+  `agents/brainstorm/codebase-scout.md`, `agents/design/approach-researcher.md`,
+  `agents/design/solution-assembler.md`) — Expanded the "delegate heavy lifting" directive
+  with concrete delegation rules: the coordinator dispatches work to subagents and only
+  coordinates results, never produces artifact content itself.
+
+- **Coordinator delegation directives** (`references/agent-orchestration.md`) — Rewrote the
+  Coordinator Responsibilities section around a "dispatcher, not worker" principle. Added a
+  "Coordinator Must NOT Do Itself" table covering reading workspace artifacts, reading agent
+  prompt files, merging reports, writing phase outputs, and building dependency graphs. Added
+  the "Pass Paths, Not Contents" pattern — subagents receive file paths and read them
+  themselves rather than having the coordinator embed file contents in prompts. Added the
+  "Synthesis Agent Pattern" — each phase spawns a synthesis agent to read worker reports,
+  merge findings, and write the final phase output, keeping the coordinator's context lean.
+
+- **Rate-limit retry with sequential fallback** (`references/agent-orchestration.md`,
+  `SKILL.md`) — When spawning agents encounters rate limits (429/529), server errors (503),
+  or connection failures, the coordinator follows a 4-step escalation: retry parallel once,
+  fall back to sequential (one agent at a time), reduce to small batches (2 agents), then
+  proceed with available results and log gaps. Includes a decision flow diagram and
+  coordinator behavior rules during fallback.
+
+### Changed
+
+- **Slimmed reference files for token efficiency** — Optimized multiple reference and agent
+  files by trimming verbose prose, shortening labels, condensing explanations, and removing
+  redundant content while preserving all technical accuracy:
+  - `references/security-patterns.md` — trimmed verbose prose, shortened labels, condensed
+    explanations
+  - `references/security-checklist.md` — already optimized in prior pass
+  - `agents/brainstorm/question-patterns.md` — condensed question examples and reduced
+    redundancy
+  - `references/workflow-guide.md` — tightened descriptions and removed verbose context
+
+- **Updated "Merge, don't concatenate" directive** (`SKILL.md`) — Replaced with "Merge via
+  synthesis agent" directing the coordinator to spawn a synthesis agent for report merging
+  instead of doing it itself.
+
+### Files Changed
+
+- `zflow/SKILL.md` — Added token efficiency directives; delegation directives; rate-limit
+  retry bullet; replaced merge directive with synthesis agent pattern
+- `zflow/references/agent-orchestration.md` — Rewrote Coordinator Responsibilities with
+  delegation table, pass-paths-not-contents pattern, synthesis agent pattern, and rate-limit
+  retry fallback with decision flow
+- `zflow/references/security-patterns.md` — Trimmed verbose prose, shortened labels
+- `zflow/references/security-checklist.md` — Already optimized
+- `zflow/agents/brainstorm/question-patterns.md` — Condensed question examples
+- `zflow/agents/brainstorm/codebase-scout.md` — Delegation directive updates
+- `zflow/agents/design/approach-researcher.md` — Delegation directive updates
+- `zflow/agents/design/solution-assembler.md` — Delegation directive updates
+- `zflow/references/workflow-guide.md` — Tightened descriptions
+- `zflow/phases/brainstorm.md` — Token efficiency reference updates
+- `zflow/phases/design.md` — Token efficiency reference updates
+- `zflow/phases/document.md` — Token efficiency reference updates
+- `zflow/references/karpathy-guidelines.md` — Token efficiency reference updates
+- `zflow/references/escalation-patterns.md` — Token efficiency reference updates
+- `zflow/templates/*.md` — Slimmed templates (scope, research-report, solution,
+  reviewed-solution, qa-report, impl-report, implementation-plan, investigation)
+
+### Backward Compatibility
+
+No breaking changes. All phase artifacts, config schemas, agent prompts, and workflow
+logic remain identical. Changes are limited to coordinator behavior directives (how the
+orchestrator manages its context and delegates work) and internal file optimization
+(reducing token consumption without changing content).
+
+---
+
 ## [v1.0.1] - 2026-04-15
 
 ### Added
