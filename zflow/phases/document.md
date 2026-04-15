@@ -35,49 +35,41 @@ Read the complete document chain in order:
 
 ## Method
 
-### Step 1: Read the Full Document Chain
+### Step 1: Verify Document Chain Exists
 
-Read every document listed above in order. Build a complete picture of:
+Quick-check that all required files exist. Do NOT read their contents into
+main context — the subagent will handle that.
 
-- What was requested (scope.md)
-- What was planned (solution.md, reviewed-solution.md)
-- What was actually built (impl-report.md)
-- What passed QA (qa-report.md)
-- Whether security findings were addressed (qa-report.md security section)
+Check existence of:
+1. `.zflow/phases/00-brainstorm/scope.md`
+2. `.zflow/phases/01-research/research-report.md`
+3. `.zflow/phases/02-design/solution.md`
+4. `.zflow/phases/03-review/reviewed-solution.md`
+5. `.zflow/phases/04-implement/impl-report.md`
+6. `.zflow/phases/05-qa/qa-report.md`
 
-If any required document is missing, stop and report which one. The document
-chain must be complete before documentation can be accurate.
+If any required file is missing, stop and report which one.
 
-### Step 2: Identify Documentation Needs
+**Context tip:** Don't summarize what you read back to the user. Let the
+subagent do the heavy reading and writing.
 
-From the document chain, determine what needs updating:
+### Step 2: Deploy the Documentation Writer Agent (Subagent)
 
-1. **README.md** — if the change adds new features, changes usage, adds
-   dependencies, or modifies the public API
-2. **API documentation** — if endpoints were added, changed, or removed
-3. **Inline code comments** — if complex logic was introduced that needs
-   explanation beyond what the code itself conveys
-4. **Configuration docs** — if new config options were added
-5. **CHANGELOG.md** — always updated for this phase
-
-Do NOT update documentation for trivial changes. If the implementation was
-a bug fix with no API impact, only the CHANGELOG needs updating.
-
-### Step 3: Deploy the Documentation Writer Agent
-
-Spawn the documentation writer agent. For its prompt:
-1. Read `${CLAUDE_SKILL_DIR}/agents/document/documentation-writer.md`
-2. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` (include the Karpathy preamble)
-3. Include the full contents of: `scope.md`, `impl-report.md`,
-   `qa-report.md`, and the list of changed files from `impl-report.md`
+Spawn the documentation writer agent. It reads the full document chain and
+produces all outputs. For its prompt:
+1. Read `${CLAUDE_SKILL_DIR}/agents/document/documentation-writer.md` and include its contents
+2. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
+3. Pass the paths to all document chain files (the agent reads them itself)
 4. Call the Agent tool with that prompt and description "documentation writer"
 
 The agent will:
+- Read the full document chain itself (keeping it out of main context)
+- Determine what documentation needs updating based on the change scope
 - Update/create relevant documentation files
 - Generate a CHANGELOG entry
 - Create a conventional commit message
 
-### Step 4: Collect and Review Agent Output
+### Step 3: Collect and Review Agent Output
 
 After the documentation writer completes:
 
@@ -85,10 +77,8 @@ After the documentation writer completes:
 2. Verify the CHANGELOG entry is well-structured and accurate
 3. Verify the commit message follows conventional commits format
 4. Check that documentation updates are proportional to the change size
-5. If security findings were addressed in QA, confirm the CHANGELOG has
-   a Security section noting them
 
-### Step 5: Present for Human Approval
+### Step 4: Present for Human Approval
 
 Display the following to the user for review:
 
@@ -99,7 +89,7 @@ Display the following to the user for review:
 
 Ask: "Review the above. Ready to commit, or would you like changes?"
 
-### Step 6: Commit (After Approval)
+### Step 5: Commit (After Approval)
 
 Once the user approves:
 
@@ -108,7 +98,7 @@ Once the user approves:
    artifacts, .zflow/ workspace files)
 3. Commit with the approved conventional commit message
 
-### Step 7: Write Phase Metadata
+### Step 6: Write Phase Metadata
 
 Create `.zflow/phases/06-document/phase-meta.json`:
 ```json

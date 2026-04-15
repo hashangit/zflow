@@ -32,14 +32,30 @@ Read these files before starting:
 **Interactive** — you run in the main conversation thread (not as a spawned agent). You need the user's
 input at multiple points: approach selection and section-by-section approval.
 
+## Output Discipline
+
+Each design section should be proportional to its complexity. A few sentences if
+straightforward, more detail if genuinely nuanced. When presenting a section for
+approval, include the content and your check-in question — no preamble explaining
+what you're about to show. Don't repeat research findings the user already saw in
+the gate summary. Reference them by name instead.
+
 ## Process
 
-### Step 1: Propose Approaches (Guided Multiple-Choice)
+### Step 1: Propose Approaches (Subagent Research + Interactive Presentation)
 
-1. Read `scope.md` and `research-report.md` thoroughly.
-2. Map scope requirements against research findings.
-3. Identify 2-3 viable solution approaches grounded in the actual codebase.
-4. Present them using the approach-proposal template structure:
+Reading the full research-report.md and scope.md to generate approaches is
+expensive. Delegate the analysis to a subagent, then present the result.
+
+**Spawn the approach researcher subagent:**
+1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
+2. Read `${CLAUDE_SKILL_DIR}/agents/design/approach-researcher.md` and include its contents
+3. Include the full contents of `.zflow/phases/00-brainstorm/scope.md`
+4. Include the full contents of `.zflow/phases/01-research/research-report.md`
+5. Call the Agent tool with that prompt and description "approach researcher"
+
+**After the agent returns:** It produces 2-3 viable approaches with analysis.
+Review the approaches for quality, then present them to the user using this format:
 
 ```
 Based on what you want to build and what I found in your codebase, here are
@@ -108,20 +124,33 @@ After the user selects an approach, present the design **one section at a time**
 - If the user disagrees, resolve the disagreement before moving on.
 - Track concerns raised during reviews — they feed into the Risk Register.
 
-### Step 3: Assemble solution.md
+### Step 3: Assemble solution.md (Subagent)
 
-After all sections are approved, assemble the final document:
+After all sections are approved, delegate the final document assembly to a
+subagent. This keeps the template structure and artifact writing out of the
+main context.
 
-1. Compile all approved sections into a coherent `solution.md`.
-2. Add: Chosen Approach with rationale, Alternatives Considered with rejection rationale.
-3. Ensure every implementation task has a dependency graph entry + per-task success criteria
-   (Karpathy: Goal-Driven).
-4. Estimate complexity per task (S/M/L).
-5. Compile Risk Register from concerns raised during section reviews.
-6. List Open Questions (anything the user flagged as "decide later").
-7. If UI work: include component breakdown, state management approach, design-to-code mapping.
+**Spawn the solution assembler subagent:**
+1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
+2. Read `${CLAUDE_SKILL_DIR}/agents/design/solution-assembler.md` and include its contents
+3. Read `${CLAUDE_SKILL_DIR}/templates/solution.md` and include its contents as the output template
+4. Pass: the chosen approach (name + rationale from approach-analysis.md),
+   all approved section content from the conversation, the approach-analysis.md
+   alternatives and recommendation, and any concerns/risks raised during reviews
+5. Call the Agent tool with that prompt and description "solution assembler"
 
-Write the final `solution.md` to `.zflow/phases/02-design/solution.md`.
+The agent will:
+- Compile all approved sections into a coherent `solution.md`
+- Add: Chosen Approach with rationale, Alternatives Considered with rejection rationale
+- Ensure every task has a dependency graph entry + per-task success criteria (Karpathy: Goal-Driven)
+- Estimate complexity per task (S/M/L)
+- Compile Risk Register from concerns raised during section reviews
+- List Open Questions (anything the user flagged as "decide later")
+- If UI work: include component breakdown, state management, design-to-code mapping
+- Write the final `solution.md` to `.zflow/phases/02-design/solution.md`
+
+**After the agent returns:** Verify the output exists and has all required sections.
+No need to re-read the full document into main context — just confirm it was written.
 
 ## Success Criteria
 

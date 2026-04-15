@@ -6,21 +6,9 @@
 
 ## Template Guidance
 
-This template provides a recommended structure. Sections marked **Required** must
-be present — downstream phases depend on them. Sections marked **Expected** should
-be present unless you have a specific reason to omit them; if omitted, add a
-one-line note explaining why. Sections marked **Optional** are suggestions — include
-them when they add value, or leave them out.
-
-**When to follow closely:** The task is complex, spans multiple systems, or
-involves non-trivial decisions.
-
-**When to deviate:** The task is simple and a section would contain only padding.
-Produce output proportional to the complexity.
-
-**Risk of going off-template:** Required sections must exist or the phase gate
-will fail. If you restructure Expected sections, include the same content under
-different headings.
+**Required** sections must exist or the phase gate fails. **Expected** sections
+should exist unless you note why they're omitted. **Optional** sections are
+discretionary. Scale output to task complexity — don't pad simple tasks.
 
 ---
 
@@ -40,47 +28,36 @@ Measurable outcomes that define "done":
 
 - {Criterion 1 — specific, falsifiable}
 - {Criterion 2 — specific, falsifiable}
-- {Criterion 3 — specific, falsifiable}
 
 ---
 
 ## Constraints [Expected]
 
-- **Tech stack**: {Relevant technologies and versions, based on codebase}
-- **Timeline**: {If applicable — deadline or timebox}
+- **Tech stack**: {Relevant technologies and versions}
 - **Backward compatibility**: {What must not break}
-- **Performance**: {Latency, throughput, or resource requirements if relevant}
 - **Dependencies**: {External services, APIs, or libraries that constrain choices}
 
 ---
 
 ## Affected Systems [Expected]
 
-Based on codebase analysis:
-
 - {System/module 1}: {How it's affected}
 - {System/module 2}: {How it's affected}
-- {System/module 3}: {How it's affected}
 
 ---
 
 ## Scope Boundaries [Required]
 
 ### In Scope
-
 - {Item 1}
 - {Item 2}
-- {Item 3}
 
 ### Out of Scope
-
-- {Item 1} — {reason it's excluded}
-- {Item 2} — {reason it's excluded}
-- {Item 3} — {reason it's excluded}
+- {Item 1} — {reason}
+- {Item 2} — {reason}
 
 ### Explicitly Deferred
-
-- {Item 1} — {why it's deferred, when it might be revisited}
+- {Item 1} — {why, when it might be revisited}
 
 ---
 
@@ -88,16 +65,9 @@ Based on codebase analysis:
 
 **The simplest version that delivers core value:**
 
-{1-3 sentence description of what the MVP looks like, focused on the minimum
-needed to validate the feature solves the stated problem.}
+{1-2 sentence description.}
 
-**MVP includes:**
-- {Item 1}
-- {Item 2}
-
-**MVP does NOT include:**
-- {Item 1} — {deferred to iteration 2}
-- {Item 2} — {deferred to iteration 2}
+**Includes:** {list} | **Does NOT include:** {list}
 
 ---
 
@@ -105,24 +75,15 @@ needed to validate the feature solves the stated problem.}
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
-| {Risk 1} | {High/Med/Low} | {High/Med/Low} | {How to address} |
-| {Risk 2} | {High/Med/Low} | {High/Med/Low} | {How to address} |
-| {Risk 3} | {High/Med/Low} | {High/Med/Low} | {How to address} |
+| {Risk 1} | {H/M/L} | {H/M/L} | {How to address} |
 
 ---
 
 ## User's Mental Model [Optional]
 
-**How the user expects this to work** (in their words or paraphrased from
-conversation):
-
-{Description of the user's expected behavior and flow. What they imagine
-interacting with, what outcomes they expect. This captures the user's intuition
-— which may differ from the technical reality. That gap is valuable to document.}
-
-**Key assumptions the user is making:**
-- {Assumption 1}
-- {Assumption 2}
+{How the user expects this to work. What they imagine interacting with, what
+outcomes they expect. Captures the user's intuition — which may differ from
+technical reality.}
 
 ---
 
@@ -130,32 +91,8 @@ interacting with, what outcomes they expect. This captures the user's intuition
 
 **UI work detected**: {yes/no}
 
-{If yes:}
-
-- **Design system**: {Name of existing system, or "needs creation"}
-- **Component library**: {What's available, what's needed new}
-- **Responsive requirements**: {Breakpoints, target devices, orientations}
-- **Accessibility requirements**: {WCAG level, specific needs (screen reader,
-  keyboard nav, color contrast)}
-
-{If no:}
-
-*No UI work detected. Phase 3.5 (UI Design) will be skipped.*
-
----
-
-## Important Note
-
-This document intentionally does NOT include:
-
-- **Solution approach or architecture** — belongs in Phase 2 (Design), which
-  runs after Phase 1 (Research) grounds decisions in actual codebase analysis
-- **Component breakdown or data flow** — belongs in Phase 2 (Design)
-- **Implementation details** — belongs in Phase 4 (Implement)
-- **Testing strategy specifics** — belongs in Phase 2 (Design)
-
-The brainstorm phase captures **WHAT** and **WHY**. The **HOW** is earned
-through research and decided through design.
+{If yes: design system, component library, responsive needs, accessibility.}
+{If no: "No UI work. Phase 3.5 skipped."}
 
 ---
 

@@ -1,3 +1,68 @@
+# ZFlow v1.0.2 — Release Notes
+
+**Release Date:** April 15, 2026
+
+---
+
+## What is ZFlow?
+
+An adaptive, multi-agent development workflow system that orchestrates specialized AI agents through a complexity-aware, phase-gated software development lifecycle. Works with any skills-capable AI harness — Claude Code, zClaw, Gemini CLI, OpenCode, and others.
+
+Instead of a single AI agent trying to do everything, ZFlow dynamically constructs a pipeline using **35 purpose-built agents** — each with a focused mission — tailored to the specific complexity of your task.
+
+### How to use it
+
+```
+/zflow I want to add a notification system to my app
+```
+
+That's it. ZFlow auto-detects whether you're building something new or fixing a bug, assesses complexity, and runs the right workflow.
+
+---
+
+## v1.0.2 — Token Efficiency & Coordinator Delegation
+
+Optimizes how the ZFlow coordinator manages context and delegates work to subagents, reducing token consumption and adding resilience against API rate limits.
+
+### What changed
+
+**Coordinator is now a pure dispatcher.** The coordinator no longer reads workspace artifacts for analysis, merges agent reports, or writes phase outputs itself. Instead it:
+- Passes file paths to subagents (letting them read files themselves)
+- Spawns a synthesis agent to merge worker reports and write the final output
+- Only validates results and runs gate checks
+
+**Rate-limit resilience.** When spawning multiple agents in parallel hits rate limits (429/529) or server errors (503), the coordinator now automatically:
+1. Retries the parallel spawn once (transient issues)
+2. Falls back to sequential — one agent at a time
+3. Reduces to small batches (2 agents) if sequential also fails
+4. Proceeds with available results and logs gaps as a last resort
+
+**Token efficiency across all files.** Trimmed verbose prose, shortened labels, and condensed explanations across reference files, agent prompts, templates, and phase docs — reducing token consumption without losing any technical accuracy.
+
+### Files changed (16+ files)
+
+| Area | Change |
+|------|--------|
+| `SKILL.md` | Token efficiency directives, delegation rules, rate-limit retry, synthesis agent pattern |
+| `references/agent-orchestration.md` | Rewrote coordinator role, added delegation table, pass-paths pattern, synthesis agent, rate-limit fallback |
+| `references/security-patterns.md` | Trimmed verbose prose, shortened labels |
+| `references/security-checklist.md` | Already optimized |
+| `references/workflow-guide.md` | Tightened descriptions |
+| `references/karpathy-guidelines.md` | Token efficiency reference |
+| `references/escalation-patterns.md` | Token efficiency reference |
+| `agents/brainstorm/*` | Delegation directives, condensed patterns |
+| `agents/design/*` | Delegation directive updates |
+| `phases/brainstorm.md` | Token efficiency reference |
+| `phases/design.md` | Token efficiency reference |
+| `phases/document.md` | Token efficiency reference |
+| `templates/*.md` | Slimmed template content |
+
+### Backward compatibility
+
+No breaking changes. All phase artifacts, config schemas, agent prompts, and workflow logic are identical. Only coordinator behavior directives and internal file optimization changed.
+
+---
+
 # ZFlow v1.0.1 — Release Notes
 
 **Release Date:** April 15, 2026
