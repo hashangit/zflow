@@ -227,19 +227,63 @@ context.
 
 ## Coordinator Responsibilities
 
-Each phase's SKILL.md acts as the coordinator:
+Each phase's SKILL.md acts as the coordinator. The coordinator is a **dispatcher,
+not a worker**. It decides what to do and delegates the doing.
 
-1. **Read input:** Load the previous phase's output document(s)
-2. **Spawn agents:** Create sub-agents with appropriate isolation and input
+1. **Dispatch workers:** Spawn subagents to read inputs, analyze code, and produce reports
+2. **Dispatch writer:** Spawn a synthesis agent to read worker reports, merge them, and
+   write the final phase output document
 3. **Monitor completion:** Wait for all agents in a group to finish
-4. **Merge results:** Combine individual agent outputs into the phase's output document
-5. **Validate:** Check the output follows the template structure
-6. **Gate check:** Present to user if the gate is set to `human`
-7. **Persist:** Write the output to the workspace directory
+4. **Validate:** Check the output follows the template structure (quick structural check only)
+5. **Gate check:** Present to user if the gate is set to `human`
+6. **Persist:** Confirm the output was written to the workspace directory
+
+### Coordinator Must NOT Do Itself
+
+| Task | Delegate to |
+|------|-------------|
+| Read and analyze workspace artifacts (scope.md, research-report.md, etc.) | Subagent |
+| Read agent prompt files and templates to embed in prompts | Pass paths to subagent — let it read them |
+| Merge multiple agent reports into a single output | Synthesis subagent |
+| Write the final phase output document | Synthesis subagent |
+| Analyze task dependencies, build dependency graphs | Subagent |
+
+### How to Pass File Paths Instead of Contents
+
+When spawning a subagent, do NOT read the file and embed its contents in the
+prompt. Instead, pass the resolved file path and let the agent read it:
+
+```
+Bad:  Read scope.md → paste contents into agent prompt
+Good: "Read .zflow/phases/00-brainstorm/scope.md, then [agent instructions]"
+```
+
+For skill-internal files (agent prompts, templates, Karpathy preamble), resolve
+`${CLAUDE_SKILL_DIR}` to its absolute path before passing to the agent, since
+subagents may not have access to the variable.
+
+### Synthesis Agent Pattern
+
+Each phase that collects multiple worker reports should spawn a **synthesis agent**
+as the final step:
+
+1. Worker agents complete and write individual reports to the workspace
+2. Coordinator spawns a synthesis agent that:
+   - Receives the list of report file paths to read
+   - Receives the output template file path
+   - Reads all reports, merges overlapping findings, flags contradictions
+   - Writes the final merged output to the designated file
+3. Coordinator validates the output exists and has required sections
+4. Coordinator runs the gate check
+
+This keeps the coordinator's context lean — it never loads the full content of
+worker reports or output templates.
 
 ---
 
 ## Error Handling in Orchestration
+
+### Individual Agent Failure
 
 If an individual agent fails (timeout, error, incomplete output):
 
@@ -249,3 +293,47 @@ If an individual agent fails (timeout, error, incomplete output):
 4. The phase output includes a "Coverage Gaps" section noting any agent whose analysis is missing
 
 This ensures the workflow is resilient -- one failing agent does not block the entire phase.
+
+### Rate Limits and Server Unavailability
+
+When spawning agents and encountering rate limits (429/529), server errors (503),
+or connection failures ("server temporarily unavailable"):
+
+**Step 1 — Retry parallel.** Wait a short pause and re-attempt the same parallel
+spawn. Often the issue is transient.
+
+**Step 2 — Fall back to sequential.** If the parallel retry also fails, the
+coordinator spawns agents **one at a time** instead of in a single batch. Each
+agent is launched only after the previous one completes.
+
+**Step 3 — Reduce batch size.** If sequential still triggers rate limits, split
+the remaining agents into smaller batches (e.g., 2 at a time) and retry.
+
+**Step 4 — Proceed with available results.** If agents still fail after
+sequential + reduced-batch attempts, follow the individual agent failure
+procedure above: log gaps and proceed.
+
+**Decision flow:**
+
+```
+Parallel spawn fails (rate limit / server error)?
+    |
+    +-- Yes --> Short pause --> Retry parallel spawn
+    |               |
+    |               +-- Success --> Continue normally
+    |               +-- Fail again --> Switch to sequential (one agent at a time)
+    |                                      |
+    |                                      +-- Success --> Continue normally
+    |                                      +-- Fail --> Reduce batch to 2 agents
+    |                                                      |
+    |                                                      +-- Success --> Continue
+    |                                                      +-- Fail --> Proceed with gaps
+    |
+    +-- No --> Continue normally
+```
+
+**Coordinator behavior during fallback:**
+- When switching to sequential, spawn each remaining agent individually
+- Each sequential agent gets the same prompt and input as the parallel version
+- Do NOT re-spawn agents that already completed successfully
+- Track which agents succeeded vs. failed to avoid duplicate work

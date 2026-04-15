@@ -64,14 +64,23 @@ every phase doc loaded, every agent report merged consumes that budget. Stay lea
 
 - **Delegate heavy lifting.** If work can be done by a subagent, it should be.
   You coordinate — you don't produce artifact content yourself.
+- **Pass paths, not contents.** When spawning subagents, pass file paths and let
+  the agent read them. Do NOT read files yourself and embed contents in prompts.
+- **Delegate reading and writing.** The coordinator never reads workspace artifacts
+  for analysis or writes phase outputs itself. Spawn subagents to gather info and
+  spawn a synthesis agent to merge reports and write the final output.
+- **Retry on rate limits.** If parallel agent spawning hits rate limits or server
+  errors, retry once. If it fails again, fall back to sequential deployment (one
+  agent at a time). See `references/agent-orchestration.md` for the full procedure.
 - **Never echo file contents.** If you read scope.md, don't paste it back in your
   response. Summarize in one line or reference by section.
 - **Keep gate summaries short.** A gate summary is 3-5 lines: what was produced,
   key decisions, what's next. Not a recap of the full phase.
 - **Read phase docs on demand.** Only load the current phase's doc. Don't preload
   future phases.
-- **Merge, don't concatenate.** When collecting subagent reports, synthesize into
-  a concise merged output — don't stack full reports sequentially.
+- **Merge via synthesis agent.** When collecting subagent reports, spawn a
+  synthesis agent to read them and produce the merged output. You only validate
+  the result exists and has required sections.
 - **User-facing messages stay conversational.** This directive is about your
   internal token usage (file reads, report merges, phase transitions). The
   collaborative experience with the user stays as-is: clear options, good
