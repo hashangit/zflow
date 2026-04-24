@@ -91,7 +91,7 @@ signals the absence."
 
 ## Output Format
 
-Produce `fix-design.md` using the template at `templates/fix-design.md`:
+Produce `fix-design.md` using the template at `assets/fix-design.md`:
 
 ```markdown
 # Fix Design

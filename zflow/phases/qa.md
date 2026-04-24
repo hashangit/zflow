@@ -64,13 +64,33 @@ Each agent receives a tailored context package:
 | test-coverage-agent | reviewed-solution.md, impl-report.md, code changes |
 | design-alignment-qa | reviewed-solution.md, impl-report.md, code changes |
 | security-auditor | reviewed-solution.md, impl-report.md, code changes, scope.md |
+
+**Security reference files** — instruct the security-auditor agent to load only the
+relevant split references based on what is being audited:
+
+| If auditing | Load |
+|-------------|------|
+| Input handling, output encoding, command execution, error paths | `references/security-injection.md` |
+| Authorization, session management, passwords, tokens | `references/security-auth.md` |
+| Configuration, dependencies, business logic, observability | `references/security-config.md` |
+| Crypto, secrets, data integrity, CSRF, file upload, API security | `references/security-crypto.md` |
+
+**Code-level patterns** — also load the language-specific vulnerability patterns:
+
+| If the codebase is | Load |
+|--------------------|------|
+| JavaScript / TypeScript | `references/security-patterns-js.md` |
+| Python | `references/security-patterns-python.md` |
+| Any web backend | `references/security-patterns-web.md` |
+
+For a full security audit, load all checklist and pattern files.
 | ui-visual-qa | reviewed-solution.md, impl-report.md, code changes, ui-design-report.md |
 
 ### Step 3: Spawn All QA Agents in Parallel
 
 Spawn all agents in a SINGLE tool-use block (parallel fan-out). Each agent:
 
-- Uses its dedicated prompt template from `${CLAUDE_SKILL_DIR}/agents/qa/`
+- Uses its dedicated prompt template from `agents/qa/`
 - Runs independently — each agent gets only the documents you explicitly
   include in its prompt, preventing cross-contamination
 - Produces a dimension report saved to
@@ -82,7 +102,7 @@ After all agents complete:
 
 1. Read every dimension report from `dimension-reports/`.
 2. Merge all findings into a unified `qa-report.md` using
-   `${CLAUDE_SKILL_DIR}/templates/qa-report.md`.
+   `assets/qa-report.md`.
 3. Categorize each finding by severity:
    - **Critical (Security)**: Security vulnerability -- must fix immediately
    - **Blocker**: Must fix before merge (broken functionality, missing core

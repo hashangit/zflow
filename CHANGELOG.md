@@ -5,6 +5,72 @@ All notable changes to ZFlow will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.3] - 2026-04-24
+
+### Changed
+
+- **Renamed `templates/` to `assets/`** — aligns with agentskills.io spec convention for
+  output document templates. All 18 template files moved from `zflow/templates/` to
+  `zflow/assets/`.
+
+- **Split security references** — monolithic `references/security-checklist.md` (533 lines)
+  and `references/security-patterns.md` replaced with focused files organized by OWASP
+  category and language:
+  - `references/security-auth.md` — OWASP A01 (Broken Access Control) & A07 (Auth Failures)
+  - `references/security-config.md` — OWASP A02, A03, A06, A09 (Config, Data, Logging)
+  - `references/security-crypto.md` — OWASP A04 (Insecure Design) & A08 (Data Integrity)
+  - `references/security-injection.md` — OWASP A05 (Injection) & A10 (SSRF)
+  - `references/security-patterns-js.md` — JavaScript/TypeScript vulnerability patterns
+  - `references/security-patterns-python.md` — Python vulnerability patterns
+  - `references/security-patterns-web.md` — Web application vulnerability patterns
+
+- **Standardized all paths to relative** — agent and phase files use relative paths instead
+  of `${CLAUDE_SKILL_DIR}` runtime variable, improving portability across harnesses.
+
+- **Removed content inlining from agents** — agent files reference external templates by
+  path rather than duplicating template content inline.
+
+- **Fixed SKILL.md frontmatter** — corrected license and compatibility fields for
+  agentskills.io spec compliance.
+
+### Added
+
+- `AGENTS.md` — behavioral guidelines for LLM coding (think before coding, simplicity
+  first, surgical changes, goal-driven execution)
+- `CODEX.md` — dual-graph context policy specification
+- `zflow/assets/` — 18 document templates (moved from `zflow/templates/`)
+
+### Removed
+
+- `zflow/templates/` — renamed to `zflow/assets/`
+- `zflow/references/security-checklist.md` — split into category-specific files
+- `zflow/references/security-patterns.md` — replaced by language-specific pattern files
+
+### Files Changed
+
+- `zflow/SKILL.md` — frontmatter fixes, standardized paths
+- `zflow/.claude-plugin/plugin.json` — updated description
+- `zflow/agents/brainstorm/*` — standardized to relative paths, removed content inlining
+- `zflow/agents/debug/*` — standardized to relative paths, removed content inlining
+- `zflow/agents/design/*` — standardized to relative paths, removed content inlining
+- `zflow/phases/brainstorm.md` through `zflow/phases/document.md` — path standardization
+- `zflow/references/agent-orchestration.md` — updated
+- `zflow/references/error-handling.md` — updated
+- `zflow/references/quick-reference.md` — updated
+- `zflow/references/workflow-guide.md` — updated
+- `zflow/scripts/init-workspace.sh` — fixed paths
+- `zflow/scripts/validate-phase.py` — fixed paths
+- `.gitignore` — updated
+- `README.md` — updated
+
+### Backward Compatibility
+
+No breaking changes. All workflows, agent prompts, phase artifacts, config schemas, and
+human gates remain identical. Changes are limited to file paths (templates/ → assets/),
+security reference organization, and internal path resolution.
+
+---
+
 ## [v1.0.2] - 2026-04-15
 
 ### Added
@@ -71,7 +137,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `zflow/phases/document.md` — Token efficiency reference updates
 - `zflow/references/karpathy-guidelines.md` — Token efficiency reference updates
 - `zflow/references/escalation-patterns.md` — Token efficiency reference updates
-- `zflow/templates/*.md` — Slimmed templates (scope, research-report, solution,
+- `zflow/assets/*.md` — Slimmed templates (scope, research-report, solution,
   reviewed-solution, qa-report, impl-report, implementation-plan, investigation)
 
 ### Backward Compatibility

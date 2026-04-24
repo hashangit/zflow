@@ -49,12 +49,13 @@ D0: REPRODUCE ──► D1: INVESTIGATE ──► D2: ANALYZE ──► D3: DESI
 
 ### Phase D0: Reproduce
 
-**Agent prompt**: Read `${CLAUDE_SKILL_DIR}/agents/debug/reproducer.md` (include the Karpathy preamble from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
+**Agent prompt paths**: `agents/debug/reproducer.md` and `agents/_shared/karpathy-preamble.md`
 **Mode**: Interactive (agent needs to run code and observe output)
 **Gate**: `auto` by default (reproduction is self-validating)
 
 Steps:
 1. Spawn the reproducer agent with the user's bug description
+   and the prompt paths above. Tell it to read those files itself.
 2. Agent confirms reproducibility, documents steps, captures error output
 3. Agent identifies minimal reproduction case
 4. Output saved to `.zflow/debug/session-{timestamp}/d0-reproduce/repro-report.md`
@@ -71,35 +72,35 @@ If bug is NOT reproducible:
 
 | Agent | Prompt File | Focus |
 |-------|----------|-------|
-| Call Chain Tracer | `${CLAUDE_SKILL_DIR}/agents/debug/call-chain-tracer.md` | Trace execution backward from symptom |
-| Data Flow Tracer | `${CLAUDE_SKILL_DIR}/agents/debug/data-flow-tracer.md` | Follow invalid data to its source |
-| Pattern Scanner | `${CLAUDE_SKILL_DIR}/agents/debug/pattern-scanner.md` | Find similar patterns that may share the bug |
-| History Investigator | `${CLAUDE_SKILL_DIR}/agents/debug/history-investigator.md` | Git blame/log analysis |
-| Security Impact Assessor | `${CLAUDE_SKILL_DIR}/agents/debug/security-impact-assessor.md` | Security implications of the bug |
+| Call Chain Tracer | `agents/debug/call-chain-tracer.md` | Trace execution backward from symptom |
+| Data Flow Tracer | `agents/debug/data-flow-tracer.md` | Follow invalid data to its source |
+| Pattern Scanner | `agents/debug/pattern-scanner.md` | Find similar patterns that may share the bug |
+| History Investigator | `agents/debug/history-investigator.md` | Git blame/log analysis |
+| Security Impact Assessor | `agents/debug/security-impact-assessor.md` | Security implications of the bug |
 
 **Mode**: All agents run independently in parallel
 **Gate**: `auto` by default
 
 Steps:
-1. Read `repro-report.md` from D0
+1. Verify `repro-report.md` from D0 exists
 2. Spawn all 5 investigation agents simultaneously in a single tool-use block.
-   For each agent, read its prompt file and the Karpathy preamble from
-   `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`, and include both plus the
-   `repro-report.md` contents in the agent's prompt.
-3. Each agent receives `repro-report.md` as input
+   For each agent, pass its prompt file path, `agents/_shared/karpathy-preamble.md`,
+   the `repro-report.md` path, and the required output path. Tell each agent to
+   read those files itself.
+3. Each agent receives `repro-report.md` as an input path
 4. Merge individual reports into `investigation.md`
 5. Save to `.zflow/debug/session-{timestamp}/d1-investigate/investigation.md`
 6. If security-impact-assessor rated High/Critical: flag for expedited handling
 
 ### Phase D2: Root Cause Analysis
 
-**Agent prompt**: Read `${CLAUDE_SKILL_DIR}/agents/debug/root-cause-analyst.md` (include Karpathy preamble from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
+**Agent prompt paths**: `agents/debug/root-cause-analyst.md` and `agents/_shared/karpathy-preamble.md`
 **Mode**: Independent agent
 **Gate**: `human` by default (critical checkpoint)
 
 Steps:
-1. Read `repro-report.md` and `investigation.md`
-2. Spawn root-cause-analyst agent
+1. Verify `repro-report.md` and `investigation.md` exist
+2. Spawn root-cause-analyst agent with prompt paths and input artifact paths
 3. Agent synthesizes findings into root cause hypothesis
 4. Output saved to `.zflow/debug/session-{timestamp}/d2-analyze/root-cause.md`
 5. **HUMAN GATE**: Present root cause to user for review
@@ -110,13 +111,13 @@ Steps:
 
 ### Phase D3: Design Fix
 
-**Agent prompt**: Read `${CLAUDE_SKILL_DIR}/agents/debug/fix-designer.md` (include Karpathy preamble from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
+**Agent prompt paths**: `agents/debug/fix-designer.md` and `agents/_shared/karpathy-preamble.md`
 **Mode**: Independent agent
 **Gate**: `human` by default (critical checkpoint)
 
 Steps:
-1. Read `root-cause.md`
-2. Spawn fix-designer agent with 3 parallel reviewers:
+1. Verify `root-cause.md` exists
+2. Spawn fix-designer agent with prompt paths, the `root-cause.md` path, and 3 parallel reviewers:
    - **Minimal Fix Reviewer**: Is this the smallest possible fix? (Karpathy: Surgical Changes)
    - **Regression Risk Reviewer**: What could break from this fix?
    - **Pattern Fix Reviewer**: Do similar patterns need the same fix?
@@ -129,13 +130,13 @@ Steps:
 
 ### Phase D4: Implement Fix
 
-**Agent**: `${CLAUDE_SKILL_DIR}/agents/implement/focused-implementer.md` (shared with dev workflow)
+**Agent**: `agents/implement/focused-implementer.md` (shared with dev workflow)
 **Mode**: Independent agent
 **Gate**: `auto` by default
 
 Steps:
-1. Read `fix-design.md`
-2. Spawn focused-implementer agent with the fix design
+1. Verify `fix-design.md` exists
+2. Spawn focused-implementer agent with the `fix-design.md` path
 3. Agent applies the fix under Karpathy Surgical Changes constraint
 
 **Escalation Pattern** (3-strike rule):
@@ -161,12 +162,12 @@ ESCALATE: Pause. Present full context to user.
 
 ### Phase D5: Verify
 
-**Agent prompt**: Read `${CLAUDE_SKILL_DIR}/agents/debug/fix-verifier.md` (include Karpathy preamble from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`)
+**Agent prompt paths**: `agents/debug/fix-verifier.md` and `agents/_shared/karpathy-preamble.md`
 **Mode**: Independent agent (4 parallel verification dimensions)
 **Gate**: `auto` by default
 
 Steps:
-1. Read all previous debug phase outputs + code changes
+1. Verify all previous debug phase outputs exist
 2. Spawn verification across 4 dimensions:
    - **Regression Verification**: Full test suite passes
    - **Fix Verification**: Original bug reproduction steps now pass

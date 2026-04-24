@@ -76,34 +76,36 @@ PHASE_REQUIREMENTS: Dict[str, Dict] = {
     "reviewed-solution": {
         "display": "Phase 3: Review — reviewed-solution.md",
         "required_sections": [
-            "Chosen Approach",
-            "Architecture Overview",
-            "Component Breakdown",
-            "Reviewer Findings",
+            "Original Solution",
+            "Review Appendix",
+            "Self-Review Fixes",
         ],
     },
     "ui-design-report": {
         "display": "Phase 3.5: UI Design — ui-design-report.md",
         "required_sections": [
-            "Design Tokens",
+            "Design System",
             "Component Specifications",
-            "Layout Descriptions",
+            "Screen-by-Screen Layouts",
         ],
     },
     "implementation-plan": {
         "display": "Phase 4: Implement — implementation-plan.md",
         "required_sections": [
-            "Task Breakdown",
+            "Overview",
             "Dependency Graph",
-            "Success Criteria",
+            "Tier Breakdown",
+            "Execution Order",
         ],
     },
     "impl-report": {
         "display": "Phase 4: Implement — impl-report.md",
         "required_sections": [
-            "Tasks Completed",
+            "Executive Summary",
+            "Per-Task Reports",
             "Files Changed",
             "Deviations",
+            "Ready for QA",
         ],
     },
     "qa-report": {
@@ -128,44 +130,46 @@ PHASE_REQUIREMENTS: Dict[str, Dict] = {
     "investigation": {
         "display": "Phase D1: Investigate — investigation.md",
         "required_sections": [
+            "Executive Summary",
             "Call Chain Analysis",
             "Data Flow Analysis",
-            "Pattern Analysis",
-            "History Analysis",
-            "Synthesis",
+            "Pattern Scan Results",
+            "Git History Findings",
+            "Cross-Cutting Observations",
         ],
     },
     "root-cause": {
         "display": "Phase D2: Analyze — root-cause.md",
         "required_sections": [
-            "Root Cause",
+            "Root Cause Statement",
             "Causal Chain",
-            "Evidence",
+            "Defect Location",
             "Confidence Level",
         ],
     },
     "fix-design": {
         "display": "Phase D3: Design Fix — fix-design.md",
         "required_sections": [
-            "Fix Description",
-            "Root Cause Link",
-            "Regression Risk",
+            "Root Cause Reference",
+            "Proposed Fix",
+            "Regression Risk Assessment",
         ],
     },
     "fix-impl-report": {
         "display": "Phase D4: Implement Fix — fix-impl-report.md",
         "required_sections": [
-            "Changes Made",
+            "Executive Summary",
+            "Per-Task Reports",
             "Files Changed",
-            "Verification",
+            "Ready for QA",
         ],
     },
     "verification": {
         "display": "Phase D5: Verify — verification.md",
         "required_sections": [
-            "Original Bug",
-            "Regression Tests",
-            "Verification Result",
+            "Verification Summary",
+            "Original Bug Verification",
+            "Regression Test Results",
         ],
     },
 }

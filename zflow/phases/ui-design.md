@@ -73,7 +73,7 @@ orchestrator that Phase 3.5 is skipped by user choice.
 
 ### Sub-Phase 3.5a: Design System Setup
 
-**Agent**: `${CLAUDE_SKILL_DIR}/agents/ui-design/design-system-builder.md`
+**Agent**: `agents/ui-design/design-system-builder.md`
 
 1. **Check for existing design system**
    - From research report, check if ui-system-scout found existing tokens,
@@ -104,7 +104,7 @@ orchestrator that Phase 3.5 is skipped by user choice.
 
 ### Sub-Phase 3.5b: UI Design on Canvas
 
-**Agent**: `${CLAUDE_SKILL_DIR}/agents/ui-design/pencil-designer.md`
+**Agent**: `agents/ui-design/pencil-designer.md`
 
 1. **Open or create .pen file** via `open_document`
 
@@ -130,7 +130,7 @@ orchestrator that Phase 3.5 is skipped by user choice.
 
 ### Sub-Phase 3.5c: Design Review
 
-**Agent**: `${CLAUDE_SKILL_DIR}/agents/ui-design/ui-review-agent.md`
+**Agent**: `agents/ui-design/ui-review-agent.md`
 
 1. **Take screenshots** of all designed screens via `get_screenshot`
 
@@ -160,7 +160,7 @@ orchestrator that Phase 3.5 is skipped by user choice.
 ### Generate Final Report
 
 Compile everything into `.zflow/phases/03.5-ui-design/ui-design-report.md`
-using the `${CLAUDE_SKILL_DIR}/templates/ui-design-report.md` template. Include:
+using the `assets/ui-design-report.md` template. Include:
 
 - Design system tokens (with values)
 - Component library reference

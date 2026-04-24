@@ -11,7 +11,8 @@ Reference for invoking, configuring, and navigating ZFlow workflows.
 | `/using-zflow` | Brainstorm → Research → Design → Review → UI Design → Implement → QA → Document | New features, refactoring, architectural changes |
 | `/using-zflow-debug` | Reproduce → Investigate → Analyze → Design Fix → Implement Fix → Verify | Bugs, errors, test failures |
 
-Both require explicit invocation (`disable-model-invocation: true` prevents auto-triggering).
+ZFlow is intended for explicit invocation or clearly requested structured workflow use.
+Claude Code clients preserve that behavior through skill metadata.
 
 ---
 

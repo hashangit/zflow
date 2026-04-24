@@ -57,10 +57,11 @@ subagent do the heavy reading and writing.
 
 Spawn the documentation writer agent. It reads the full document chain and
 produces all outputs. For its prompt:
-1. Read `${CLAUDE_SKILL_DIR}/agents/document/documentation-writer.md` and include its contents
-2. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
+1. Pass the path `agents/document/documentation-writer.md`
+2. Pass the path `agents/_shared/karpathy-preamble.md`
 3. Pass the paths to all document chain files (the agent reads them itself)
-4. Call the Agent tool with that prompt and description "documentation writer"
+4. Tell the subagent to read those files itself
+5. Launch the subagent with description "documentation writer"
 
 The agent will:
 - Read the full document chain itself (keeping it out of main context)

@@ -225,7 +225,7 @@ Verification agents confirm: original bug is fixed, no regressions introduced, r
     │   └── document/
     │       └── documentation-writer.md
     │
-    ├── templates/                     # Output document templates
+    ├── assets/                        # Output document templates
     │   ├── scope.md
     │   ├── approach-proposal.md
     │   ├── research-report.md
@@ -251,8 +251,13 @@ Verification agents confirm: original bug is fixed, no regressions introduced, r
     │   ├── escalation-patterns.md
     │   ├── karpathy-guidelines.md
     │   ├── pencil-integration.md
-    │   ├── security-checklist.md
-    │   └── security-patterns.md
+    │   ├── security-auth.md
+    │   ├── security-config.md
+    │   ├── security-crypto.md
+    │   ├── security-injection.md
+    │   ├── security-patterns-js.md
+    │   ├── security-patterns-python.md
+    │   └── security-patterns-web.md
     │
     └── scripts/
         ├── init-workspace.sh
@@ -1470,8 +1475,8 @@ The security audit can be configured:
 
 ### Security Integration (Phase 3)
 14. `security-auditor.md` agent with full OWASP checklist
-15. `security-checklist.md` reference document
-16. `security-patterns.md` language-specific patterns
+15. `security-auth.md`, `security-config.md`, `security-crypto.md`, `security-injection.md` — OWASP category reference documents
+16. `security-patterns-js.md`, `security-patterns-python.md`, `security-patterns-web.md` — language-specific patterns
 17. `security-audit-report.md` template
 18. `security-impact-assessor.md` for debug workflow
 19. Security verification agent for debug Phase D5

@@ -89,7 +89,7 @@ Verify the fix across four dimensions:
 
 ## Output Format
 
-Produce `verification.md` using the template at `templates/verification.md`:
+Produce `verification.md` using the template at `assets/verification.md`:
 
 ```markdown
 # Fix Verification Report

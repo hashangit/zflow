@@ -93,7 +93,7 @@ Rules for section presentation:
 - Risk Register captures concerns from the interactive review
 
 ## Output Format
-Follow the `templates/solution.md` structure exactly:
+Follow the `assets/solution.md` structure exactly:
 
 ```
 # Solution Design

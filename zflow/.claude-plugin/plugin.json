@@ -1,13 +1,16 @@
 {
   "name": "zflow",
-  "description": "Multi-agent development workflow orchestrator with structured phases: brainstorm, research, design, review, implement, QA, and document.",
-  "version": "1.0.2",
+  "description": "Multi-agent development workflow orchestrator for planning, building, QA, documentation, or debugging — with structured development and debug pipelines.",
+  "version": "1.0.3",
   "author": {
     "name": "Hashan Wickramasinghe"
   },
   "repository": "https://github.com/hashanw/zflow",
   "license": "MIT",
   "keywords": [
+    "brainstorm",
+    "coding",
+    "software engineering",
     "workflow",
     "multi-agent",
     "orchestration",

@@ -140,7 +140,7 @@ Write scope.md and confirm user approval.
 
 ## Output Format
 
-Produce `scope.md` following the template at `templates/scope.md`:
+Produce `scope.md` following the template at `assets/scope.md`:
 
 ```markdown
 # Scope: {Feature Name}

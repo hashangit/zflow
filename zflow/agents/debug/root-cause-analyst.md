@@ -101,7 +101,7 @@ Example:
 
 ## Output Format
 
-Produce `root-cause.md` using the template at `templates/root-cause.md`:
+Produce `root-cause.md` using the template at `assets/root-cause.md`:
 
 ```markdown
 # Root Cause Analysis

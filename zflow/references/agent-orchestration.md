@@ -6,7 +6,7 @@ How ZFlow coordinates sub-agent swarms across phases.
 
 ## Overview
 
-ZFlow uses five orchestration patterns to coordinate sub-agents. Each pattern is chosen based on the dependency structure of the work being done. The coordinator (the phase's SKILL.md) is responsible for spawning agents, collecting results, and managing transitions.
+ZFlow uses five orchestration patterns to coordinate sub-agents. Each pattern is chosen based on the dependency structure of the work being done. The coordinator (the phase doc) is responsible for spawning agents, collecting results, and managing transitions.
 
 ---
 
@@ -27,7 +27,9 @@ Coordinator reads phase input
 
 **When it is used:** When multiple independent analyses need to run on the same input. Each agent examines the input from a different perspective but does not depend on other agents' results.
 
-**How spawning works:** All agents in a fan-out are spawned in the SAME message (a single tool-use block with multiple Agent calls). This maximizes parallelism -- all agents begin executing simultaneously rather than sequentially.
+**How spawning works:** All agents in a fan-out are spawned in the SAME message
+using the client subagent mechanism. This maximizes parallelism -- all agents
+begin executing simultaneously rather than sequentially.
 
 **How the coordinator merges results:**
 
@@ -38,11 +40,11 @@ Coordinator reads phase input
 5. Contradictions between agents are flagged for resolution
 6. The merged output follows the phase's template structure
 
-**Agent isolation:** Each fan-out agent runs independently — it receives only what
-you explicitly include in its prompt string. Agents launched via the Agent tool
-cannot see each other's work or the parent conversation, preventing groupthink.
-Construct each agent's prompt by combining: the Karpathy preamble, the agent's
-specific prompt file, and the relevant input documents.
+**Agent isolation:** Each fan-out agent runs independently. It receives only the
+paths and instructions you explicitly give it. Subagents cannot see each other's
+work or the parent conversation unless the client provides that context.
+Construct each agent's prompt by passing: the Karpathy preamble path, the
+agent-specific prompt file path, and the relevant input document paths.
 
 **Example -- Research Phase:**
 - architecture-scout maps the project structure
@@ -227,7 +229,7 @@ context.
 
 ## Coordinator Responsibilities
 
-Each phase's SKILL.md acts as the coordinator. The coordinator is a **dispatcher,
+Each phase doc acts as the coordinator. The coordinator is a **dispatcher,
 not a worker**. It decides what to do and delegates the doing.
 
 1. **Dispatch workers:** Spawn subagents to read inputs, analyze code, and produce reports
@@ -258,9 +260,9 @@ Bad:  Read scope.md → paste contents into agent prompt
 Good: "Read .zflow/phases/00-brainstorm/scope.md, then [agent instructions]"
 ```
 
-For skill-internal files (agent prompts, templates, Karpathy preamble), resolve
-`${CLAUDE_SKILL_DIR}` to its absolute path before passing to the agent, since
-subagents may not have access to the variable.
+For skill-internal files (agent prompts, templates, Karpathy preamble), pass
+paths relative to the skill root, or resolve them to absolute paths if your
+client's subagents cannot resolve skill-relative paths.
 
 ### Synthesis Agent Pattern
 

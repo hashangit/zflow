@@ -71,7 +71,7 @@ error output, identify the minimal reproduction case, and classify the bug type.
 
 ## Output Format
 
-Produce `repro-report.md` using the template at `templates/repro-report.md`:
+Produce `repro-report.md` using the template at `assets/repro-report.md`:
 
 ```markdown
 # Bug Reproduction Report

@@ -44,36 +44,36 @@ Ready to move on?
 
 ## Dev Workflow Phases
 
-| # | Phase | Sub-Skill | Gate | Key Artifact |
+| # | Phase | Phase Doc | Gate | Key Artifact |
 |---|-------|-----------|------|-------------|
-| 0 | Brainstorm | `skills/zflow-brainstorm/SKILL.md` | human | `scope.md` |
-| 1 | Research | `skills/zflow-research/SKILL.md` | auto | `research-report.md` |
-| 2 | Design | `skills/zflow-design/SKILL.md` | human | `solution.md` |
-| 3 | Review | `skills/zflow-review/SKILL.md` | human | `reviewed-solution.md` |
-| 3.5 | UI Design | `skills/zflow-ui-design/SKILL.md` | human | `ui-design-report.md` |
-| 4 | Implement | `skills/zflow-implement/SKILL.md` | auto | `impl-report.md` |
-| 5 | QA | `skills/zflow-qa/SKILL.md` | human | `qa-report.md` |
-| 6 | Document | `skills/zflow-document/SKILL.md` | auto | changelog + commit |
+| 0 | Brainstorm | `phases/brainstorm.md` | human | `scope.md` |
+| 1 | Research | `phases/research.md` | auto | `research-report.md` |
+| 2 | Design | `phases/design.md` | human | `solution.md` |
+| 3 | Review | `phases/review.md` | human | `reviewed-solution.md` |
+| 3.5 | UI Design | `phases/ui-design.md` | human | `ui-design-report.md` |
+| 4 | Implement | `phases/implement.md` | auto | `impl-report.md` |
+| 5 | QA | `phases/qa.md` | human | `qa-report.md` |
+| 6 | Document | `phases/document.md` | auto | changelog + commit |
 
 ## Debug Workflow Phases
 
-| # | Phase | Sub-Skill | Gate | Key Artifact |
+| # | Phase | Phase Doc | Gate | Key Artifact |
 |---|-------|-----------|------|-------------|
-| D0 | Reproduce | `skills/zflow-debug/SKILL.md` | auto | `repro-report.md` |
-| D1 | Investigate | `skills/zflow-debug/SKILL.md` | auto | `investigation.md` |
-| D2 | Analyze | `skills/zflow-debug/SKILL.md` | human | `root-cause.md` |
-| D3 | Design Fix | `skills/zflow-debug/SKILL.md` | human | `fix-design.md` |
-| D4 | Implement Fix | `skills/zflow-debug/SKILL.md` | auto | `fix-impl-report.md` |
-| D5 | Verify | `skills/zflow-debug/SKILL.md` | auto | `verification.md` |
+| D0 | Reproduce | `phases/debug.md` | auto | `repro-report.md` |
+| D1 | Investigate | `phases/debug.md` | auto | `investigation.md` |
+| D2 | Analyze | `phases/debug.md` | human | `root-cause.md` |
+| D3 | Design Fix | `phases/debug.md` | human | `fix-design.md` |
+| D4 | Implement Fix | `phases/debug.md` | auto | `fix-impl-report.md` |
+| D5 | Verify | `phases/debug.md` | auto | `verification.md` |
 
 ## File Naming Conventions
 
 | Item | Convention | Example |
 |------|-----------|---------|
-| Sub-skill dirs | `zflow-{phase}` | `zflow-research` |
+| Phase docs | `{phase}.md` | `research.md` |
 | Agent prompts | `{role-name}.md` | `architecture-scout.md` |
 | Shared files | `_shared/{name}.md` | `_shared/karpathy-preamble.md` |
-| Templates | `{output-name}.md` | `scope.md` |
+| Templates | `{output-name}.md` | `scope.md` (in `assets/`) |
 | Workspace phase dirs | `{NN}-{phase}/` | `01-research/` |
 | Config files | `{name}.json` | `config.json` |
 | Security findings | `SEV-{NNN}` | `SEV-001` |

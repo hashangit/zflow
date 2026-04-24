@@ -2,7 +2,7 @@
 
 ## Phase Failure
 
-If a sub-skill fails or produces invalid output:
+If a phase doc fails or produces invalid output:
 
 1. Report the failure clearly to the user
 2. Identify what went wrong (missing sections, validation failure, etc.)
@@ -20,16 +20,16 @@ If a previous phase's artifact is missing when the next phase needs it:
 3. If not found, ask user: "Phase {N} output is missing. Re-run Phase {N}
    or abort?"
 
-## Sub-Skill Not Found
+## Phase Doc Not Found
 
-If a referenced sub-skill does not exist:
+If a referenced phase doc does not exist:
 
 ```
-Phase sub-skill not found: skills/zflow-{phase}/SKILL.md
+Phase doc not found: phases/{phase}.md
 
 This phase has not been implemented yet. You can:
   [A] Skip this phase and proceed to the next
-  [B] Abort and implement the missing sub-skill first
+  [B] Abort and implement the missing phase doc first
 ```
 
 ## Configuration Errors

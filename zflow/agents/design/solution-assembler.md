@@ -15,7 +15,7 @@ You receive:
 - The approach analysis from `.zflow/phases/02-design/approach-analysis.md`
   (or equivalent content passed in the prompt)
 - All approved section content from the design conversation
-- The output template structure from `templates/solution.md`
+- The output template structure from `assets/solution.md`
 
 ## What to Produce
 

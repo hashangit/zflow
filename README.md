@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-active-brightgreen.svg" alt="Status">
-  <img src="https://img.shields.io/badge/version-v1.0.2-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-v1.0.3-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/license-MIT-orange.svg" alt="License">
   <img src="https://img.shields.io/badge/agents-35-blueviolet.svg" alt="Agents">
 </p>
@@ -301,7 +301,7 @@ ZFlow will:
 
 Security isn't a checkbox in ZFlow — it's a dedicated workflow dimension:
 
-**During Development**: The QA phase includes a deep security audit covering the full OWASP Top 10 2025 — broken access control, injection, cryptographic failures, misconfiguration, and more. Every finding includes an attack scenario, not just a code smell.
+**During Development**: The QA phase includes a deep security audit covering the full OWASP Top 10 2025. Security references are organized by OWASP category and language: `security-auth.md`, `security-config.md`, `security-crypto.md`, `security-injection.md`, plus language-specific pattern files for JS/TS, Python, and web apps. Every finding includes an attack scenario, not just a code smell.
 
 **During Debugging**: A security impact assessor evaluates whether bugs can be exploited, what the blast radius would be, and whether fixes introduce new attack surface.
 
@@ -407,16 +407,16 @@ zflow/                              # Copy this folder to your harness's skills 
 ├── SKILL.md                        # Main orchestrator entry point
 ├── LICENSE.txt                     # MIT License
 │
-├── skills/                         # Phase sub-skills
-│   ├── zflow-brainstorm/SKILL.md
-│   ├── zflow-research/SKILL.md
-│   ├── zflow-design/SKILL.md
-│   ├── zflow-review/SKILL.md
-│   ├── zflow-ui-design/SKILL.md
-│   ├── zflow-implement/SKILL.md
-│   ├── zflow-qa/SKILL.md
-│   ├── zflow-document/SKILL.md
-│   └── zflow-debug/SKILL.md
+├── phases/                         # Phase coordinator docs
+│   ├── brainstorm.md
+│   ├── research.md
+│   ├── design.md
+│   ├── review.md
+│   ├── ui-design.md
+│   ├── implement.md
+│   ├── qa.md
+│   ├── document.md
+│   └── debug.md
 │
 ├── agents/                         # 35 agent prompt templates
 │   ├── _shared/karpathy-preamble.md
@@ -430,12 +430,23 @@ zflow/                              # Copy this folder to your harness's skills 
 │   ├── debug/
 │   └── document/
 │
-├── templates/                      # Output document templates
+├── assets/                         # Output document templates (scope.md, qa-report.md, etc.)
 ├── references/                     # Internal reference documentation
+│   ├── agent-orchestration.md      # Coordinator delegation and agent patterns
+│   ├── error-handling.md           # Phase failure and recovery procedures
+│   ├── quick-reference.md          # Naming conventions and gate templates
+│   ├── workflow-guide.md           # End-to-end workflow procedures
+│   ├── security-auth.md            # OWASP A01 & A07 — Auth & session security
+│   ├── security-config.md          # OWASP A02, A03, A06, A09 — Config & data
+│   ├── security-crypto.md          # OWASP A04, A08 — Crypto & integrity
+│   ├── security-injection.md       # OWASP A05, A10 — Injection & SSRF
+│   ├── security-patterns-js.md     # JavaScript/TypeScript vulnerability patterns
+│   ├── security-patterns-python.md # Python vulnerability patterns
+│   └── security-patterns-web.md    # Web application vulnerability patterns
 └── scripts/                        # Workspace and validation scripts
 ```
 
-100 files, ~14,600 lines across skills, agents, templates, references, and evals.
+100 files, ~14,600 lines across skills, agents, assets, references, and scripts.
 
 ---
 
@@ -476,6 +487,20 @@ ZFlow builds on two foundational ideas:
 ---
 
 ## 🚀 Changelog
+
+### v1.0.3 (2026-04-24) — agentskills.io Spec Alignment
+
+Aligns ZFlow with the agentskills.io specification. Reorganizes templates, splits security docs, standardizes paths, and adds behavioral guidelines.
+
+- **`templates/` renamed to `assets/`** — matches agentskills.io spec convention for output document templates
+- **Security references split** — monolithic `security-checklist.md` and `security-patterns.md` replaced with focused files: `security-auth.md`, `security-config.md`, `security-crypto.md`, `security-injection.md`, `security-patterns-js.md`, `security-patterns-python.md`, `security-patterns-web.md`
+- **All paths standardized to relative** — agent and phase files use relative paths instead of `${CLAUDE_SKILL_DIR}`, improving portability
+- **Content inlining removed from agents** — agent files reference external templates by path rather than duplicating content
+- **SKILL.md frontmatter fixed** — corrected license and compatibility fields
+- **`AGENTS.md` added** — behavioral guidelines for LLM coding (think before coding, simplicity first, surgical changes, goal-driven execution)
+- **`CODEX.md` added** — dual-graph context policy specification
+
+No breaking changes — only file paths and internal organization changed. All workflows, agents, and artifacts remain identical.
 
 ### v1.0.2 (2026-04-15) — Token Efficiency & Coordinator Delegation
 

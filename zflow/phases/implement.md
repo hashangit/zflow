@@ -62,7 +62,7 @@ Tier 2: [Task F (deps: D, E)]        -- single task
 ### Step 4: Generate Implementation Plan
 
 Write `.zflow/phases/04-implement/implementation-plan.md` using the
-`${CLAUDE_SKILL_DIR}/templates/implementation-plan.md` template. Populate:
+`assets/implementation-plan.md` template. Populate:
 - The dependency graph visualization
 - The tier breakdown with task assignments
 - Per-task details: agent type, input files, success criteria, complexity
@@ -74,8 +74,8 @@ For each tier, from Tier 0 to the highest tier:
 
 1. **Identify agent type per task**:
    - If the task involves UI components AND `ui-design-report.md` exists:
-     use `${CLAUDE_SKILL_DIR}/agents/implement/ui-implementer.md`
-   - Otherwise: use `${CLAUDE_SKILL_DIR}/agents/implement/focused-implementer.md`
+     use `agents/implement/ui-implementer.md`
+   - Otherwise: use `agents/implement/focused-implementer.md`
 
 2. **Prepare each agent's context**:
    - The specific task description from the solution
@@ -85,8 +85,8 @@ For each tier, from Tier 0 to the highest tier:
    - File paths to work on (from research phase findings)
    - Coding conventions (from pattern analysis in research report)
    - Related test patterns (from test survey in research report)
-   - The Karpathy preamble (`${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`) is included
-     in each agent prompt automatically
+   - Pass the path `agents/_shared/karpathy-preamble.md` in every agent prompt
+     (the agent loads it itself)
    - For UI tasks with Pencil.dev designs: the relevant section of
      `ui-design-report.md` with design tokens and component specs, plus
      paths to exported screenshots
@@ -113,7 +113,7 @@ For each tier, from Tier 0 to the highest tier:
 ### Step 6: Compile Implementation Report
 
 After all tiers complete, write `.zflow/phases/04-implement/impl-report.md`
-using the `${CLAUDE_SKILL_DIR}/templates/impl-report.md` template. This report must include:
+using the `assets/impl-report.md` template. This report must include:
 - Executive summary: tasks completed, failed, or partially completed
 - Per-task reports: status, files changed, deviations from design with
   justification, verification results

@@ -12,8 +12,10 @@ solution approaches that are grounded in the actual codebase — not generic.
 ## Input
 
 You receive:
-- The full contents of `scope.md` (user-validated requirements)
-- The full contents of `research-report.md` (codebase analysis)
+- The path to `scope.md` (user-validated requirements)
+- The path to `research-report.md` (codebase analysis)
+
+Read those files yourself before analyzing approaches.
 
 ## Output Format
 

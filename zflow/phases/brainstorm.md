@@ -29,10 +29,12 @@ technical spec. See the question patterns file for detailed plain language rules
 Before asking the user anything, spawn a codebase scout subagent to build
 context. This keeps heavy file reads out of the main conversation.
 
-Spawn the Agent tool with:
-1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
-2. Read `${CLAUDE_SKILL_DIR}/agents/brainstorm/codebase-scout.md` and include its contents
-3. Pass the project root path and the user's initial description
+Spawn the codebase scout subagent with:
+1. The path `agents/_shared/karpathy-preamble.md`
+2. The path `agents/brainstorm/codebase-scout.md`
+3. The project root path and the user's initial description
+
+Tell the subagent to read those files itself before producing its summary.
 
 The agent produces a structured summary covering:
 - Project structure, tech stack, and architectural patterns
@@ -64,8 +66,8 @@ Your first interaction with the user:
 
 ### Step 3: Guided Questions (One at a Time)
 
-Load the question patterns from `${CLAUDE_SKILL_DIR}/agents/brainstorm/question-patterns.md` and the
-Socratic interviewer persona from `${CLAUDE_SKILL_DIR}/agents/brainstorm/socratic-interviewer.md`.
+Load the question patterns from `agents/brainstorm/question-patterns.md` and the
+Socratic interviewer persona from `agents/brainstorm/socratic-interviewer.md`.
 
 Ask questions **one at a time** using this priority:
 
@@ -96,11 +98,13 @@ After all questions are answered (or the user provides enough context), delegate
 the scope.md assembly to a subagent. This keeps the template and artifact
 writing out of the main context.
 
-Spawn the Agent tool with:
-1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
-2. Read `${CLAUDE_SKILL_DIR}/templates/scope.md` and include its contents as the output template
-3. Pass all collected answers: user's initial description, each question response,
+Spawn the scope writer subagent with:
+1. The path `agents/_shared/karpathy-preamble.md`
+2. The path `assets/scope.md` as the output template
+3. All collected answers: user's initial description, each question response,
    the codebase summary from Step 1, and the ui_work determination
+
+Tell the subagent to read the prompt and template files itself.
 
 The agent must:
 - Follow the template's section classifications: Required must be present,
@@ -147,4 +151,3 @@ phase, or when the task complexity suggests a lighter touch:
 3. Produce an abbreviated scope.md with only Required sections
 4. Skip conditional dimensions entirely unless the user's description clearly
    calls for them
-

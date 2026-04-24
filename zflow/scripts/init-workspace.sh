@@ -22,6 +22,32 @@ set -euo pipefail
 # Configuration
 # ---------------------------------------------------------------------------
 
+show_help() {
+  cat <<'HELP_EOF'
+ZFlow Workspace Initializer
+
+Usage:
+  ./init-workspace.sh [dev|debug]
+  ./init-workspace.sh --help
+
+Arguments:
+  dev     Initialize for development workflow (default)
+  debug   Initialize for debugging workflow
+
+Options:
+  -h, --help  Show this help message
+
+The script is idempotent: existing files are kept.
+HELP_EOF
+}
+
+case "${1:-}" in
+  -h|--help)
+    show_help
+    exit 0
+    ;;
+esac
+
 WORKFLOW_TYPE="${1:-dev}"
 ZFLOW_DIR=".zflow"
 PHASES_DIR="${ZFLOW_DIR}/phases"

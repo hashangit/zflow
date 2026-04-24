@@ -1,12 +1,14 @@
 ---
 name: zflow
 description: >
-  Multi-agent development workflow system. Use whenever the user wants to
-  plan, research, design, implement, QA, or debug a feature or fix using
-  a structured multi-phase workflow with specialized sub-agent swarms.
-  Triggers on: "zflow", multi-phase development, agent workflow,
-  structured development, systematic implementation.
-disable-model-invocation: true
+  Use this skill when the user explicitly asks to run ZFlow or wants a
+  structured multi-phase, multi-agent workflow for planning, building, QA,
+  documentation, or debugging.
+license: See LICENSE.txt
+compatibility: Requires bash and Python 3. Designed for skills-capable coding agents with subagent support.
+metadata:
+  claude-code:
+    disable-model-invocation: "true"
 ---
 
 # ZFlow — Multi-Agent Development Workflow Orchestrator
@@ -93,13 +95,8 @@ every phase doc loaded, every agent report merged consumes that budget. Stay lea
 3. [Workspace Initialization](#workspace-initialization)
 4. [Configuration](#configuration)
 5. [Pencil.dev Detection](#pencildev-detection)
-6. [Development Workflow](#development-workflow)
-7. [QA Loop-Back Protocol](#qa-loop-back-protocol)
-8. [Debug Workflow](#debug-workflow)
-9. [Phase Transitions](#phase-transitions)
-10. [Status Reporting](#status-reporting)
-11. [Phase Resumption](#phase-resumption)
-12. [Error Handling](#error-handling)
+6. [Workflow Execution](#workflow-execution)
+7. [Important Constraints](#important-constraints)
 
 ---
 
@@ -107,7 +104,7 @@ every phase doc loaded, every agent report merged consumes that budget. Stay lea
 
 Before creating the workspace, assess the task's complexity and propose a pipeline
 profile. This determines which phases run, how deeply each executes, and how many
-agents deploy. For the complete profile definitions, read `${CLAUDE_SKILL_DIR}/references/pipeline-profiles.md`.
+agents deploy. For the complete profile definitions, read `references/pipeline-profiles.md`.
 
 ### Step 1: Assess Task Complexity
 
@@ -165,7 +162,7 @@ Keep the internal complexity score and profile name for tracking in
 
 ### Step 3: Pipeline Profiles
 
-Four profiles are defined. For complete details, read `${CLAUDE_SKILL_DIR}/references/pipeline-profiles.md`.
+Four profiles are defined. For complete details, read `references/pipeline-profiles.md`.
 
 - **Quick Fix**: IMPLEMENT (with design sketch) → QA (reduced) → DOCUMENT
 - **Standard**: BRAINSTORM (abbreviated) → DESIGN → REVIEW → IMPLEMENT → QA → DOCUMENT
@@ -289,7 +286,7 @@ Before any phase runs, create the `.zflow/` workspace in the project root.
 
 ### Default Configuration
 
-For the full default config schema, read `${CLAUDE_SKILL_DIR}/references/default-config.md`.
+For the full default config schema, read `references/default-config.md`.
 
 Write `.zflow/config.json` on first run. Users may edit it between runs to
 customize behavior.
@@ -305,7 +302,7 @@ Before each phase, read `.zflow/config.json` to check:
 
 ### Applying Configuration
 
-- **Gate mode `"human"`**: After the phase sub-skill completes, present the
+- **Gate mode `"human"`**: After the phase doc completes, present the
   output artifact to the user and ask for explicit approval before proceeding.
 - **Gate mode `"auto"`**: Validate the artifact and proceed automatically.
 - **Skipped phases**: Skip directly but note in `current-phase.json` that
@@ -317,7 +314,7 @@ Before each phase, read `.zflow/config.json` to check:
 
 At runtime, check whether `mcp__pencil__` prefixed tools are available. This
 determines whether Phase 3.5 (UI Design) can use the full Pencil.dev flow.
-For detailed detection steps and the decision flow, read `${CLAUDE_SKILL_DIR}/references/pencil-integration.md`.
+For detailed detection steps and the decision flow, read `references/pencil-integration.md`.
 
 **Quick summary:**
 1. After Phase 0, check `scope.md` for `ui_work: true`
@@ -327,364 +324,18 @@ For detailed detection steps and the decision flow, read `${CLAUDE_SKILL_DIR}/re
 
 ---
 
-## Development Workflow
+## Workflow Execution
 
-### Phase Sequence
+Use progressive disclosure: load only the current phase doc and any reference it explicitly requests.
 
-```
-Phase 0: BRAINSTORM --> Phase 1: RESEARCH --> Phase 2: DESIGN --> Phase 3: REVIEW
-     |                       |                      |                    |
-     v                       v                      v                    v
-  scope.md            research-report.md      solution.md       reviewed-solution.md
-                                                                       |
-                                               +-----------------------+
-                                               |                       |
-                                       [UI work detected]        [Non-UI path]
-                                       Phase 3.5: UI DESIGN            |
-                                               |                       |
-                                               v                       |
-                                       ui-design-report.md             |
-                                               |                       |
-                                               +-----------------------+
-                                                                       |
-                                                                       v
-                     Phase 4: IMPLEMENT --> Phase 5: QA --> Phase 6: DOCUMENT
-                          |                     |                   |
-                          v                     v                   v
-                     impl-report.md        qa-report.md      changelog + commit
-```
+- Development workflow summary: read `references/workflow-guide.md` when the user asks for a phase overview.
+- Phase path table and validation checklist: read `references/quick-reference.md` before validating artifacts or reporting gates.
+- QA loop-back rules: read `references/phase-gates.md` when QA finds Critical or Blocker issues.
+- Debug workflow details: read `phases/debug.md` when the request is a bug, regression, crash, or failing test.
+- Status and resume handling: read `references/phase-resumption.md` when `.zflow/` already exists or the user asks where things stand.
+- Error handling: read `references/error-handling.md` when a phase fails, an artifact is missing, or config is malformed.
 
-### Phase 0: Brainstorm
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/brainstorm.md`
-**Mode**: Interactive (conversation with user)
-**Input**: User's initial description
-**Output**: `.zflow/phases/00-brainstorm/scope.md`
-
-Read `/phases/brainstorm.md` and follow its instructions. It will engage the user through guided
-multiple-choice questions to refine the idea into a structured scope document.
-
-After completion, check `scope.md` for the `ui_work` flag and update
-`current-phase.json` accordingly.
-
-**Gate**: Present `scope.md` to user. Ask: "Does this scope capture your
-intent? Ready to proceed to research?"
-
-### Phase 1: Research
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/research.md`
-**Mode**: Parallel agent swarm (up to `max_parallel_agents`)
-**Input**: `.zflow/phases/00-brainstorm/scope.md`
-**Output**: `.zflow/phases/01-research/research-report.md`
-
-Read `/phases/research.md` and follow its instructions. It deploys parallel research agents:
-architecture-scout, dependency-mapper, pattern-analyzer, test-surveyor,
-related-code-finder. If `ui_work: true`, also deploys ui-system-scout.
-
-**Gate**: Default `"auto"` — validate artifact exists and has required sections,
-then proceed.
-
-### Phase 2: Design
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/design.md`
-**Mode**: Interactive (approach selection + section-by-section approval)
-**Input**: `scope.md` + `research-report.md`
-**Output**: `.zflow/phases/02-design/solution.md`
-
-Read `/phases/design.md` and follow its instructions. It proposes 2-3 approaches, the user picks one,
-then the design is presented section-by-section for incremental approval.
-
-**Gate**: Present `solution.md` to user. Ask: "Does this design approach work?
-Any sections that need revision?"
-
-### Phase 3: Review
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/review.md`
-**Mode**: Parallel agent swarm (5 reviewers + coordinator self-review)
-**Input**: `scope.md` + `solution.md` (NOT research-report — fresh eyes)
-**Output**: `.zflow/phases/03-review/reviewed-solution.md`
-
-Read `/phases/review.md` and follow its instructions. Fresh agents examine scope + solution from
-multiple viewpoints: gaps, over-engineering, security, performance, alignment.
-Coordinator performs structural self-review.
-
-**Gate**: Present `reviewed-solution.md` changes to user. Ask: "Review findings
-applied. Any adjustments before implementation?"
-
-### Phase 3.5: UI Design (Conditional)
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/ui-design.md`
-**Trigger**: Only when `scope.md` has `ui_work: true`
-**Input**: `reviewed-solution.md` + Pencil.dev canvas
-**Output**: `.zflow/phases/03.5-ui-design/ui-design-report.md`
-
-Only invoked if:
-1. `scope.md` flags `ui_work: true`
-2. User confirms (or Pencil.dev is detected as available)
-
-If conditions are not met, skip directly to Phase 4.
-
-**Gate**: Present UI designs (screenshots) to user for approval.
-
-### Phase 4: Implement
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/implement.md`
-**Mode**: Tiered parallel agent swarm (dependency-ordered)
-**Input**: `reviewed-solution.md` + optionally `ui-design-report.md`
-**Output**: `.zflow/phases/04-implement/impl-report.md` + code changes
-
-Read `/phases/implement.md` and follow its instructions. Tasks are organized by dependency tiers.
-Tier 0 (no dependencies) runs first, then Tier 1, etc. Each agent gets
-a focused task slice with success criteria and the Karpathy preamble.
-
-**Gate**: Default `"auto"` — validate impl-report exists, then proceed.
-
-### Phase 5: QA
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/qa.md`
-**Mode**: Parallel agent swarm (6 agents, 7 if UI)
-**Input**: `reviewed-solution.md` + `impl-report.md` + code changes
-**Output**: `.zflow/phases/05-qa/qa-report.md`
-
-Read `/phases/qa.md` and follow its instructions. Agents check: completeness, UX, code quality,
-test coverage, design alignment, security audit. If UI work, also runs
-visual QA.
-
-**Gate**: Present QA findings with Root Cause Layer classification. For Critical
-or Blocker issues, follow the [QA Loop-Back Protocol](#qa-loop-back-protocol)
-below instead of automatically looping to Phase 4.
-
-### Phase 6: Document
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/document.md`
-**Mode**: Single agent
-**Input**: Full document chain — `scope.md` through `qa-report.md`
-**Output**: Updated docs, CHANGELOG entry, commit
-
-Read `/phases/document.md` and follow its instructions. Updates relevant documentation, CHANGELOG,
-generates a conventional commit message, and stages changes for commit.
-
-**Gate**: Default `"auto"` — but commit requires human approval.
-
----
-
-## QA Loop-Back Protocol
-
-When QA finds Critical or Blocker issues, follow this protocol:
-
-### Step 1: Classify Findings
-
-Each Critical/Blocker finding has been classified by the QA coordinator with a
-Root Cause Layer:
-- **Implementation**: Design is sound, code doesn't match it
-- **Design**: Code matches design, but design is flawed
-- **Scope**: Scope missed a requirement
-- **Unknown**: Ambiguous — user must decide
-
-### Step 2: Present Decision to User
-
-Use plain, non-technical language:
-
-```
-## Testing found {N} issue(s) that need fixing
-
-### What went wrong
-
-{For each issue, explain in plain language:}
-
-**{Issue ID}**: {What's broken, in everyday terms}
-- **How serious**: {Critical / Should fix / Nice to fix}
-- **Where the problem started**:
-  - The code doesn't match the design (we just need to fix the code)
-  - The design itself has a flaw (we need to revisit the design)
-  - We missed something in the original requirements (we need to go back to scoping)
-  - Not clear — you decide
-
-### What I recommend
-
-{If most issues are code-level:}
-The plan is solid — we just need to fix some code. I recommend going back to
-the implementation step to make targeted fixes.
-
-{If any issues are design-level:}
-The approach we picked has some problems. I recommend going back to the design
-step to revise the plan, then re-doing the review and implementation.
-
-{If any issues are scope-level:}
-We may have missed something important in the original requirements. I recommend
-going back to the brainstorming step to revisit what we're building.
-
-### Your options
-  [A] Go with the recommendation — go back to {step name}
-  [B] Go back to a different step:
-      - Just fix the code
-      - Revisit the design (then re-build)
-      - Start over from scoping (keeping our research)
-  [C] I'll fix these myself outside of ZFlow
-  [D] The issues are acceptable — proceed anyway
-```
-
-### Step 3: Execute User Decision
-
-**Loop to Phase 4**: Preserved = all design artifacts. Regenerated = code + impl-report. Max 3 iterations total.
-
-**Loop to Phase 2**: Preserved = scope.md, research-report.md, qa-report.md (as context). Regenerated = solution.md, reviewed-solution.md, impl-report.md. Design agent receives qa-report.md.
-
-**Loop to Phase 0**: Preserved = research-report.md. Regenerated = everything else. Soft restart — user only revisits changed requirements.
-
-### Constraints
-
-1. ALWAYS classify Root Cause Layer before recommending a loop-back target
-2. ALWAYS present options and a recommendation to the user
-3. NEVER automatically loop back to Phase 2 or Phase 0 without user confirmation
-4. Security Criticals always get priority regardless of loop-back target
-5. Maximum 3 iterations for the total QA feedback loop (not per-target)
-
----
-
-## Debug Workflow
-
-### Phase Sequence
-
-```
-Phase D0: REPRODUCE --> Phase D1: INVESTIGATE --> Phase D2: ANALYZE
-     |                        |                         |
-     v                        v                         v
- repro-report.md        investigation.md          root-cause.md
-                                                         |
-                                                         v
-Phase D3: DESIGN FIX --> Phase D4: IMPLEMENT FIX --> Phase D5: VERIFY
-     |                        |                           |
-     v                        v                           v
- fix-design.md           fix-impl-report.md         verification.md
-```
-
-### Phase D0: Reproduce
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/debug.md`
-**Mode**: Interactive (runs code, observes output)
-**Input**: User's bug description
-**Output**: `.zflow/debug/session-<ts>/d0-reproduce/repro-report.md`
-
-### Phase D1: Investigate
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/debug.md`
-**Mode**: Parallel agent swarm (5 investigators)
-**Input**: `repro-report.md`
-**Output**: `d1-investigate/investigation.md`
-
-Agents: call-chain-tracer, data-flow-tracer, pattern-scanner,
-history-investigator, security-impact-assessor.
-
-### Phase D2: Root Cause Analysis
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/debug.md`
-**Mode**: Single deliberation agent
-**Input**: `repro-report.md` + `investigation.md`
-**Output**: `d2-analyze/root-cause.md`
-
-**Gate**: Present root cause to user. Ask: "Does this root cause analysis
-match your understanding of the bug?"
-
-### Phase D3: Design Fix
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/debug.md`
-**Mode**: Parallel review (3 agents)
-**Input**: `root-cause.md`
-**Output**: `d3-design-fix/fix-design.md`
-
-**Gate**: Present proposed fix to user. Ask: "Does this fix approach look
-correct? Ready to implement?"
-
-### Phase D4: Implement Fix
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/debug.md`
-**Mode**: Single implementation agent with escalation
-**Input**: `fix-design.md`
-**Output**: Code changes + `d4-implement-fix/fix-impl-report.md`
-
-**Escalation**: If 3 fix attempts fail (configurable via
-`debug.escalation_threshold`), escalate to architectural review or
-surface to user with full context.
-
-### Phase D5: Verify
-
-**Phase doc**: `${CLAUDE_SKILL_DIR}/phases/debug.md`
-**Mode**: Parallel verification (4 agents)
-**Input**: All debug phase outputs + code changes
-**Output**: `d5-verify/verification.md`
-
-Agents: regression verifier, fix verifier, pattern verifier, security verifier.
-
-**Gate**: Present verification results. If issues found, loop back to D4.
-
----
-
-## Phase Transitions
-
-### Transition Protocol
-
-Every phase transition follows this protocol:
-
-1. **Phase completes** — sub-skill finishes and writes output artifact
-2. **Artifact validation** — output exists, non-empty, Required sections from the
-   template are populated, Expected sections are either populated or explicitly
-   noted as omitted with a reason. Optional sections are not validated. For the
-   per-phase validation checklist with section classifications, read
-   `${CLAUDE_SKILL_DIR}/references/quick-reference.md`.
-3. **Update tracking** — write `phase-meta.json` with status, timestamps, agent count.
-   Update `current-phase.json` with next phase.
-4. **Gate check** — read config for gate setting: `"human"` presents summary to user,
-   `"auto"` proceeds if validation passes. For the human gate prompt template,
-   read `${CLAUDE_SKILL_DIR}/references/quick-reference.md`.
-5. **Next phase** — read the next phase doc and follow its instructions
-
----
-
-## Status Reporting
-
-When the user asks "status" or "where are we?", report in plain language:
-- What kind of work we're doing (building a new feature / fixing a bug)
-- Where we are right now (which step)
-- What we've finished so far
-- What's coming next
-
-During each phase, provide brief progress updates:
-- Interactive phases: natural conversation flow
-- Swarm phases: "Running {N} research tasks in parallel..." then "All done."
-- Tiered phases: "Working on group {N} of tasks ({count} tasks)..."
-
----
-
-## Phase Resumption
-
-For detailed resumption steps, archiving, and debug session resumption,
-read `${CLAUDE_SKILL_DIR}/references/phase-resumption.md`.
-
-**Quick summary:**
-1. If `.zflow/` exists, read `current-phase.json` to find where you stopped
-2. Check status: `completed`, `in_progress`, `awaiting_gate`, or `initialized`
-3. Verify artifacts exist and offer resume/fresh-start options
-4. Starting fresh archives the existing workspace with a timestamp
-
----
-
-## Error Handling
-
-For detailed error handling procedures, read `${CLAUDE_SKILL_DIR}/references/error-handling.md`.
-
-**Quick summary:**
-- Phase failure: report, identify cause, offer retry/skip/abort
-- Missing artifact: check unexpected paths, ask user to re-run or abort
-- Missing sub-skill: offer to skip or abort
-- Config errors: use defaults, log warning, don't abort
-
----
-
-## Quick Reference
-
-For phase tables, sub-skill paths, and file naming conventions, read
-`${CLAUDE_SKILL_DIR}/references/quick-reference.md`.
+Always follow the current pipeline manifest. Do not preload future phase docs.
 
 ---
 
@@ -692,15 +343,12 @@ For phase tables, sub-skill paths, and file naming conventions, read
 
 ### Phase Doc Invocation
 
-Invoke phase sub-skills by reading their phase doc files. Use the Read tool
-to load `${CLAUDE_SKILL_DIR}/phases/<phase>.md` (e.g., `phases/brainstorm.md`,
-`phases/implement.md`), then follow the instructions in that document.
+Invoke phase docs by reading `phases/<phase>.md` (for example,
+`phases/brainstorm.md` or `phases/implement.md`), then follow the instructions
+in that document.
 
-`${CLAUDE_SKILL_DIR}` is a built-in variable that resolves to this skill's
-root directory at runtime — it works regardless of where the skill is installed.
-
-In other harnesses (Gemini CLI, Copilot), use the equivalent skill-relative
-path resolution mechanism to find and load the phase docs.
+Use paths relative to this skill root. Skills-capable clients should resolve
+these paths from the directory that contains this `SKILL.md`.
 
 ### Orchestrator Role
 
@@ -708,8 +356,8 @@ path resolution mechanism to find and load the phase docs.
 passing them the paths to their input artifacts and workspace directories.
 You never write code, design solutions, or perform research directly.
 
-**Karpathy rules apply globally.** Every sub-skill and agent receives the
-shared behavioral rules from `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md`. You do
+**Karpathy rules apply globally.** Every phase and agent receives the
+shared behavioral rules from `agents/_shared/karpathy-preamble.md`. You do
 not need to enforce them — they are embedded in each agent's prompt. But you
 should note violations when reviewing phase outputs.
 

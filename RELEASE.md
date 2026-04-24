@@ -55,7 +55,7 @@ Optimizes how the ZFlow coordinator manages context and delegates work to subage
 | `phases/brainstorm.md` | Token efficiency reference |
 | `phases/design.md` | Token efficiency reference |
 | `phases/document.md` | Token efficiency reference |
-| `templates/*.md` | Slimmed template content |
+| `assets/*.md` | Slimmed template content |
 
 ### Backward compatibility
 
@@ -258,12 +258,12 @@ zflow/
 │   ├── qa/
 │   ├── debug/
 │   └── document/
-├── templates/            # Phase output templates
+├── assets/               # Phase output templates
 ├── references/           # Internal reference documentation
 └── scripts/              # Workspace and validation scripts
 ```
 
-100 files, ~14,600 lines across phases, agents, templates, references, and scripts.
+100 files, ~14,600 lines across phases, agents, assets, references, and scripts.
 
 ---
 

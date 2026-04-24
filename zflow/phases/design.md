@@ -48,11 +48,12 @@ Reading the full research-report.md and scope.md to generate approaches is
 expensive. Delegate the analysis to a subagent, then present the result.
 
 **Spawn the approach researcher subagent:**
-1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
-2. Read `${CLAUDE_SKILL_DIR}/agents/design/approach-researcher.md` and include its contents
-3. Include the full contents of `.zflow/phases/00-brainstorm/scope.md`
-4. Include the full contents of `.zflow/phases/01-research/research-report.md`
-5. Call the Agent tool with that prompt and description "approach researcher"
+1. Pass the path `agents/_shared/karpathy-preamble.md`
+2. Pass the path `agents/design/approach-researcher.md`
+3. Pass the path `.zflow/phases/00-brainstorm/scope.md`
+4. Pass the path `.zflow/phases/01-research/research-report.md`
+5. Tell the subagent to read those files itself
+6. Launch the subagent with description "approach researcher"
 
 **After the agent returns:** It produces 2-3 viable approaches with analysis.
 Review the approaches for quality, then present them to the user using this format:
@@ -131,13 +132,14 @@ subagent. This keeps the template structure and artifact writing out of the
 main context.
 
 **Spawn the solution assembler subagent:**
-1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents
-2. Read `${CLAUDE_SKILL_DIR}/agents/design/solution-assembler.md` and include its contents
-3. Read `${CLAUDE_SKILL_DIR}/templates/solution.md` and include its contents as the output template
+1. Pass the path `agents/_shared/karpathy-preamble.md`
+2. Pass the path `agents/design/solution-assembler.md`
+3. Pass the path `assets/solution.md` as the output template
 4. Pass: the chosen approach (name + rationale from approach-analysis.md),
    all approved section content from the conversation, the approach-analysis.md
    alternatives and recommendation, and any concerns/risks raised during reviews
-5. Call the Agent tool with that prompt and description "solution assembler"
+5. Tell the subagent to read those files itself
+6. Launch the subagent with description "solution assembler"
 
 The agent will:
 - Compile all approved sections into a coherent `solution.md`
@@ -194,4 +196,3 @@ When looping back from QA (qa-report.md exists as input):
 - Read the QA report to understand what went wrong with the previous design
 - Focus on findings classified as "Design" or "Unknown" root cause layer
 - Preserve the valid parts of the previous design; only revise what QA identified as flawed
-

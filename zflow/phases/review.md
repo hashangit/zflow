@@ -20,23 +20,26 @@ If either file is missing, report the error and halt. Do not proceed without bot
 ### Step 1: Spawn 5 Parallel Review Agents
 
 Spawn all 5 agents in a SINGLE message to maximize parallelism. Each agent
-runs independently with only the documents you explicitly include in its prompt.
+runs independently with only the paths and instructions you explicitly give it.
 
 **Agents to spawn (all in parallel):**
 
 | Agent | Prompt File | Focus |
 |---|---|---|
-| gap-detector | `${CLAUDE_SKILL_DIR}/agents/review/gap-detector.md` | Missing requirements, edge cases, assumptions |
-| overengineering-critic | `${CLAUDE_SKILL_DIR}/agents/review/overengineering-critic.md` | Unnecessary complexity, YAGNI, Karpathy simplicity |
-| security-reviewer | `${CLAUDE_SKILL_DIR}/agents/review/security-reviewer.md` | Design-level security implications |
-| performance-reviewer | `${CLAUDE_SKILL_DIR}/agents/review/performance-reviewer.md` | Performance bottlenecks, scaling concerns |
-| alignment-checker | `${CLAUDE_SKILL_DIR}/agents/review/alignment-checker.md` | Architecture consistency, naming, conventions |
+| gap-detector | `agents/review/gap-detector.md` | Missing requirements, edge cases, assumptions |
+| overengineering-critic | `agents/review/overengineering-critic.md` | Unnecessary complexity, YAGNI, Karpathy simplicity |
+| security-reviewer | `agents/review/security-reviewer.md` | Design-level security implications |
+| performance-reviewer | `agents/review/performance-reviewer.md` | Performance bottlenecks, scaling concerns |
+| alignment-checker | `agents/review/alignment-checker.md` | Architecture consistency, naming, conventions |
 
 For each agent, construct a prompt string containing:
-1. Read `${CLAUDE_SKILL_DIR}/agents/_shared/karpathy-preamble.md` and include its contents (the Karpathy behavioral rules)
-2. Read the agent's prompt file (e.g., `${CLAUDE_SKILL_DIR}/agents/review/gap-detector.md`) and include its contents
-3. Include the full contents of `scope.md` and `solution.md` as input context
-4. Call the Agent tool with that prompt and a short description
+1. The path `agents/_shared/karpathy-preamble.md`
+2. The agent's prompt file path (for example, `agents/review/gap-detector.md`)
+3. The paths `.zflow/phases/00-brainstorm/scope.md` and `.zflow/phases/02-design/solution.md`
+4. The required reviewer report output path
+
+Tell each agent to read those files itself, then launch it with a short
+description.
 
 ### Step 2: Merge Findings and Self-Review
 
@@ -68,7 +71,7 @@ Once all 5 agents return their reports:
 
 ### Step 3: Produce Reviewed Solution
 
-Write the final output to `.zflow/phases/03-review/reviewed-solution.md` using the `${CLAUDE_SKILL_DIR}/templates/reviewed-solution.md` template structure.
+Write the final output to `.zflow/phases/03-review/reviewed-solution.md` using the `assets/reviewed-solution.md` template structure.
 
 The document contains:
 - **Original Solution with Adjustments Applied**: The solution text with inline modifications clearly marked (additions noted, deletions struck through)
